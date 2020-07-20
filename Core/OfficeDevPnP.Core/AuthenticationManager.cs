@@ -21,6 +21,7 @@ using System.Net.Http;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Utilities.Context;
 using System.Web;
+using Microsoft.Identity.Client;
 
 namespace OfficeDevPnP.Core
 {
@@ -29,18 +30,18 @@ namespace OfficeDevPnP.Core
     /// </summary>
     public enum AzureEnvironment
     {
-        Production=0,
-        PPE=1,
-        China=2,
-        Germany=3,
-        USGovernment=4
+        Production = 0,
+        PPE = 1,
+        China = 2,
+        Germany = 3,
+        USGovernment = 4
     }
 
     /// <summary>
     /// This manager class can be used to obtain a SharePointContext object
     /// </summary>
     ///
-    public class AuthenticationManager: IDisposable
+    public class AuthenticationManager : IDisposable
     {
         private const string SHAREPOINT_PRINCIPAL = "00000003-0000-0ff1-ce00-000000000000";
 
@@ -48,18 +49,23 @@ namespace OfficeDevPnP.Core
         private SharePointOnlineCredentials sharepointOnlineCredentials;
 #endif
         private string appOnlyAccessToken;
-        private AutoResetEvent appOnlyAccessTokenResetEvent = null;        
+        private AutoResetEvent appOnlyAccessTokenResetEvent = null;
         private string azureADCredentialsToken;
         private AutoResetEvent azureADCredentialsResetEvent = null;
         private object tokenLock = new object();
         private CookieContainer fedAuth = null;
         private string _contextUrl;
-        private TokenCache _tokenCache;
+        private Microsoft.IdentityModel.Clients.ActiveDirectory.TokenCache _tokenCache;
         private string _commonAuthority = "https://login.windows.net/Common";
         private static AuthenticationContext _authContext = null;
         private string _clientId;
         private Uri _redirectUri;
         private bool disposedValue;
+
+        private static IPublicClientApplication publicClientApplication;
+        private static IConfidentialClientApplication confidentialClientApplication;
+        private static string tokenCacheFileName;
+        private static string tokenCacheFileDirectory;
 
         #region Construction
         public AuthenticationManager()
@@ -67,7 +73,9 @@ namespace OfficeDevPnP.Core
 #if !ONPREMISES
             // Set the TLS preference. Needed on some server os's to work when Office 365 removes support for TLS 1.0
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+
 #endif
+
         }
         #endregion
 
@@ -337,7 +345,7 @@ namespace OfficeDevPnP.Core
             public RegisteredWaitHandle Handle = null;
         }
 
-        internal void AppOnlyAccessTokenWaitProc(object state, bool timedOut)         
+        internal void AppOnlyAccessTokenWaitProc(object state, bool timedOut)
         {
             if (!timedOut)
             {
@@ -415,7 +423,8 @@ namespace OfficeDevPnP.Core
                         if (Regex.IsMatch(cookieString, "FedAuth", RegexOptions.IgnoreCase))
                         {
                             authCookies = cookieString.Split(',').Where(c => c.StartsWith("FedAuth", StringComparison.InvariantCultureIgnoreCase) || c.StartsWith("rtFa", StringComparison.InvariantCultureIgnoreCase));
-                        } else if (Regex.IsMatch(cookieString, "EdgeAccessCookie", RegexOptions.IgnoreCase))
+                        }
+                        else if (Regex.IsMatch(cookieString, "EdgeAccessCookie", RegexOptions.IgnoreCase))
                         {
                             authCookies = cookieString.Split(',').Where(c => c.StartsWith("EdgeAccessCookie", StringComparison.InvariantCultureIgnoreCase));
                         }
@@ -452,9 +461,9 @@ namespace OfficeDevPnP.Core
             return null;
         }
 #endif
-#endregion
+        #endregion
 
-#region Authenticating against SharePoint on-premises using credentials
+        #region Authenticating against SharePoint on-premises using credentials
         /// <summary>
         /// Returns a SharePoint on-premises / SharePoint Online Dedicated ClientContext object
         /// </summary>
@@ -681,9 +690,9 @@ namespace OfficeDevPnP.Core
         }
 #endif
 
-#endregion
+        #endregion
 
-#region Authenticating against SharePoint Online using Azure AD based authentication
+        #region Authenticating against SharePoint Online using Azure AD based authentication
 #if !ONPREMISES
 
         /// <summary>
@@ -805,7 +814,7 @@ namespace OfficeDevPnP.Core
                             Log.Debug(Constants.LOGGING_SOURCE, "Lease expiration date: {0}", token.ValidTo);
                             var lease = GetAccessTokenLease(token.ValidTo);
                             lease = TimeSpan.FromSeconds(lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds > 0 ? lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds : lease.TotalSeconds);
-                            
+
                             azureADCredentialsResetEvent = new AutoResetEvent(false);
 
                             AzureADCredentialsTokenWaitInfo wi = new AzureADCredentialsTokenWaitInfo();
@@ -858,7 +867,7 @@ namespace OfficeDevPnP.Core
         /// <param name="tokenCache">Optional token cache. If not specified an in-memory token cache will be used</param>
         /// <param name="environment">SharePoint environment being used</param>
         /// <returns>Client context object</returns>
-        public ClientContext GetAzureADNativeApplicationAuthenticatedContext(string siteUrl, string clientId, string redirectUrl, TokenCache tokenCache = null, AzureEnvironment environment = AzureEnvironment.Production)
+        public ClientContext GetAzureADNativeApplicationAuthenticatedContext(string siteUrl, string clientId, string redirectUrl, Microsoft.IdentityModel.Clients.ActiveDirectory.TokenCache tokenCache = null, AzureEnvironment environment = AzureEnvironment.Production)
         {
             return GetAzureADNativeApplicationAuthenticatedContext(siteUrl, clientId, new Uri(redirectUrl), tokenCache, environment);
         }
@@ -872,7 +881,7 @@ namespace OfficeDevPnP.Core
         /// <param name="tokenCache">Optional token cache. If not specified an in-memory token cache will be used</param>
         /// <param name="environment">SharePoint environment being used</param>
         /// <returns>Client context object</returns>
-        public ClientContext GetAzureADNativeApplicationAuthenticatedContext(string siteUrl, string clientId, Uri redirectUri, TokenCache tokenCache = null, AzureEnvironment environment = AzureEnvironment.Production)
+        public ClientContext GetAzureADNativeApplicationAuthenticatedContext(string siteUrl, string clientId, Uri redirectUri, Microsoft.IdentityModel.Clients.ActiveDirectory.TokenCache tokenCache = null, AzureEnvironment environment = AzureEnvironment.Production)
         {
             var clientContext = new ClientContext(siteUrl);
             _contextUrl = siteUrl;
@@ -943,9 +952,9 @@ namespace OfficeDevPnP.Core
             }
         }
 
-        private async Task<AuthenticationResult> AcquireNativeApplicationTokenAsync(string authContextUrl, string resourceId)
+        private async Task<Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationResult> AcquireNativeApplicationTokenAsync(string authContextUrl, string resourceId)
         {
-            AuthenticationResult ar = null;
+            Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationResult ar = null;
 
             await new SynchronizationContextRemover();
 
@@ -1086,7 +1095,7 @@ namespace OfficeDevPnP.Core
 
             var authContext = new AuthenticationContext(authority);
 
-            var clientAssertionCertificate = new ClientAssertionCertificate(clientId, certificate);
+            var clientAssertionCertificate = new Microsoft.IdentityModel.Clients.ActiveDirectory.ClientAssertionCertificate(clientId, certificate);
 
             var host = new Uri(siteUrl);
 
@@ -1361,7 +1370,286 @@ namespace OfficeDevPnP.Core
             }
         }
 
-      
+
+
+        #endregion
+#endif
+
+
+#if !ONPREMISES
+        #region Azure AD AccessTokens
+
+        /// <summary>
+        /// Tries to acquire an application Azure AD Access Token. Defaults to using an in-memory token cache.
+        /// </summary>
+        /// <param name="tenant">Name of the tenant to acquire the token for (i.e. contoso.onmicrosoft.com). Required.</param>
+        /// <param name="clientId">ClientId to use to acquire the token. Required.</param>
+        /// <param name="scopes">Array with scopes that should be requested access to. Required.</param>
+        /// <param name="certificate">Certificate to use to acquire the token. Required.</param>
+        /// <param name="authority">The Authority to use to acquire the token. Required</param>
+        /// <param name="registerTokenCacheAction">Optional action that will be call to register a custom token cache. See https://github.com/AzureAD/microsoft-authentication-extensions-for-dotnet/tree/master/src/Microsoft.Identity.Client.Extensions.Msal for a possible cache implementation.</param>
+        /// <returns></returns>
+        public static async Task<string> AcquireApplicationTokenAsync(string tenant, string clientId, string[] scopes, X509Certificate2 certificate, string authority = "https://loginmicrosoftonline.com/organizations", Action<ITokenCache> registerTokenCacheAction = null)
+        {
+            if (string.IsNullOrEmpty(tenant))
+            {
+                throw new ArgumentNullException(nameof(tenant));
+            }
+            if (string.IsNullOrEmpty(clientId))
+            {
+                throw new ArgumentNullException(nameof(clientId));
+            }
+            if (string.IsNullOrEmpty(authority))
+            {
+                throw new ArgumentNullException(nameof(authority));
+            }
+            if (certificate == null)
+            {
+                throw new ArgumentNullException(nameof(certificate));
+            }
+
+            Microsoft.Identity.Client.AuthenticationResult tokenResult = null;
+
+            if (confidentialClientApplication == null)
+            {
+                confidentialClientApplication = ConfidentialClientApplicationBuilder.Create(clientId).WithAuthority(authority).WithCertificate(certificate).Build();
+                registerTokenCacheAction?.Invoke(confidentialClientApplication.UserTokenCache);
+            }
+
+            var account = await confidentialClientApplication.GetAccountsAsync();
+
+            try
+            {
+                tokenResult = await confidentialClientApplication.AcquireTokenSilent(scopes, account.First()).ExecuteAsync();
+            }
+            catch
+            {
+                tokenResult = await confidentialClientApplication.AcquireTokenForClient(scopes).ExecuteAsync();
+            }
+
+            return tokenResult.AccessToken;
+        }
+
+        /// <summary>
+        /// Tries to acquire an application Azure AD Access Token. Defaults to using an in-memory token cache.
+        /// </summary>
+        /// <param name="clientId">ClientId to use to acquire the token. Required.</param>
+        /// <param name="scopes">Array with scopes that should be requested access to. Required.</param>
+        /// <param name="username">The username to authenticate with. Required.</param>
+        /// <param name="securePassword">The password to authenticate with. Required.</param>
+        /// <param name="authority">The Authority to use to acquire the token. Required.</param>
+        /// <param name="registerTokenCacheAction">Optional action that will be call to register a custom token cache. See https://github.com/AzureAD/microsoft-authentication-extensions-for-dotnet/tree/master/src/Microsoft.Identity.Client.Extensions.Msal for a possible cache implementation.</param>
+        public static async Task<string> AcquireDelegatedTokenWithCredentialsAsync(string clientId, string[] scopes, string username, SecureString securePassword, string authority, Action<ITokenCache> registerTokenCacheAction = null)
+        {
+            if (string.IsNullOrEmpty(clientId))
+            {
+                throw new ArgumentNullException(nameof(clientId));
+            }
+            if (scopes == null || scopes.Length == 0)
+            {
+                throw new ArgumentNullException(nameof(scopes));
+            }
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ArgumentNullException(nameof(username));
+            }
+            if (securePassword == null || securePassword.Length == 0)
+            {
+                throw new ArgumentNullException(nameof(securePassword));
+            }
+            if (string.IsNullOrEmpty(authority))
+            {
+                throw new ArgumentNullException(nameof(authority));
+            }
+
+            Microsoft.Identity.Client.AuthenticationResult tokenResult = null;
+
+            if (publicClientApplication == null)
+            {
+                publicClientApplication = PublicClientApplicationBuilder.Create(clientId).WithAuthority(authority).Build();
+                registerTokenCacheAction?.Invoke(publicClientApplication.UserTokenCache);
+            }
+
+            var account = await publicClientApplication.GetAccountsAsync();
+            try
+            {
+                tokenResult = await publicClientApplication.AcquireTokenSilent(scopes, account.First()).ExecuteAsync();
+            }
+            catch
+            {
+                tokenResult = await publicClientApplication.AcquireTokenByUsernamePassword(scopes, username, securePassword).ExecuteAsync();
+            }
+
+            return tokenResult.AccessToken;
+        }
+
+
+        /// <summary>
+        /// Tries to acquire an application Azure AD Access Token. Defaults to using an in-memory token cache.
+        /// </summary>
+        /// <param name="tenant">Name of the tenant to acquire the token for (i.e. contoso.onmicrosoft.com). Required.</param>
+        /// <param name="clientId">ClientId to use to acquire the token. Required.</param>
+        /// <param name="scopes">Array with scopes that should be requested access to. Required.</param>
+        /// <param name="clientSecret">Client Secret to use to acquire the token. Required.</param>
+        /// <param name="authority">The Authority to use to acquire the token. Required.</param>
+        /// <param name="registerTokenCacheAction">Optional action that will be call to register a custom token cache. See https://github.com/AzureAD/microsoft-authentication-extensions-for-dotnet/tree/master/src/Microsoft.Identity.Client.Extensions.Msal for a possible cache implementation.</param>
+        public static async Task<string> AcquireApplicationTokenAsync(string tenant, string clientId, string[] scopes, string clientSecret, string authority, Action<ITokenCache> registerTokenCacheAction = null)
+        {
+            if (string.IsNullOrEmpty(tenant))
+            {
+                throw new ArgumentNullException(nameof(tenant));
+            }
+            if (string.IsNullOrEmpty(clientId))
+            {
+                throw new ArgumentNullException(nameof(clientId));
+            }
+            if (string.IsNullOrEmpty(clientSecret))
+            {
+                throw new ArgumentNullException(nameof(clientSecret));
+            }
+
+            Microsoft.Identity.Client.AuthenticationResult tokenResult = null;
+
+            if (confidentialClientApplication == null)
+            {
+                confidentialClientApplication = ConfidentialClientApplicationBuilder.Create(clientId).WithAuthority(authority).WithClientSecret(clientSecret).Build();
+                registerTokenCacheAction?.Invoke(confidentialClientApplication.UserTokenCache);
+            }
+
+            var account = await confidentialClientApplication.GetAccountsAsync();
+
+            try
+            {
+                tokenResult = await confidentialClientApplication.AcquireTokenSilent(scopes, account.First()).ExecuteAsync();
+            }
+            catch
+            {
+                tokenResult = await confidentialClientApplication.AcquireTokenForClient(scopes).ExecuteAsync();
+            }
+            return tokenResult.AccessToken;
+        }
+
+        /// <summary>
+        /// Interactively tries to acquire an application Azure AD Access Token using the device login flow. Defaults to using an in-memory token cache.
+        /// </summary>
+        /// <param name="clientId">ClientId to use to acquire the token. Required.</param>
+        /// <param name="scopes">Array with scopes that should be requested access to. Required.</param>
+        /// <param name="authority">The Authority to use to acquire the token. Required.</param>
+        /// <param name "callBackAction">Will be called the moment the device code is being returned by the service. Use this callback to present information to the user or launch a webbrowser.</param>
+        /// <param name="registerTokenCacheAction">Optional action that will be call to register a custom token cache. See https://github.com/AzureAD/microsoft-authentication-extensions-for-dotnet/tree/master/src/Microsoft.Identity.Client.Extensions.Msal for a possible cache implementation.</param>
+        public static async Task<string>  AcquireApplicationTokenDeviceLoginAsync(string clientId, string[] scopes, string authority, Action<Microsoft.Identity.Client.DeviceCodeResult> callBackAction, Action<ITokenCache> registerTokenCacheAction = null)
+        {
+            if (string.IsNullOrEmpty(clientId))
+            {
+                throw new ArgumentNullException(nameof(clientId));
+            }
+            if (scopes == null || scopes.Length == 0)
+            {
+                throw new ArgumentNullException(nameof(scopes));
+            }
+            if (string.IsNullOrEmpty(authority))
+            {
+                throw new ArgumentNullException(nameof(authority));
+            }
+
+
+            Microsoft.Identity.Client.AuthenticationResult tokenResult = null;
+
+            if (publicClientApplication == null)
+            {
+                publicClientApplication = PublicClientApplicationBuilder.Create(clientId).WithAuthority(authority).Build();
+                registerTokenCacheAction?.Invoke(publicClientApplication.UserTokenCache);
+            }
+            var account = await publicClientApplication.GetAccountsAsync();
+
+            try
+            {
+                tokenResult = await publicClientApplication.AcquireTokenSilent(scopes, account.First()).ExecuteAsync();
+            }
+            catch
+            {
+                var builder = publicClientApplication.AcquireTokenWithDeviceCode(scopes, result =>
+                {
+                    if (callBackAction != null)
+                    {
+                        callBackAction(result);
+                    }
+                    return Task.FromResult(0);
+                });
+                tokenResult = await builder.ExecuteAsync();
+            }
+            return tokenResult.AccessToken;
+        }
+
+        /// <summary>
+        /// Interactively tries to acquire an application Azure AD Access Token and shows a popup where the user can authenticate.
+        /// </summary>
+        /// <param name="clientId">ClientId to use to acquire the token. Required.</param>
+        /// <param name="scopes">Array with scopes that should be requested access to. Required.</param>
+        /// <param name="registerTokenCacheAction">Optional action that will be call to register a custom token cache. See https://github.com/AzureAD/microsoft-authentication-extensions-for-dotnet/tree/master/src/Microsoft.Identity.Client.Extensions.Msal for a possible cache implementation.</param>
+        public async static Task<string> AcquireApplicationTokenInteractiveAsync(string clientId, string[] scopes, Action<ITokenCache> registerTokenCacheAction = null)
+        {
+            if (string.IsNullOrEmpty(clientId))
+            {
+                throw new ArgumentNullException(nameof(clientId));
+            }
+            if (scopes == null || scopes.Length == 0)
+            {
+                throw new ArgumentNullException(nameof(scopes));
+            }
+
+
+            if (publicClientApplication == null)
+            {
+                publicClientApplication = PublicClientApplicationBuilder.Create(clientId).WithRedirectUri("https://login.microsoftonline.com/common/oauth2/nativeclient").Build();
+                registerTokenCacheAction?.Invoke(publicClientApplication.UserTokenCache);
+            }
+
+            var account = await publicClientApplication.GetAccountsAsync();
+
+            Microsoft.Identity.Client.AuthenticationResult tokenResult;
+            try
+            {
+                tokenResult = await publicClientApplication.AcquireTokenSilent(scopes, account.First()).ExecuteAsync();
+            }
+            catch
+            {
+                tokenResult = await publicClientApplication.AcquireTokenInteractive(scopes).ExecuteAsync();
+            }
+            return tokenResult.AccessToken;
+        }
+
+        /// <summary>
+        /// Clears the MSAL token cache being used with the AcquireApplicationToken* and AcquireDelegateToken* methods.
+        /// </summary>
+        /// <returns></returns>
+        public async static Task ClearTokenCache()
+        {
+            if (publicClientApplication != null)
+            {
+                var accounts = await publicClientApplication.GetAccountsAsync();
+
+                // clear the cache
+                while (accounts.Any())
+                {
+                    await publicClientApplication.RemoveAsync(accounts.First());
+                    accounts = publicClientApplication.GetAccountsAsync().GetAwaiter().GetResult().ToList();
+                }
+                publicClientApplication = null;
+            }
+            if (confidentialClientApplication != null)
+            {
+                var accounts = confidentialClientApplication.GetAccountsAsync().GetAwaiter().GetResult().ToList();
+
+                // clear the cache
+                while (accounts.Any())
+                {
+                    await confidentialClientApplication.RemoveAsync(accounts.First());
+                    accounts = confidentialClientApplication.GetAccountsAsync().GetAwaiter().GetResult().ToList();
+                }
+                confidentialClientApplication = null;
+            }
+        }
 
         #endregion
 #endif
