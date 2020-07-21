@@ -20,7 +20,6 @@ using System.Text.Encodings.Web;
 #endif
 using System.Threading.Tasks;
 using System.Web;
-using System.Linq;
 
 namespace OfficeDevPnP.Core.Sites
 {
@@ -303,7 +302,7 @@ namespace OfficeDevPnP.Core.Sites
             int maxRetryCount = 12, // Maximum number of retries (12 x 10 sec = 120 sec = 2 mins)
             int retryDelay = 1000 * 10 // Wait time default to 10sec,
 #if !SP2019
-            , 
+            ,
             bool noWait = false
 #endif
             )
@@ -1410,13 +1409,13 @@ namespace OfficeDevPnP.Core.Sites
         /// Enable Microsoft Teams team in an O365 group connected team site
         /// Will also enable it on a newly Groupified classic site
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="context">Context to operate against</param>
         /// <returns></returns>
         public static async Task<string> TeamifySiteAsync(ClientContext context)
         {
             string responseString = null;
 
-            context.Site.EnsureProperties(s => s.GroupId);
+            context.Site.EnsureProperty(s => s.GroupId);
 
             if (context.Web.IsSubSite())
             {
@@ -1532,7 +1531,7 @@ namespace OfficeDevPnP.Core.Sites
 
             await context.Web.ExecutePost("/_api/sitepages/communicationsite/enable", $@" {{ ""designPackageId"": ""{designPackageId.ToString()}"" }}");
         }
-#endif
+
 
         /// <summary>
         /// Get sensitivity label id for a given Label
@@ -1560,6 +1559,45 @@ namespace OfficeDevPnP.Core.Sites
             return await Task.Run(() => sensitivityLabelId);
         }
 
+        /// <summary>
+        /// Deletes a Communication site or a Group-less Modern team site.
+        /// </summary>
+        /// <param name="context">Context to operate against</param>
+        /// <returns></returns>
+        public static async Task<bool> DeleteSiteAsync(ClientContext context)
+        {
+            bool siteDeleted = false;
+
+            var webTemplateId = context.Web.GetBaseTemplateId();
+
+            context.Site.EnsureProperties(s => s.Id, s => s.GroupId, s => s.Url);
+
+            if (webTemplateId == "SITEPAGEPUBLISHING#0" || webTemplateId == "STS#3")
+            {
+                var result = await context.Web.ExecutePost("/_api/SPSiteManager/delete", $@" {{ ""siteId"": ""{context.Site.Id.ToString()}"" }}");
+
+                var parsedResult = JObject.Parse(result);
+
+                siteDeleted = Convert.ToBoolean(parsedResult["odata.null"]);
+
+                return await Task.Run(() => siteDeleted);
+            }
+            else if (webTemplateId == "GROUP#0" || context.Site.GroupId != Guid.Empty)
+            {
+                var result = await context.Web.ExecutePost($"/_api/GroupSiteManager/Delete?siteUrl='{context.Site.Url}'", string.Empty);
+
+                var parsedResult = JObject.Parse(result);
+
+                siteDeleted = Convert.ToBoolean(parsedResult["odata.null"]);
+
+                return await Task.Run(() => siteDeleted);
+            }
+            else
+            {
+                throw new Exception("Only deletion of Communication site or Modern team site is supported by this method.");
+            }
+        }
+#endif
     }
 }
 #endif

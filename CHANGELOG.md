@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## Added
 
+- Added ability to delete modern sites to SiteCollection helper class #2298 [gautamdsheth - Gautam Sheth]
+
 ## Changed
 
 - Added functionality to the provisioning engine to refer to list fields that have been added in the same list. By means of {fieldtitle:[fieldname]}. The enables for instance the ability to refer to fields in the list when creating a validation formula #2299 [koenzomers - Koen Zomers]
