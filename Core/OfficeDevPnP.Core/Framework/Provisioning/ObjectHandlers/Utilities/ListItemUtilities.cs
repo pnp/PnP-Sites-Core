@@ -270,6 +270,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             context.Web.EnsureProperty(w => w.Url);
 
             bool isDocLib = list.EnsureProperty(l => l.BaseType) == BaseType.DocumentLibrary;
+            bool isPagesLib = list.EnsureProperty(l => l.RootFolder).Name.Equals("SitePages", StringComparison.InvariantCultureIgnoreCase);
 
             var clonedContext = context.Clone(context.Web.Url);
             var web = clonedContext.Web;
@@ -585,7 +586,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     }
                 case ListItemUpdateType.UpdateOverwriteVersion:
                     {
-                        item.UpdateOverwriteVersion();
+                        var itemIsModernClientSidePage = isPagesLib && item["File_x0020_Type"]?.ToString() == "aspx";
+                        if (itemIsModernClientSidePage)
+                        {
+                            // when updating fields of modern client side pages UpdateOverwriteVersion throws this error: "Additions to this Web site have been blocked."
+                            // so use SystemUpdate instead
+                            item.SystemUpdate();
+                        }
+                        else
+                        {
+                            item.UpdateOverwriteVersion();
+                        }
                         break;
                     }
             }
