@@ -146,7 +146,6 @@ namespace Microsoft.SharePoint.Client
                     }
                 case BuiltInIdentity.EveryoneButExternalUsers:
                     {
-#if !NETSTANDARD2_0
                         User spReader = null;
                         try
                         {
@@ -179,9 +178,6 @@ namespace Microsoft.SharePoint.Client
                         web.AssociatedVisitorGroup.Update();
                         web.Context.ExecuteQueryRetry();
                         return spReader;
-#else
-                        throw new Exception("Not supported");
-#endif
                     }
             }
 
@@ -1029,12 +1025,17 @@ namespace Microsoft.SharePoint.Client
             web.Context.ExecuteQueryRetry();
             if (group != null)
             {
-                User user = group.Users.GetByLoginName(userLoginName);
-                web.Context.Load(user);
-                web.Context.ExecuteQueryRetry();
-                if (!user.ServerObjectIsNull.Value)
+                // Check wether the group contains any users to avoid errors / exceptions
+                group.EnsureProperty(g => g.Users);
+                if (group.Users.Count > 0)
                 {
-                    web.RemoveUserFromGroup(group, user);
+                    User user = group.Users.GetByLoginName(userLoginName);
+                    web.Context.Load(user);
+                    web.Context.ExecuteQueryRetry();
+                    if (!user.ServerObjectIsNull.Value)
+                    {
+                        web.RemoveUserFromGroup(group, user);
+                    }
                 }
             }
         }

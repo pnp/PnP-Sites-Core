@@ -52,19 +52,38 @@ namespace OfficeDevPnP.Core.Framework.Graph
             int retryAttempts = 0;
             int backoffInterval = this._delay;
 
+            HttpRequestMessage workrequest = request;
+
             // Loop until we need to retry
             while (retryAttempts < this._retryCount)
             {
                 try
                 {
                     // Add the PnP User Agent string
-                    request.Headers.UserAgent.TryParseAdd(string.IsNullOrEmpty(_userAgent) ? $"{PnPCoreUtilities.PnPCoreUserAgent}" : _userAgent);
+                    workrequest.Headers.UserAgent.TryParseAdd(string.IsNullOrEmpty(_userAgent) ? $"{PnPCoreUtilities.PnPCoreUserAgent}" : _userAgent);
 
                     // Make the request
-                    Task<HttpResponseMessage> result = base.SendAsync(request, completionOption, cancellationToken);
+                    Task<HttpResponseMessage> result = base.SendAsync(workrequest, completionOption, cancellationToken);
 
-                    // And return the response in case of success
-                    return (result);
+                    if (result != null && result.Result != null && (result.Result.StatusCode == (HttpStatusCode)429 || result.Result.StatusCode == (HttpStatusCode)503))
+                    {
+                        // And return the response in case of success
+                        Log.Warning(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_SendAsyncRetry, $"{backoffInterval}");
+
+                        //Add delay for retry
+                        Task.Delay(backoffInterval).Wait();
+
+                        //Add to retry count and increase delay.
+                        retryAttempts++;
+                        backoffInterval = backoffInterval * 2;
+
+                        workrequest = workrequest.CloneRequest();
+                    }
+                    else
+                    {
+                        // And return the response in case of success
+                        return result;
+                    }
                 }
                 // Or handle any ServiceException
                 catch (ServiceException ex)
@@ -89,6 +108,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                             //Add to retry count and increase delay.
                             retryAttempts++;
                             backoffInterval = backoffInterval * 2;
+                            workrequest = workrequest.CloneRequest();
                         }
                         else
                         {

@@ -736,6 +736,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (urlHasValue)
                 {
                     //restore original title
+                    if (string.Equals(createdView.Title, viewTitle, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        // The title field will only be updated if a change other than case is applied
+                        createdView.Title = $"{viewTitle}_temp";
+                        createdView.Title = viewTitle;
+                        createdView.Update();
+                        web.Context.ExecuteQueryRetry();
+                    }
                     createdView.Title = viewTitle;
                     createdView.Update();
                 }
@@ -831,7 +839,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
-#if !ONPREMISES || SP2019
+#if !SP2013 && !SP2016
                 // CustomFormatter
                 var customFormatterElement = viewElement.Descendants("CustomFormatter").FirstOrDefault();
                 if (customFormatterElement != null)
@@ -918,10 +926,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
 
             // We cannot configure Hidden property for Phonetic fields
-            if (!(siteList.BaseTemplate == (int)ListTemplateType.Contacts
-                && (fieldRef.Name.Equals("LastNamePhonetic", StringComparison.InvariantCultureIgnoreCase)
-                || fieldRef.Name.Equals("FirstNamePhonetic", StringComparison.InvariantCultureIgnoreCase)
-                || fieldRef.Name.Equals("CompanyPhonetic", StringComparison.InvariantCultureIgnoreCase))))
+            if (CanConfigureHiddenPropertyForField(siteList, fieldRef))
             {
                 if (fieldRef.Hidden != listField.Hidden)
                 {
@@ -943,6 +948,52 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             return listField;
+        }
+
+        private static bool CanConfigureHiddenPropertyForField(List siteList, FieldRef fieldRef)
+        {
+            bool result = true;
+
+            try
+            {
+                if (
+                    (
+                        // We cannot configure Hidden property for Phonetic fields 
+                        siteList.BaseTemplate == (int)ListTemplateType.Contacts
+                        && fieldRef.Name != null
+                        &&
+                        (
+                            fieldRef.Name.Equals("LastNamePhonetic", StringComparison.InvariantCultureIgnoreCase)
+                            || fieldRef.Name.Equals("FirstNamePhonetic", StringComparison.InvariantCultureIgnoreCase)
+                            || fieldRef.Name.Equals("CompanyPhonetic", StringComparison.InvariantCultureIgnoreCase)
+                        )
+                    )
+#if ONPREMISES
+                || 
+                    ( 
+                        // We cannot configure Hidden property for folowing fields 
+                        fieldRef.Name != null 
+                        &&  
+                        ( 
+                            fieldRef.Name.Equals("_ComplianceFlags", StringComparison.InvariantCultureIgnoreCase) 
+                            || fieldRef.Name.Equals("_ComplianceTag", StringComparison.InvariantCultureIgnoreCase)
+                            || fieldRef.Name.Equals("_ComplianceTagWrittenTime", StringComparison.InvariantCultureIgnoreCase) 
+                            || fieldRef.Name.Equals("_ComplianceTagUserId", StringComparison.InvariantCultureIgnoreCase) 
+                            || fieldRef.Name.Equals("_IsRecord", StringComparison.InvariantCultureIgnoreCase) 
+                        ) 
+                    ) 
+#endif
+                )
+                {
+                    result = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+            return result;
         }
 
         private static Field CreateFieldRef(ListInfo listInfo, Field field, FieldRef fieldRef, TokenParser parser, Web web)
@@ -2108,7 +2159,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         currentFolder.Properties["docset_LastRefresh"] = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss");
                         currentFolder.Properties["vti_contenttypeorder"] = string.Join(",", list.SiteList.ContentTypes.ToList().Where(c => c.StringId.StartsWith(BuiltInContentTypeId.Document + "00"))?.Select(c => c.StringId));
                     }
+#if !SP2013 && !SP2016
+                    currentFolderItem.UpdateOverwriteVersion();
+#else
                     currentFolderItem.Update();
+#endif
                     currentFolder.Update();
                     parentFolder.Context.ExecuteQueryRetry();
                 }
@@ -2123,7 +2178,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         currentFolderItem[p.Key] = parser.ParseString(p.Value);
                     }
+#if !SP2013 && !SP2016
+                    currentFolderItem.UpdateOverwriteVersion();
+#else
                     currentFolderItem.Update();
+#endif
                     currentFolder.Update();
                     parentFolder.Context.ExecuteQueryRetry();
                 }
@@ -2601,13 +2660,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var siteContext = web.Context.GetSiteCollectionContext();
                 var rootWeb = siteContext.Site.RootWeb;
                 siteColumns = rootWeb.Fields;
+#if !SP2013 && !SP2016
+                siteContext.Load(siteColumns, scs => scs.Include(sc => sc.Id, sc => sc.DefaultValue, sc => sc.PinnedToFiltersPane, sc => sc.ShowInFiltersPane, sc => sc.CustomFormatter));
+#else
                 siteContext.Load(siteColumns, scs => scs.Include(sc => sc.Id, sc => sc.DefaultValue));
+#endif
                 siteContext.ExecuteQueryRetry();
             }
             else
             {
                 siteColumns = web.Fields;
+#if !SP2013 && !SP2016
+                web.Context.Load(siteColumns, scs => scs.Include(sc => sc.Id, sc => sc.DefaultValue, sc => sc.PinnedToFiltersPane, sc => sc.ShowInFiltersPane, sc => sc.CustomFormatter));
+#else
                 web.Context.Load(siteColumns, scs => scs.Include(sc => sc.Id, sc => sc.DefaultValue));
+#endif
                 web.Context.ExecuteQueryRetry();
             }
 
@@ -2615,8 +2682,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             foreach (var field in fieldsToProcess)
             {
+                bool includeAsListField = false;
                 var siteColumn = siteColumns.FirstOrDefault(sc => sc.Id == field.Id);
+
+#if !SP2013 && !SP2016
                 if (siteColumn != null)
+                {
+                    //include the list field if settings on List field instance are different then the ones on the web field
+                    if(siteColumn.PinnedToFiltersPane != field.PinnedToFiltersPane 
+                        || siteColumn.ShowInFiltersPane != field.ShowInFiltersPane 
+                        || siteColumn.CustomFormatter != field.CustomFormatter)
+                    {
+                        includeAsListField = true;
+                    }
+                }
+#endif
+
+                if (siteColumn != null && !includeAsListField)
                 {
                     var addField = true;
                     if (siteList.ContentTypesEnabled && contentTypeFields.FirstOrDefault(c => c.Id == field.Id) == null)
@@ -2697,7 +2779,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             taxField.EnsureProperties(f => f.TextField, f => f.Id);
 
                             var noteField = siteList.Fields.GetById(taxField.TextField);
-                            web.Context.Load(noteField, nf => nf.Id, nf => nf.Title, nf => nf.Required, nf => nf.Hidden, nf => nf.InternalName);
+                            web.Context.Load(noteField, 
+                                nf => nf.Id, 
+                                nf => nf.Title, 
+                                nf => nf.Required, 
+                                nf => nf.Hidden, 
+                                nf => nf.InternalName);
                             web.Context.ExecuteQueryRetry();
 
                             list.FieldRefs.Insert(0, new FieldRef(noteField.InternalName)

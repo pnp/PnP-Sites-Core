@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Tests.Sites
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     [TestClass]
     public class SiteCollectionTests
     {
@@ -37,13 +37,36 @@ namespace OfficeDevPnP.Core.Tests.Sites
         [TestCleanup]
         public void CleanUp()
         {
-            using (var clientContext = TestCommon.CreateTenantClientContext())
+            if (!TestCommon.AppOnlyTesting())
             {
-                var tenant = new Tenant(clientContext);
-                tenant.DeleteSiteCollection($"{baseUrl}/sites/site{communicationSiteGuid}", false);
-                // Commented this, first group cleanup needs to be implemented in this test case
-                //tenant.DeleteSiteCollection($"{baseUrl}/sites/site{teamSiteGuid}", false);
-                //TODO: Cleanup group
+                using (var clientContext = TestCommon.CreateTenantClientContext())
+                {
+                    var tenant = new Tenant(clientContext);
+
+                    var communicationSiteUrl = $"{baseUrl}/sites/site{communicationSiteGuid}";
+                    if (tenant.SiteExistsAnywhere(communicationSiteUrl) != SiteExistence.No)
+                    {
+#if !ONPREMISES
+                        tenant.DeleteSiteCollection(communicationSiteUrl, false);
+#else
+                        tenant.DeleteSiteCollection(communicationSiteUrl);
+#endif
+                    }
+
+                    var teamSiteUrl = $"{baseUrl}/sites/site{teamSiteGuid}";
+                    if (tenant.SiteExistsAnywhere(teamSiteUrl) != SiteExistence.No)
+                    {
+#if !ONPREMISES
+                        tenant.DeleteSiteCollection(teamSiteUrl, false);
+#else
+                        tenant.DeleteSiteCollection(teamSiteUrl);
+#endif
+                    }
+
+                    // Commented this, first group cleanup needs to be implemented in this test case
+                    //tenant.DeleteSiteCollection($"{baseUrl}/sites/site{teamSiteGuid}", false);
+                    //TODO: Cleanup group
+                }
             }
         }
 

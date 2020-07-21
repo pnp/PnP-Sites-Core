@@ -409,7 +409,7 @@ namespace Microsoft.SharePoint.Client
             var listItem = folder.ListItemAllFields;
 
             // If already a document set, just return the folder
-            if (listItem["ContentTypeId"].ToString() == BuiltInContentTypeId.Folder) return folder;
+            if (listItem["ContentTypeId"].ToString().StartsWith(BuiltInContentTypeId.DocumentSet)) return folder;
             listItem["ContentTypeId"] = BuiltInContentTypeId.DocumentSet;
 
             // Add missing properties            
@@ -1780,6 +1780,7 @@ namespace Microsoft.SharePoint.Client
             return file;
         }
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Uploads a file to the specified folder by saving the binary directly (via webdav).
         /// </summary>
@@ -1861,6 +1862,7 @@ namespace Microsoft.SharePoint.Client
             return await folder.UploadFileWebDavImplementation(fileName, stream, overwriteIfExists);
         }
 #endif
+
         /// <summary>
         /// Uploads a file to the specified folder by saving the binary directly (via webdav).
         /// Note: this method does not work using app only token.
@@ -1909,6 +1911,8 @@ namespace Microsoft.SharePoint.Client
 #endif
             return file;
         }
+#endif
+
         /// <summary>
         /// Gets a file in a document library.
         /// </summary>
@@ -2080,7 +2084,7 @@ namespace Microsoft.SharePoint.Client
 #endif
 
             // Hash contents
-            HashAlgorithm ha = HashAlgorithm.Create();
+            HashAlgorithm ha = HashAlgorithm.Create("SHA");
             using (var serverStream = streamResult.Value)
                 serverHash = ha.ComputeHash(serverStream);
 
@@ -2171,7 +2175,11 @@ namespace Microsoft.SharePoint.Client
                 {
                     // If this throws ServerException (does not belong to list), then shouldn't be trying to set properties)
                     // Handling the exception stating the "The object specified does not belong to a list."
+#if !ONPREMISES
+                    if (ex.ServerErrorCode != -2113929210)
+#else
                     if (ex.ServerErrorCode != -2146232832)
+#endif
                     {
                         throw;
                     }
@@ -2387,7 +2395,11 @@ namespace Microsoft.SharePoint.Client
                     catch (ServerException ex)
                     {
                         // Handling the exception stating the "The object specified does not belong to a list."
+#if !ONPREMISES
+                        if (ex.ServerErrorCode != -2113929210)
+#else
                         if (ex.ServerErrorCode != -2146232832)
+#endif
                         {
                             // TODO Replace this with an errorcode as well, does not work with localized o365 tenants
                             if (ex.Message.StartsWith("Cannot invoke method or retrieve property from null object. Object returned by the following call stack is null.") &&

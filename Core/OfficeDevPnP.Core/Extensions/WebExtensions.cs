@@ -1139,7 +1139,7 @@ namespace Microsoft.SharePoint.Client
         #endregion
 
         #region Localization
-#if !ONPREMISES
+#if !SP2013 && !SP2016
         /// <summary>
         /// Can be used to set translations for different cultures.
         /// </summary>

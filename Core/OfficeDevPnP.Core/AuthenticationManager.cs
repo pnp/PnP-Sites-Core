@@ -40,13 +40,17 @@ namespace OfficeDevPnP.Core
     /// This manager class can be used to obtain a SharePointContext object
     /// </summary>
     ///
-    public class AuthenticationManager
+    public class AuthenticationManager: IDisposable
     {
         private const string SHAREPOINT_PRINCIPAL = "00000003-0000-0ff1-ce00-000000000000";
 
+#if !NETSTANDARD2_0
         private SharePointOnlineCredentials sharepointOnlineCredentials;
+#endif
         private string appOnlyAccessToken;
+        private AutoResetEvent appOnlyAccessTokenResetEvent = null;        
         private string azureADCredentialsToken;
+        private AutoResetEvent azureADCredentialsResetEvent = null;
         private object tokenLock = new object();
         private CookieContainer fedAuth = null;
         private string _contextUrl;
@@ -55,6 +59,7 @@ namespace OfficeDevPnP.Core
         private static AuthenticationContext _authContext = null;
         private string _clientId;
         private Uri _redirectUri;
+        private bool disposedValue;
 
         #region Construction
         public AuthenticationManager()
@@ -68,6 +73,8 @@ namespace OfficeDevPnP.Core
 
 
         #region Authenticating against SharePoint Online using credentials or app-only
+
+#if !NETSTANDARD2_0
         /// <summary>
         /// Returns a SharePointOnline ClientContext object
         /// </summary>
@@ -100,12 +107,13 @@ namespace OfficeDevPnP.Core
 
             var ctx = new ClientContext(siteUrl);
             ctx.Credentials = sharepointOnlineCredentials;
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
             ctx.DisableReturnValueCache = true;
 #endif
 
             return ctx;
         }
+#endif
 
         /// <summary>
         /// Returns an app only ClientContext object
@@ -146,7 +154,7 @@ namespace OfficeDevPnP.Core
         {
             EnsureToken(siteUrl, realm, appId, appSecret, acsHostUrl, globalEndPointPrefix);
             ClientContext clientContext = Utilities.TokenHelper.GetClientContextWithAccessToken(siteUrl, appOnlyAccessToken);
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
             clientContext.DisableReturnValueCache = true;
 #endif
 
@@ -275,28 +283,76 @@ namespace OfficeDevPnP.Core
 
                         var response = Utilities.TokenHelper.GetAppOnlyAccessToken(SHAREPOINT_PRINCIPAL, new Uri(siteUrl).Authority, realm);
                         string token = response.AccessToken;
-                        ThreadPool.QueueUserWorkItem(obj =>
+
+                        try
                         {
-                            try
-                            {
-                                Log.Debug(Constants.LOGGING_SOURCE, "Lease expiration date: {0}", response.ExpiresOn);
-                                var lease = GetAccessTokenLease(response.ExpiresOn);
-                                lease =
-                                    TimeSpan.FromSeconds(lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds > 0 ? lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds : lease.TotalSeconds);
-                                Thread.Sleep(lease);
-                                appOnlyAccessToken = null;
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Warning(Constants.LOGGING_SOURCE, CoreResources.AuthenticationManger_ProblemDeterminingTokenLease, ex);
-                                appOnlyAccessToken = null;
-                            }
-                        });
+                            Log.Debug(Constants.LOGGING_SOURCE, "Lease expiration date: {0}", response.ExpiresOn);
+                            var lease = GetAccessTokenLease(response.ExpiresOn);
+                            lease = TimeSpan.FromSeconds(lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds > 0 ? lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds : lease.TotalSeconds);
+
+
+
+                            appOnlyAccessTokenResetEvent = new AutoResetEvent(false);
+
+                            AppOnlyAccessTokenWaitInfo wi = new AppOnlyAccessTokenWaitInfo();
+
+                            wi.Handle = ThreadPool.RegisterWaitForSingleObject(appOnlyAccessTokenResetEvent,
+                                                                               new WaitOrTimerCallback(AppOnlyAccessTokenWaitProc),
+                                                                               wi,
+                                                                               (uint)lease.TotalMilliseconds,
+                                                                               true);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Warning(Constants.LOGGING_SOURCE, CoreResources.AuthenticationManger_ProblemDeterminingTokenLease, ex);
+                            appOnlyAccessToken = null;
+                        }
+
+                        //ThreadPool.QueueUserWorkItem(obj =>
+                        //{
+                        //    try
+                        //    {
+                        //        Log.Debug(Constants.LOGGING_SOURCE, "Lease expiration date: {0}", response.ExpiresOn);
+                        //        var lease = GetAccessTokenLease(response.ExpiresOn);
+                        //        lease =
+                        //            TimeSpan.FromSeconds(lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds > 0 ? lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds : lease.TotalSeconds);
+                        //        Thread.Sleep(lease);
+                        //        appOnlyAccessToken = null;
+                        //    }
+                        //    catch (Exception ex)
+                        //    {
+                        //        Log.Warning(Constants.LOGGING_SOURCE, CoreResources.AuthenticationManger_ProblemDeterminingTokenLease, ex);
+                        //        appOnlyAccessToken = null;
+                        //    }
+                        //});
+
                         appOnlyAccessToken = token;
                     }
                 }
             }
         }
+
+        internal class AppOnlyAccessTokenWaitInfo
+        {
+            public RegisteredWaitHandle Handle = null;
+        }
+
+        internal void AppOnlyAccessTokenWaitProc(object state, bool timedOut)         
+        {
+            if (!timedOut)
+            {
+                AppOnlyAccessTokenWaitInfo wi = (AppOnlyAccessTokenWaitInfo)state;
+                if (wi.Handle != null)
+                {
+                    wi.Handle.Unregister(null);
+                }
+            }
+            else
+            {
+                appOnlyAccessToken = null;
+            }
+        }
+
 
         /// <summary>
         /// Get the access token lease time span.
@@ -365,7 +421,10 @@ namespace OfficeDevPnP.Core
                         }
                         if (authCookies != null)
                         {
-                            authCookiesContainer.SetCookies(siteUri, string.Join(",", authCookies));
+                            // Set the authentication cookies both on the SharePoint Online Admin as well as on the SharePoint Online domains to allow for APIs on both domains to be used
+                            var authCookiesString = string.Join(",", authCookies);
+                            authCookiesContainer.SetCookies(siteUri, authCookiesString);
+                            authCookiesContainer.SetCookies(new Uri(siteUri.Scheme + "://" + siteUri.Authority.Replace(".sharepoint.com", "-admin.sharepoint.com")), authCookiesString);
                             form.Close();
                         }
                     }
@@ -383,7 +442,7 @@ namespace OfficeDevPnP.Core
             if (authCookiesContainer.Count > 0)
             {
                 var ctx = new ClientContext(siteUrl);
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
                 ctx.DisableReturnValueCache = true;
 #endif
                 ctx.ExecutingWebRequest += (sender, e) => e.WebRequestExecutor.WebRequest.CookieContainer = authCookiesContainer;
@@ -408,7 +467,7 @@ namespace OfficeDevPnP.Core
         {
             ClientContext clientContext = new ClientContext(siteUrl)
             {
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
                 DisableReturnValueCache = true,
 #endif
                 Credentials = new NetworkCredential(user, password, domain)
@@ -428,7 +487,7 @@ namespace OfficeDevPnP.Core
         {
             ClientContext clientContext = new ClientContext(siteUrl)
             {
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
                 DisableReturnValueCache = true,
 #endif
                 Credentials = new NetworkCredential(user, password, domain)
@@ -502,7 +561,7 @@ namespace OfficeDevPnP.Core
         {
             var siteUri = new Uri(siteUrl);
             var clientContext = new ClientContext(siteUri);
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
             clientContext.DisableReturnValueCache = true;
 #endif
 
@@ -601,7 +660,7 @@ namespace OfficeDevPnP.Core
         {
             var siteUri = new Uri(siteUrl);
             var clientContext = new ClientContext(siteUri);
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
             clientContext.DisableReturnValueCache = true;
 #endif
 
@@ -622,10 +681,10 @@ namespace OfficeDevPnP.Core
         }
 #endif
 
-        #endregion
+#endregion
 
-        #region Authenticating against SharePoint Online using Azure AD based authentication
-#if !ONPREMISES && !NETSTANDARD2_0
+#region Authenticating against SharePoint Online using Azure AD based authentication
+#if !ONPREMISES
 
         /// <summary>
         /// Returns a SharePoint ClientContext using Azure Active Directory credential authentication. This depends on the SPO Management Shell app being registered in your Azure AD.
@@ -658,7 +717,7 @@ namespace OfficeDevPnP.Core
             string resourceUri = spUri.Scheme + "://" + spUri.Authority;
 
             var clientContext = new ClientContext(siteUrl);
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
             clientContext.DisableReturnValueCache = true;
 #endif
             clientContext.ExecutingWebRequest += (sender, args) =>
@@ -703,6 +762,10 @@ namespace OfficeDevPnP.Core
             });
 
             JObject jobject = JObject.Parse(result);
+
+            // Ensure the resulting JSON could be parsed and that it doesn't contain an error. If incorrect credentials have been provided, this will not be the case and we return NULL to indicate not to have an access token.
+            if (jobject == null || jobject["error"] != null) return null;
+
             var token = jobject["access_token"].Value<string>();
             return token;
         }
@@ -717,27 +780,72 @@ namespace OfficeDevPnP.Core
                     {
 
                         String accessToken = Task.Run(() => AcquireTokenAsync(resourceUri, userPrincipalName, userPassword, environment)).GetAwaiter().GetResult();
-                        ThreadPool.QueueUserWorkItem(obj =>
+                        //ThreadPool.QueueUserWorkItem(obj =>
+                        //{
+                        //    try
+                        //    {
+                        //        var token = new System.IdentityModel.Tokens.Jwt.JwtSecurityToken(accessToken);
+                        //        Log.Debug(Constants.LOGGING_SOURCE, "Lease expiration date: {0}", token.ValidTo);
+                        //        var lease = GetAccessTokenLease(token.ValidTo);
+                        //        lease =
+                        //            TimeSpan.FromSeconds(lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds > 0 ? lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds : lease.TotalSeconds);
+                        //        Thread.Sleep(lease);
+                        //        azureADCredentialsToken = null;
+                        //    }
+                        //    catch (Exception ex)
+                        //    {
+                        //        Log.Warning(Constants.LOGGING_SOURCE, CoreResources.AuthenticationManger_ProblemDeterminingTokenLease, ex);
+                        //        azureADCredentialsToken = null;
+                        //    }
+                        //});
+
+                        try
                         {
-                            try
-                            {
-                                var token = new System.IdentityModel.Tokens.Jwt.JwtSecurityToken(accessToken);
-                                Log.Debug(Constants.LOGGING_SOURCE, "Lease expiration date: {0}", token.ValidTo);
-                                var lease = GetAccessTokenLease(token.ValidTo);
-                                lease =
-                                    TimeSpan.FromSeconds(lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds > 0 ? lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds : lease.TotalSeconds);
-                                Thread.Sleep(lease);
-                                azureADCredentialsToken = null;
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Warning(Constants.LOGGING_SOURCE, CoreResources.AuthenticationManger_ProblemDeterminingTokenLease, ex);
-                                azureADCredentialsToken = null;
-                            }
-                        });
+                            var token = new System.IdentityModel.Tokens.Jwt.JwtSecurityToken(accessToken);
+                            Log.Debug(Constants.LOGGING_SOURCE, "Lease expiration date: {0}", token.ValidTo);
+                            var lease = GetAccessTokenLease(token.ValidTo);
+                            lease = TimeSpan.FromSeconds(lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds > 0 ? lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds : lease.TotalSeconds);
+                            
+                            azureADCredentialsResetEvent = new AutoResetEvent(false);
+
+                            AzureADCredentialsTokenWaitInfo wi = new AzureADCredentialsTokenWaitInfo();
+
+                            wi.Handle = ThreadPool.RegisterWaitForSingleObject(azureADCredentialsResetEvent,
+                                                                               new WaitOrTimerCallback(AzureADCredentialsTokenWaitProc),
+                                                                               wi,
+                                                                               (uint)lease.TotalMilliseconds,
+                                                                               true);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Warning(Constants.LOGGING_SOURCE, CoreResources.AuthenticationManger_ProblemDeterminingTokenLease, ex);
+                            azureADCredentialsToken = null;
+                        }
+
                         azureADCredentialsToken = accessToken;
                     }
                 }
+            }
+        }
+
+        internal class AzureADCredentialsTokenWaitInfo
+        {
+            public RegisteredWaitHandle Handle = null;
+        }
+
+        internal void AzureADCredentialsTokenWaitProc(object state, bool timedOut)
+        {
+            if (!timedOut)
+            {
+                AzureADCredentialsTokenWaitInfo wi = (AzureADCredentialsTokenWaitInfo)state;
+                if (wi.Handle != null)
+                {
+                    wi.Handle.Unregister(null);
+                }
+            }
+            else
+            {
+                azureADCredentialsToken = null;
             }
         }
 
@@ -788,7 +896,7 @@ namespace OfficeDevPnP.Core
         public ClientContext GetAzureADWebApplicationAuthenticatedContext(String siteUrl, Func<String, String> accessTokenGetter)
         {
             var clientContext = new ClientContext(siteUrl);
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
             clientContext.DisableReturnValueCache = true;
 #endif
             clientContext.ExecutingWebRequest += (sender, args) =>
@@ -812,7 +920,7 @@ namespace OfficeDevPnP.Core
         public ClientContext GetAzureADAccessTokenAuthenticatedContext(String siteUrl, String accessToken)
         {
             var clientContext = new ClientContext(siteUrl);
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
             clientContext.DisableReturnValueCache = true;
 #endif
 
@@ -824,7 +932,6 @@ namespace OfficeDevPnP.Core
             return clientContext;
         }
 
-#if !NETSTANDARD2_0
         async void clientContext_NativeApplicationExecutingWebRequest(object sender, WebRequestEventArgs e)
         {
             var host = new Uri(_contextUrl);
@@ -835,9 +942,7 @@ namespace OfficeDevPnP.Core
                 e.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + ar.AccessToken;
             }
         }
-#endif
 
-#if !NETSTANDARD2_0
         private async Task<AuthenticationResult> AcquireNativeApplicationTokenAsync(string authContextUrl, string resourceId)
         {
             AuthenticationResult ar = null;
@@ -881,8 +986,11 @@ namespace OfficeDevPnP.Core
             {
                 try
                 {
+#if !NETSTANDARD2_0
                     ar = await _authContext.AcquireTokenAsync(resourceId, _clientId, _redirectUri, new PlatformParameters(PromptBehavior.Always));
-
+#else
+                    ar = await _authContext.AcquireTokenAsync(resourceId, _clientId, _redirectUri, new PlatformParameters());
+#endif
                 }
                 catch (Exception acquireEx)
                 {
@@ -892,9 +1000,7 @@ namespace OfficeDevPnP.Core
 
             return ar;
         }
-#endif
 
-#if !NETSTANDARD2_0
         /// <summary>
         /// Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
         /// </summary>
@@ -912,9 +1018,7 @@ namespace OfficeDevPnP.Core
 
             return GetAzureADAppOnlyAuthenticatedContext(siteUrl, clientId, tenant, cert, environment);
         }
-#endif
 
-#if !NETSTANDARD2_0
 
         /// <summary>
         /// Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
@@ -932,9 +1036,7 @@ namespace OfficeDevPnP.Core
 
             return GetAzureADAppOnlyAuthenticatedContext(siteUrl, clientId, tenant, certificatePath, certPassword, environment);
         }
-#endif
 
-#if !NETSTANDARD2_0
 
         /// <summary>
         /// Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
@@ -960,9 +1062,7 @@ namespace OfficeDevPnP.Core
 
             return GetAzureADAppOnlyAuthenticatedContext(siteUrl, clientId, tenant, cert, environment);
         }
-#endif
 
-#if !NETSTANDARD2_0
         /// <summary>
         /// Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
         /// </summary>
@@ -974,8 +1074,11 @@ namespace OfficeDevPnP.Core
         /// <returns></returns>
         public ClientContext GetAzureADAppOnlyAuthenticatedContext(string siteUrl, string clientId, string tenant, X509Certificate2 certificate, AzureEnvironment environment = AzureEnvironment.Production)
         {
+            LoggerCallbackHandler.UseDefaultLogging = false;
+
+
             var clientContext = new ClientContext(siteUrl);
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
             clientContext.DisableReturnValueCache = true;
 #endif
 
@@ -1010,7 +1113,6 @@ namespace OfficeDevPnP.Core
 
             return clientContext;
         }
-#endif
 
         /// <summary>
         /// Get's the Azure AD login end point for the given environment
@@ -1066,7 +1168,7 @@ namespace OfficeDevPnP.Core
         {
 
             ClientContext clientContext = new ClientContext(siteUrl);
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
             clientContext.DisableReturnValueCache = true;
 #endif
             clientContext.ExecutingWebRequest += delegate (object oSender, WebRequestEventArgs webRequestEventArgs)
@@ -1123,7 +1225,7 @@ namespace OfficeDevPnP.Core
         public ClientContext GetADFSCertificateMixedAuthenticationContext(string siteUrl, string serialNumber, string sts, string idpId, int logonTokenCacheExpirationWindow = 10)
         {
             ClientContext clientContext = new ClientContext(siteUrl);
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
             clientContext.DisableReturnValueCache = true;
 #endif
             clientContext.ExecutingWebRequest += delegate (object oSender, WebRequestEventArgs webRequestEventArgs)
@@ -1178,7 +1280,7 @@ namespace OfficeDevPnP.Core
         public ClientContext GetADFSKerberosMixedAuthenticationContext(string siteUrl, string sts, string idpId, int logonTokenCacheExpirationWindow = 10)
         {
             ClientContext clientContext = new ClientContext(siteUrl);
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
             clientContext.DisableReturnValueCache = true;
 #endif
             clientContext.ExecutingWebRequest += delegate (object oSender, WebRequestEventArgs webRequestEventArgs)
@@ -1259,7 +1361,38 @@ namespace OfficeDevPnP.Core
             }
         }
 
+      
+
         #endregion
 #endif
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    if (appOnlyAccessTokenResetEvent != null)
+                    {
+                        appOnlyAccessTokenResetEvent.Set();
+                        appOnlyAccessTokenResetEvent?.Dispose();
+                    }
+
+                    if (azureADCredentialsResetEvent != null)
+                    {
+                        azureADCredentialsResetEvent.Set();
+                        azureADCredentialsResetEvent?.Dispose();
+                    }
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
     }
 }
