@@ -55,7 +55,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 Model.SiteCollection siteCollection = null;
                 using (var siteContext = tenant.Context.Clone(siteCollectionUrl))
                 {
-                    siteContext.Site.EnsureProperties(s => s.Id, s => s.ShareByEmailEnabled);
+                    siteContext.Site.EnsureProperties(s => s.Id, s => s.ShareByEmailEnabled, s => s.Classification, s => s.GroupId);
+
                     var templateGuid = siteContext.Site.Id.ToString("N");
                     switch (siteProperties.Template)
                     {
@@ -76,6 +77,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 ((CommunicationSiteCollection)siteCollection).Language = (int)siteProperties.Lcid;
                                 ((CommunicationSiteCollection)siteCollection).Owner = siteProperties.OwnerEmail;
                                 ((CommunicationSiteCollection)siteCollection).AllowFileSharingForGuestUsers = siteContext.Site.ShareByEmailEnabled;
+                                if (!string.IsNullOrEmpty(siteContext.Site.Classification))
+                                {
+                                    ((CommunicationSiteCollection)siteCollection).Classification = siteContext.Site.Classification;
+                                }
                                 tenantTemplate.Parameters.Add($"SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_URL", siteProperties.Url);
                                 ((CommunicationSiteCollection)siteCollection).Url = $"{{parameter:SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_URL}}";
                                 tenantTemplate.Parameters.Add($"SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_TITLE", siteProperties.Title);
@@ -96,10 +101,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                                 siteCollection.Description = siteProperties.Description;
 
-                                tenantTemplate.Parameters.Add($"SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_ALIAS", siteProperties.Url.Substring(siteProperties.Url.LastIndexOf("/")));
-                                ((TeamSiteCollection)siteCollection).Alias = $"{{parameter:SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_ALIAS}}";
+                                var groupInfo = Sites.SiteCollection.GetGroupInfoByGroupIdAsync(siteContext, siteContext.Site.GroupId.ToString()).GetAwaiter().GetResult();
+
+                                if (groupInfo != null)
+                                {
+                                    tenantTemplate.Parameters.Add($"SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_ALIAS", Convert.ToString(groupInfo["alias"]));
+                                    ((TeamSiteCollection)siteCollection).Alias = $"{{parameter:SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_ALIAS}}";
+                                    if (groupInfo["classification"] != null)
+                                    {
+                                        ((TeamSiteCollection)siteCollection).Classification = Convert.ToString(groupInfo["classification"]);
+                                    }
+                                    ((TeamSiteCollection)siteCollection).IsPublic = Convert.ToBoolean(groupInfo["isPublic"]);
+                                }
+
                                 ((TeamSiteCollection)siteCollection).DisplayName = siteProperties.Title;
-                                ((TeamSiteCollection)siteCollection).HideTeamify = Core.Sites.SiteCollection.IsTeamifyPromptHiddenAsync(siteContext).GetAwaiter().GetResult();
+                                ((TeamSiteCollection)siteCollection).Language = (int)siteProperties.Lcid;
+                                ((TeamSiteCollection)siteCollection).HideTeamify = Sites.SiteCollection.IsTeamifyPromptHiddenAsync(siteContext).GetAwaiter().GetResult();
 
                                 tenantTemplate.Parameters.Add($"SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_TITLE", siteProperties.Title);
                                 siteCollection.Title = $"{{parameter:SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_TITLE}}";
@@ -107,25 +124,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         case "STS#3":
                             {
-                                siteCollection = new TeamNoGroupSiteCollection();
-                                siteCollection.IsHubSite = siteProperties.IsHubSite;
-                                if (siteProperties.IsHubSite)
+                                if (siteContext.Site.GroupId == Guid.Empty)
                                 {
-                                    var hubsiteProperties = tenant.GetHubSitePropertiesByUrl(siteCollectionUrl);
-                                    tenant.Context.Load(hubsiteProperties);
-                                    tenant.Context.ExecuteQueryRetry();
-                                    siteCollection.HubSiteLogoUrl = hubsiteProperties.LogoUrl;
-                                    siteCollection.HubSiteTitle = hubsiteProperties.Title;
+                                    siteCollection = new TeamNoGroupSiteCollection();
+                                    siteCollection.IsHubSite = siteProperties.IsHubSite;
+                                    if (siteProperties.IsHubSite)
+                                    {
+                                        var hubsiteProperties = tenant.GetHubSitePropertiesByUrl(siteCollectionUrl);
+                                        tenant.Context.Load(hubsiteProperties);
+                                        tenant.Context.ExecuteQueryRetry();
+                                        siteCollection.HubSiteLogoUrl = hubsiteProperties.LogoUrl;
+                                        siteCollection.HubSiteTitle = hubsiteProperties.Title;
+                                    }
+                                    siteCollection.Description = siteProperties.Description;
+                                    ((TeamNoGroupSiteCollection)siteCollection).Language = (int)siteProperties.Lcid;
+                                    ((TeamNoGroupSiteCollection)siteCollection).Owner = siteProperties.OwnerEmail;
+                                    ((TeamNoGroupSiteCollection)siteCollection).TimeZoneId = siteProperties.TimeZoneId;
+                                    tenantTemplate.Parameters.Add($"SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_URL", siteProperties.Url);
+                                    ((TeamNoGroupSiteCollection)siteCollection).Url = $"{{parameter:SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_URL}}";
+                                    tenantTemplate.Parameters.Add($"SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_TITLE", siteProperties.Title);
+                                    siteCollection.Title = $"{{parameter:SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_TITLE}}";
+                                    break;
                                 }
-                                siteCollection.Description = siteProperties.Description;
-                                ((TeamNoGroupSiteCollection)siteCollection).Language = (int)siteProperties.Lcid;
-                                ((TeamNoGroupSiteCollection)siteCollection).Owner = siteProperties.OwnerEmail;
-                                ((TeamNoGroupSiteCollection)siteCollection).TimeZoneId = siteProperties.TimeZoneId;
-                                tenantTemplate.Parameters.Add($"SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_URL", siteProperties.Url);
-                                ((TeamNoGroupSiteCollection)siteCollection).Url = $"{{parameter:SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_URL}}";
-                                tenantTemplate.Parameters.Add($"SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_TITLE", siteProperties.Title);
-                                siteCollection.Title = $"{{parameter:SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_TITLE}}";
-                                break;
+                                else
+                                {
+                                    goto case "GROUP#0";
+                                }
                             }
                     }
                     var siteTemplateCreationInfo = new ProvisioningTemplateCreationInformation(siteContext.Web);
@@ -160,8 +184,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             tenantTemplate.Sequences.Add(provisioningSequence);
 
-            PnPProvisioningContext.Current.ParsedSiteUrls.Clear();
-            PnPProvisioningContext.Current.ParsedSiteUrls.AddRange(siteCollectionUrls);
+            PnPProvisioningContext.Current?.ParsedSiteUrls.Clear();
+            PnPProvisioningContext.Current?.ParsedSiteUrls.AddRange(siteCollectionUrls);
 
             return tenantTemplate;
         }
@@ -467,7 +491,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             IsPublic = t.IsPublic, // Mandatory
                                             KeepOldHomePage = t.KeepOldHomePage, // Optional, but we provide it
                                             Lcid = (uint)t.Language,
-                                            Owners = new string[] {t.Owner},
+                                            Owners = new string[] { t.Owner },
                                         };
                                         tenant.GroupifySite(siteUrl, groupifyInformation);
                                     }
@@ -488,7 +512,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         else
                                         {
                                             WriteMessage($"Theme {parsedTheme} doesn't exist in the tenant, will not be applied", ProvisioningMessageType.Warning);
-                                        }                                        
+                                        }
                                     }
                                     siteUrls.Add(t.Id, siteContext.Url);
                                     if (!string.IsNullOrEmpty(t.ProvisioningId))
@@ -538,7 +562,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         configuration.ProgressDelegate?.Invoke($"{currentSite} : {message}", step, total);
                     };
-                    
+
                     foreach (var sitecollection in sequence.SiteCollections)
                     {
                         currentSite = sitecollection.ProvisioningId != null ? sitecollection.ProvisioningId : sitecollection.Title;

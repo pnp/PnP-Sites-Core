@@ -1559,6 +1559,65 @@ namespace OfficeDevPnP.Core.Sites
             return await Task.Run(() => sensitivityLabelId);
         }
 
+
+        /// <summary>
+        /// Gets group alias information by group Id
+        /// </summary>
+        /// <param name="context">Context to operate against</param>
+        /// <param name="groupId">Id of the group</param>
+        /// <returns>True if in use, false otherwise</returns>
+        public static async Task<Dictionary<string, object>> GetGroupInfoByGroupIdAsync(ClientContext context, string groupId)
+        {
+            await new SynchronizationContextRemover();
+
+            Dictionary<string, object> siteInfo = new Dictionary<string, object>();
+
+            var accessToken = context.GetAccessToken();
+
+            using (var handler = new HttpClientHandler())
+            {
+                context.Web.EnsureProperty(w => w.Url);
+
+                if (string.IsNullOrEmpty(accessToken))
+                {
+                    handler.SetAuthenticationCookies(context);
+                }
+
+                using (var httpClient = new HttpClient(handler))
+                {
+                    string requestUrl = string.Format("{0}/_api/SP.Directory.DirectorySession/Group('{1}')?$select=PrincipalName,Id,DisplayName,Alias,Description,InboxUrl,CalendarUrl,DocumentsUrl,SiteUrl,EditGroupUrl,PictureUrl,PeopleUrl,NotebookUrl,Mail,IsPublic,CreationTime,Classification,teamsResources,yammerResources,allowToAddGuests,isDynamic,assignedLabels", context.Web.Url, groupId);
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+                    request.Headers.Add("accept", "application/json;odata.metadata=none");
+                    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    request.Headers.Add("odata-version", "4.0");
+
+                    if (!string.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+
+                    // Perform actual GET request
+                    HttpResponseMessage response = await httpClient.SendAsync(request);
+
+                    if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        siteInfo = null;
+                    }
+                    else if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        var responseString = await response.Content.ReadAsStringAsync();
+                        siteInfo = JsonConvert.DeserializeObject<Dictionary<string, object>>(responseString);
+                    }
+                    else
+                    {
+                        // Something went wrong...
+                        throw new Exception(await response.Content.ReadAsStringAsync());
+                    }
+                }
+                return await Task.Run(() => siteInfo);
+            }
+        }
+
         /// <summary>
         /// Deletes a Communication site or a Group-less Modern team site.
         /// </summary>
