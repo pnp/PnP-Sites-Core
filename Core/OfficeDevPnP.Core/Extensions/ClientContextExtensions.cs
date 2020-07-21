@@ -373,7 +373,7 @@ namespace Microsoft.SharePoint.Client
                         {
                             newClientContext = authManager.GetAppOnlyAuthenticatedContext(newSiteUrl, TokenHelper.GetRealmFromTargetUrl(new Uri(newSiteUrl)), contextSettings.ClientId, contextSettings.ClientSecret, contextSettings.AcsHostUrl, contextSettings.GlobalEndPointPrefix);
                         }
-#if !ONPREMISES && !NETSTANDARD2_0
+#if !ONPREMISES 
                         else if (contextSettings.Type == ClientContextType.AzureADCredentials)
                         {
                             newClientContext = authManager.GetAzureADCredentialsContext(newSiteUrl, contextSettings.UserName, contextSettings.Password);
@@ -554,7 +554,7 @@ namespace Microsoft.SharePoint.Client
                 result = true;
             }
             // As a final check, do we have the auth cookies?
-            if (clientContext.HasAuthCookies())
+            else if (clientContext.HasAuthCookies())
             {
                 result = false;
             }
@@ -623,18 +623,26 @@ namespace Microsoft.SharePoint.Client
         public static string GetAccessToken(this ClientRuntimeContext clientContext)
         {
             string accessToken = null;
-            EventHandler<WebRequestEventArgs> handler = (s, e) =>
+
+            if (PnPProvisioningContext.Current != null)
             {
-                string authorization = e.WebRequestExecutor.RequestHeaders["Authorization"];
-                if (!string.IsNullOrEmpty(authorization))
+                accessToken = PnPProvisioningContext.Current.AcquireToken(new Uri(clientContext.Url).Authority, null);
+            }
+            else
+            {
+                EventHandler<WebRequestEventArgs> handler = (s, e) =>
                 {
-                    accessToken = authorization.Replace("Bearer ", string.Empty);
-                }
-            };
-            // Issue a dummy request to get it from the Authorization header
-            clientContext.ExecutingWebRequest += handler;
-            clientContext.ExecuteQueryRetry();
-            clientContext.ExecutingWebRequest -= handler;
+                    string authorization = e.WebRequestExecutor.RequestHeaders["Authorization"];
+                    if (!string.IsNullOrEmpty(authorization))
+                    {
+                        accessToken = authorization.Replace("Bearer ", string.Empty);
+                    }
+                };
+                // Issue a dummy request to get it from the Authorization header
+                clientContext.ExecutingWebRequest += handler;
+                clientContext.ExecuteQueryRetry();
+                clientContext.ExecutingWebRequest -= handler;
+            }
 
             return accessToken;
         }
@@ -1047,6 +1055,18 @@ namespace Microsoft.SharePoint.Client
             await new SynchronizationContextRemover();
 
             return await SiteCollection.HideTeamifyPromptAsync(clientContext);
+        }
+
+        /// <summary>
+        /// Deletes a Communication site or a group-less Modern team site
+        /// </summary>
+        /// <param name="clientContext"></param>
+        /// <returns></returns>
+        public static async Task<bool> DeleteSiteAsync(this ClientContext clientContext)
+        {
+            await new SynchronizationContextRemover();
+
+            return await SiteCollection.DeleteSiteAsync(clientContext);
         }
 #endif
     }

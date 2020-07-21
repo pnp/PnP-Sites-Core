@@ -321,6 +321,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         w => w.SearchBoxInNavBar,
 #endif
 #endif
+                        w => w.RootFolder,
+                        w => w.Title,
+                        w => w.Description,
                         w => w.WebTemplate,
                         w => w.HasUniqueRoleAssignments);
 
@@ -426,13 +429,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_WebSettings_SkipCustomMasterPageUpdate);
                         }
                     }
-                    if (webSettings.Title != null)
+                    if (!String.IsNullOrEmpty(webSettings.Title))
                     {
-                        web.Title = parser.ParseString(webSettings.Title);
+                        var newTitle = parser.ParseString(webSettings.Title);
+                        if (newTitle != web.Title)
+                        {
+                            web.Title = newTitle;
+                        }
                     }
-                    if (webSettings.Description != null)
+                    if (!String.IsNullOrEmpty(webSettings.Description))
                     {
-                        web.Description = parser.ParseString(webSettings.Description);
+                        var newDescription = parser.ParseString(webSettings.Description);
+                        if (newDescription != web.Description)
+                        {
+                            web.Description = newDescription;
+                        }
                     }
                     if (webSettings.SiteLogo != null)
                     {
@@ -444,17 +455,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             WriteMessage("Applying site logo across base template IDs is not possible. Skipping site logo provisioning.", ProvisioningMessageType.Warning);
                         }
                         else
-                        // Modern site? Then we assume the SiteLogo is actually a filepath
-                        if (web.WebTemplate == "GROUP")
                         {
-#if !ONPREMISES
-                            if (!string.IsNullOrEmpty(logoUrl) && !logoUrl.ToLower().Contains("_api/groupservice/getgroupimage"))
+                            // Modern site? Then we assume the SiteLogo is actually a filepath
+                            if (web.WebTemplate == "GROUP")
                             {
-                                var fileBytes = ConnectorFileHelper.GetFileBytes(template.Connector, logoUrl);
-                                if (fileBytes != null && fileBytes.Length > 0)
+#if !ONPREMISES
+                                if (!string.IsNullOrEmpty(logoUrl) && !logoUrl.ToLower().Contains("_api/groupservice/getgroupimage"))
                                 {
+                                    var fileBytes = ConnectorFileHelper.GetFileBytes(template.Connector, logoUrl);
+                                    if (fileBytes != null && fileBytes.Length > 0)
+                                    {
 #if !NETSTANDARD2_0
-                                    var mimeType = MimeMapping.GetMimeMapping(logoUrl);
+                                        var mimeType = MimeMapping.GetMimeMapping(logoUrl);
 #else
                                     var mimeType = "";
                                     var imgUrl = logoUrl;
@@ -475,29 +487,37 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         mimeType = "image/jpeg";
                                     }
 #endif
-                                    Sites.SiteCollection.SetGroupImageAsync((ClientContext)web.Context, fileBytes, mimeType).GetAwaiter().GetResult();
+                                        Sites.SiteCollection.SetGroupImageAsync((ClientContext)web.Context, fileBytes, mimeType).GetAwaiter().GetResult();
 
+                                    }
                                 }
-                            }
 #endif
-                        }
-                        else
-                        {
-                            web.SiteLogoUrl = logoUrl;
+                            }
+                            else
+                            {
+                                web.SiteLogoUrl = logoUrl;
+                            }
                         }
                     }
                     var welcomePage = parser.ParseString(webSettings.WelcomePage);
                     if (!string.IsNullOrEmpty(welcomePage))
                     {
-                        web.RootFolder.WelcomePage = welcomePage;
-                        web.RootFolder.Update();
+                        if (welcomePage != web.RootFolder.WelcomePage)
+                        {
+                            web.RootFolder.WelcomePage = welcomePage;
+                            web.RootFolder.Update();
+                        }
                     }
-                    if (webSettings.AlternateCSS != null)
+                    if (!string.IsNullOrEmpty(webSettings.AlternateCSS))
                     {
-                        web.AlternateCssUrl = parser.ParseString(webSettings.AlternateCSS);
+                        var newAlternateCssUrl = parser.ParseString(webSettings.AlternateCSS);
+                        if (newAlternateCssUrl != web.AlternateCssUrl)
+                        {
+                            web.AlternateCssUrl = newAlternateCssUrl;
+                        }
                     }
 
-                    // Tempory disabled as this change is a breaking change for folks that have not set this property in their provisioning templates
+                    // Temporary disabled as this change is a breaking change for folks that have not set this property in their provisioning templates
                     //web.QuickLaunchEnabled = webSettings.QuickLaunchEnabled;
 
                     web.Update();

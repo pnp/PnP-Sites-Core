@@ -16,6 +16,7 @@ using System.Linq;
 using System.Resources;
 using System.Text.RegularExpressions;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Framework.Graph;
 #if NETSTANDARD2_0
 using System.Xml.Linq;
 #endif
@@ -25,7 +26,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
     /// <summary>
     /// Handles methods for token parser
     /// </summary>
-    public class TokenParser
+    public class TokenParser : ICloneable
     {
         public Web _web;
 
@@ -111,6 +112,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
+        /// <summary>
+        /// Creates a new TokenParser. Only to be used by Clone().
+        /// </summary>
+        /// <param name="tokens">The list with TokenDefinitions to copy over</param>
+        /// <param name="web">The Web context to copy over</param>
+        private TokenParser(Web web, List<TokenDefinition> tokens)
+        {
+            _web = web;
+            _tokens = tokens;
+        }
+
         public TokenParser(Tenant tenant, Model.ProvisioningHierarchy hierarchy) :
             this(tenant, hierarchy, null)
         {
@@ -118,7 +130,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public TokenParser(Tenant tenant, Model.ProvisioningHierarchy hierarchy, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            var web = ((ClientContext)tenant.Context).Web;
+            // CHANGED: To avoid issues with low privilege users
+            Web web = null;
+
+#if !ONPREMISES
+            if (TenantExtensions.IsCurrentUserTenantAdmin((ClientContext)tenant.Context))
+            {
+                web = ((ClientContext)tenant.Context).Web;
+            }
+            else
+            {
+#endif
+                var rootSiteUrl = tenant.Context.Url.Replace("-admin", "");
+                var context = ((ClientContext)tenant.Context).Clone(rootSiteUrl);
+                web = context.Web;
+#if !ONPREMISES
+            }
+#endif
+
             web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url, w => w.Language);
             _web = web;
             _tokens = new List<TokenDefinition>();
@@ -281,6 +310,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (tokenIds.Contains("pageuniqueid"))
                 AddPageUniqueIdTokens(web, applyingInformation);
 #endif
+            if (tokenIds.Contains("propertybagvalue"))
+                AddPropertyBagTokens(web);
 
             // TermStore related tokens
             AddTermStoreTokens(web, tokenIds);
@@ -353,6 +384,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             _tokens.RemoveAll(t => t is FieldTitleToken || t is FieldIdToken);
 
+            // Add all the site columns
             var fields = web.AvailableFields;
             web.Context.Load(fields, flds => flds.Include(f => f.Title, f => f.InternalName, f => f.Id));
             web.Context.ExecuteQueryRetry();
@@ -361,6 +393,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 _tokens.Add(new FieldTitleToken(web, field.InternalName, field.Title));
                 _tokens.Add(new FieldIdToken(web, field.InternalName, field.Id));
             }
+
+           // Add all the list columns
+            //var lists = web.Lists;
+            //web.Context.Load(lists, list => list.Include(listField => listField.Fields.Include(field => field.Title, field => field.InternalName, field => field.Id)));
+            //web.Context.ExecuteQueryRetry();
+            //foreach (var list in lists)
+            //{
+            //    foreach (var field in list.Fields)
+            //    {
+            //        _tokens.Add(new FieldTitleToken(web, field.InternalName, field.Title));
+            //        _tokens.Add(new FieldIdToken(web, field.InternalName, field.Id));
+            //    }
+            //}
 
             //if (web.IsSubSite())
             //{
@@ -386,6 +431,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             foreach (var roleDef in web.RoleDefinitions)
             {
                 _tokens.Add(new RoleDefinitionIdToken(web, roleDef.Name, roleDef.Id));
+            }
+        }
+
+        private void AddPropertyBagTokens(Web web)
+        {
+            web.EnsureProperty(w => w.AllProperties);
+
+            foreach (var keyValue in web.AllProperties.FieldValues)
+            {
+                _tokens.Add(new PropertyBagValueToken(web, keyValue.Key, keyValue.Value.ToString()));
             }
         }
 
@@ -419,16 +474,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (accessToken != null)
                 {
                     // Get Office 365 Groups
-
-                    var officeGroups = HttpHelper.MakeGetRequestForString("https://graph.microsoft.com/v1.0/groups?$filter=groupTypes/any(c:c+eq+'Unified')&$select=id,displayName,mailNickname", accessToken);
-                    var returnObject = JObject.Parse(officeGroups);
-                    var groupsArray = returnObject["value"].Value<JArray>();
-                    foreach (var group in groupsArray)
+                    var officeGroups = UnifiedGroupsUtility.GetUnifiedGroups(accessToken, includeSite: false); 
+                    foreach (var group in officeGroups)
                     {
-                        _tokens.Add(new O365GroupIdToken(web, group["displayName"].Value<string>(), group["id"].Value<string>()));
-                        if (!group["displayName"].Value<string>().Equals(group["mailNickname"].Value<string>()))
+                        _tokens.Add(new O365GroupIdToken(web, group.DisplayName, group.GroupId));
+                        if (!group.DisplayName.Equals(group.MailNickname))
                         {
-                            _tokens.Add(new O365GroupIdToken(web, group["mailNickname"].Value<string>(), group["id"].Value<string>()));
+                            _tokens.Add(new O365GroupIdToken(web, group.MailNickname, group.GroupId));
                         }
                     }
                 }
@@ -1174,6 +1226,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 });
             } while (hasMatch && xml != tempXml);
             return tokenIds;
+        }
+
+        /// <summary>
+        /// Clones the current TokenParser instance into a new instance
+        /// </summary>
+        /// <returns>New cloned instance of the TokenParser</returns>
+        public object Clone()
+        {
+            return new TokenParser(_web, _tokens);
         }
     }
 }

@@ -728,6 +728,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FqdnToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ListContentTypeIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\O365GroupIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\PropertyBagValueToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SequenceSiteGroupIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SequenceSiteIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SequenceSiteCollectionIdToken.cs" />

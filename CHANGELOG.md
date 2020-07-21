@@ -6,7 +6,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [3.24.2008.0 August 2020 release - not released]
+
+## Added
+
+- Added ability to delete modern sites to SiteCollection helper class #2298 [gautamdsheth - Gautam Sheth]
+
+## Changed
+- Fixed ability to set field values on modern pages #2344 [heinrich-ulbricht Heinrich Ulbricht]
+- Added functionality to the provisioning engine to refer to list fields that have been added in the same list. By means of {fieldtitle:[fieldname]}. The enables for instance the ability to refer to fields in the list when creating a validation formula #2299 [koenzomers - Koen Zomers]
+
+## [3.23.2007.0 July 2020 release]
 
 ## Added
 
@@ -29,6 +39,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Parse user names when adding them as part of the teams security element during provisioning
 - Fix UpdateListItem: Ignore ID column. ID column cannot be updated. #2692 [gzdev]
 - Updated version of SP-Responsive-UI files (js, css) #2693 [gzdev]
+- Fix: Token parsing changes #2701 [gautamdsheth - Gautam Sheth]
+- Fix: Site collection admin timeout issue #2702 [gautamdsheth - Gautam Sheth]
 
 ## [3.22.2006.2 - June 2020 release]
 
