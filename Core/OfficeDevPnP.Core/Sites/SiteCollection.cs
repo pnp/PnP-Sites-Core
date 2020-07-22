@@ -393,7 +393,7 @@ namespace OfficeDevPnP.Core.Sites
                         }
                     }
 
-                    requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
+                    requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigestAsync());
 
                     // Perform actual post operation
                     HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
@@ -451,7 +451,7 @@ namespace OfficeDevPnP.Core.Sites
                                             }
                                         }
 
-                                        siteStatusRequest.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
+                                        siteStatusRequest.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigestAsync());
 
                                         var siteStatusResponse = await httpClient.SendAsync(siteStatusRequest, new System.Threading.CancellationToken());
                                         var siteStatusResponseString = await siteStatusResponse.Content.ReadAsStringAsync();
@@ -717,7 +717,7 @@ namespace OfficeDevPnP.Core.Sites
                         }
                     }
 
-                    requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
+                    requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigestAsync());
 
                     // Perform actual post operation
                     HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
@@ -773,7 +773,7 @@ namespace OfficeDevPnP.Core.Sites
                                                     siteStatusRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                                                 }
 
-                                                siteStatusRequest.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
+                                                siteStatusRequest.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigestAsync());
 
                                                 var siteStatusResponse = await httpClient.SendAsync(siteStatusRequest, new System.Threading.CancellationToken());
                                                 var siteStatusResponseString = await siteStatusResponse.Content.ReadAsStringAsync();
@@ -1086,7 +1086,7 @@ namespace OfficeDevPnP.Core.Sites
                         }
                     }
 
-                    requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
+                    requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigestAsync());
 
                     // Perform actual post operation
                     HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
@@ -1318,7 +1318,7 @@ namespace OfficeDevPnP.Core.Sites
 
                     string requestUrl = $"{context.Web.Url}/_api/groupservice/setgroupimage";
 
-                    var requestDigest = await context.GetRequestDigest();
+                    var requestDigest = await context.GetRequestDigestAsync();
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
                     request.Headers.Add("accept", "application/json;odata=verbose");
                     if (!string.IsNullOrEmpty(accessToken))
@@ -1477,7 +1477,7 @@ namespace OfficeDevPnP.Core.Sites
 
             if (context.Site.GroupId == Guid.Empty)
             {
-                throw new Exception("Teamify prompts can only be hidden in O365 group connected sites.");
+                throw new Exception("Teamify prompts can only be hidden in Microsoft 365 group connected sites.");
             }
             else
             {

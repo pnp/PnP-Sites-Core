@@ -342,7 +342,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         try
                                         {
                                             WriteMessage($"Teamify prompt is now hidden for site at URL - {siteContext.Url}", ProvisioningMessageType.Progress);
-                                            siteContext.HideTeamifyPrompt().GetAwaiter().GetResult();
+                                            siteContext.HideTeamifyPromptAsync().GetAwaiter().GetResult();
                                         }
                                         catch (Exception ex)
                                         {

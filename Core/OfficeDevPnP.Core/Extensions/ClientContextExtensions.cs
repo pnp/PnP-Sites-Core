@@ -39,7 +39,7 @@ namespace Microsoft.SharePoint.Client
         static ClientContextExtensions()
         {
             ClientContextExtensions.userAgentFromConfig = ConfigurationManager.AppSettings["SharePointPnPUserAgent"];
-            if(string.IsNullOrWhiteSpace(ClientContextExtensions.userAgentFromConfig))
+            if (string.IsNullOrWhiteSpace(ClientContextExtensions.userAgentFromConfig))
             {
                 ClientContextExtensions.userAgentFromConfig = System.Environment.GetEnvironmentVariable("SharePointPnPUserAgent", EnvironmentVariableTarget.Process);
             }
@@ -179,9 +179,9 @@ namespace Microsoft.SharePoint.Client
                     var response = wex.Response as HttpWebResponse;
                     // Check if request was throttled - http status code 429
                     // Check is request failed due to server unavailable - http status code 503
-                    if (response != null && 
-                        (response.StatusCode == (HttpStatusCode)429 
-                        || response.StatusCode == (HttpStatusCode)503 
+                    if (response != null &&
+                        (response.StatusCode == (HttpStatusCode)429
+                        || response.StatusCode == (HttpStatusCode)503
                         // || response.StatusCode == (HttpStatusCode)500
                         ))
                     {
@@ -253,7 +253,7 @@ namespace Microsoft.SharePoint.Client
                     throw;
                 }
             }
-            
+
             throw new MaximumRetryAttemptedException($"Maximum retry attempts {retryCount}, has be attempted.");
         }
 
@@ -686,7 +686,7 @@ namespace Microsoft.SharePoint.Client
 
             hasAuthCookies = fedAuth && rtFa;
         }
-        
+
         /// <summary>
         /// Gets the CookieCollection by cookie name = FedAuth or rtFa
         /// </summary>
@@ -710,7 +710,7 @@ namespace Microsoft.SharePoint.Client
         {
             CookieCollection cookieCollection = null;
 
-            void Handler(object sender, WebRequestEventArgs e) 
+            void Handler(object sender, WebRequestEventArgs e)
                 => cookieCollection = HandleWebRequest(e, cookieNames);
 
             clientContext.ExecutingWebRequest += Handler;
@@ -753,7 +753,7 @@ namespace Microsoft.SharePoint.Client
                     cookieCollection.Add(cookie);
                 }
             }
-            
+
             return cookieCollection;
         }
 
@@ -874,12 +874,13 @@ namespace Microsoft.SharePoint.Client
             return pnpMethod;
         }
 
+      
         /// <summary>
         /// Returns the request digest from the current session/site
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static async Task<string> GetRequestDigest(this ClientContext context)
+        public static async Task<string> GetRequestDigestAsync(this ClientContext context)
         {
             await new SynchronizationContextRemover();
 
@@ -1033,16 +1034,23 @@ namespace Microsoft.SharePoint.Client
             return await SiteCollection.TeamifySiteAsync(clientContext);
         }
 
+
         /// <summary>
         /// Checks whether the teamify prompt is hidden in O365 Group connected sites
         /// </summary>
         /// <param name="clientContext">ClientContext of the site to operate against</param>
         /// <returns></returns>
-        public static async Task<bool> IsTeamifyPromptHidden(this ClientContext clientContext)
+        public static async Task<bool> IsTeamifyPromptHiddenAsync(this ClientContext clientContext)
         {
             await new SynchronizationContextRemover();
 
             return await SiteCollection.IsTeamifyPromptHiddenAsync(clientContext);
+        }
+        
+        [Obsolete("Use IsTeamifyPromptHiddenAsync")]
+        public static async Task<bool> IsTeamifyPromptHidden(this ClientContext clientContext)
+        {
+            return await IsTeamifyPromptHiddenAsync(clientContext);
         }
 
         /// <summary>
@@ -1050,10 +1058,9 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="clientContext">ClientContext of the site to operate against</param>
         /// <returns></returns>
-        public static async Task<bool> HideTeamifyPrompt(this ClientContext clientContext)
+        public static async Task<bool> HideTeamifyPromptAsync(this ClientContext clientContext)
         {
             await new SynchronizationContextRemover();
-
             return await SiteCollection.HideTeamifyPromptAsync(clientContext);
         }
 

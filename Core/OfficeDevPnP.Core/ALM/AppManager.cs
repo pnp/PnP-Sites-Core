@@ -681,7 +681,7 @@ namespace OfficeDevPnP.Core.ALM
                             handler.Credentials = networkCredential;
                         }
                     }
-                    request.Headers.Add("X-RequestDigest", await _context.GetRequestDigest());
+                    request.Headers.Add("X-RequestDigest", await _context.GetRequestDigestAsync());
 
                     // Perform actual post operation
                     HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
@@ -773,7 +773,7 @@ namespace OfficeDevPnP.Core.ALM
                             handler.Credentials = networkCredential;
                         }
                     }
-                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigest());
+                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigestAsync());
 
                     if (postObject != null)
                     {
@@ -859,7 +859,7 @@ namespace OfficeDevPnP.Core.ALM
                                 handler.Credentials = networkCredential;
                             }
                         }
-                        request.Headers.Add("X-RequestDigest", await context.GetRequestDigest());
+                        request.Headers.Add("X-RequestDigest", await context.GetRequestDigestAsync());
 
                         // Perform actual post operation
                         HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
@@ -917,7 +917,7 @@ namespace OfficeDevPnP.Core.ALM
 
                     string requestUrl = $"{context.Web.Url}/_api/web/{(scope == AppCatalogScope.Tenant ? "tenant" : "sitecollection")}appcatalog/Add(overwrite={(overwrite.ToString().ToLower())}, url='{filename}')";
 
-                    var requestDigest = await context.GetRequestDigest();
+                    var requestDigest = await context.GetRequestDigestAsync();
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
                     request.Headers.Add("accept", "application/json;odata=nometadata");
                     if (!string.IsNullOrEmpty(accessToken))
