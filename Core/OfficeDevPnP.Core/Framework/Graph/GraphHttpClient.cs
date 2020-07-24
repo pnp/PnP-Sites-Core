@@ -1,13 +1,6 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace OfficeDevPnP.Core.Framework.Graph
 {
@@ -161,95 +154,111 @@ namespace OfficeDevPnP.Core.Framework.Graph
             String accessToken = null,
             Func<HttpResponseMessage, TResult> resultPredicate = null)
         {
-            // Prepare the variable to hold the result, if any
-            TResult result = default(TResult);
+            HttpResponseHeaders responseHeaders;
 
-            // Get the OAuth Access Token
-            if (String.IsNullOrEmpty(accessToken))
-            {
-                throw new ArgumentException("Invalid value for accessToken", "accessToken");
-            }
-            else
-            {
-                // If we have the token, then handle the HTTP request
-                using (HttpClientHandler handler = new HttpClientHandler())
-                {
-                    handler.AllowAutoRedirect = true;
-                    HttpClient httpClient = new HttpClient(handler, true);
+            return OfficeDevPnP.Core.Utilities.HttpHelper.MakeHttpRequest(
+                httpMethod,
+                requestUrl,
+                out responseHeaders,
+                accessToken,
+                accept,
+                content,
+                contentType,
+                resultPredicate: resultPredicate);
 
-                    // Set the Authorization Bearer token
-                    httpClient.DefaultRequestHeaders.Authorization =
-                        new AuthenticationHeaderValue("Bearer", accessToken);
+            #region Code removed because it is duplicated
 
-                    // If there is an accept argument, set the corresponding HTTP header
-                    if (!String.IsNullOrEmpty(accept))
-                    {
-                        httpClient.DefaultRequestHeaders.Accept.Clear();
-                        httpClient.DefaultRequestHeaders.Accept.Add(
-                            new MediaTypeWithQualityHeaderValue(accept));
-                    }
+            //            // Prepare the variable to hold the result, if any
+            //            TResult result = default(TResult);
 
-                    // Prepare the content of the request, if any
-                    HttpContent requestContent = null;
-                    System.IO.Stream streamContent = content as System.IO.Stream;
-                    if (streamContent != null)
-                    {
-                        requestContent = new StreamContent(streamContent);
-                        requestContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-                    }
-                    else
-                    {
-                        requestContent =
-                            (content != null) ?
-                            new StringContent(JsonConvert.SerializeObject(content,
-                                Formatting.None,
-                                new JsonSerializerSettings
-                                {
-                                    NullValueHandling = NullValueHandling.Ignore,
-                                    ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                                }),
-                            Encoding.UTF8, contentType) :
-                            null;
-                    }
+            //            // Get the OAuth Access Token
+            //            if (String.IsNullOrEmpty(accessToken))
+            //            {
+            //                throw new ArgumentException("Invalid value for accessToken", "accessToken");
+            //            }
+            //            else
+            //            {
+            //                // If we have the token, then handle the HTTP request
+            //                using (HttpClientHandler handler = new HttpClientHandler())
+            //                {
+            //                    handler.AllowAutoRedirect = true;
+            //                    HttpClient httpClient = new HttpClient(handler, true);
 
-                    // Prepare the HTTP request message with the proper HTTP method
-                    HttpRequestMessage request = new HttpRequestMessage(
-                        new HttpMethod(httpMethod), requestUrl);
+            //                    // Set the Authorization Bearer token
+            //                    httpClient.DefaultRequestHeaders.Authorization =
+            //                        new AuthenticationHeaderValue("Bearer", accessToken);
 
-                    // Set the request content, if any
-                    if (requestContent != null)
-                    {
-                        request.Content = requestContent;
-                    }
+            //                    // If there is an accept argument, set the corresponding HTTP header
+            //                    if (!String.IsNullOrEmpty(accept))
+            //                    {
+            //                        httpClient.DefaultRequestHeaders.Accept.Clear();
+            //                        httpClient.DefaultRequestHeaders.Accept.Add(
+            //                            new MediaTypeWithQualityHeaderValue(accept));
+            //                    }
 
-                    // Fire the HTTP request
-                    HttpResponseMessage response = httpClient.SendAsync(request).Result;
+            //                    // Prepare the content of the request, if any
+            //                    HttpContent requestContent = null;
+            //                    System.IO.Stream streamContent = content as System.IO.Stream;
+            //                    if (streamContent != null)
+            //                    {
+            //                        requestContent = new StreamContent(streamContent);
+            //                        requestContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+            //                    }
+            //                    else
+            //                    {
+            //                        requestContent =
+            //                            (content != null) ?
+            //                            new StringContent(JsonConvert.SerializeObject(content,
+            //                                Formatting.None,
+            //                                new JsonSerializerSettings
+            //                                {
+            //                                    NullValueHandling = NullValueHandling.Ignore,
+            //                                    ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            //                                }),
+            //                            Encoding.UTF8, contentType) :
+            //                            null;
+            //                    }
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        // If the response is Success and there is a
-                        // predicate to retrieve the result, invoke it
-                        if (resultPredicate != null)
-                        {
-                            result = resultPredicate(response);
-                        }
-                    }
-                    else
-                    {
-                        throw new ApplicationException(
-                            String.Format("Exception while invoking endpoint {0}.", requestUrl),
-#if !NETSTANDARD2_0
-                            new HttpException(
-                                (Int32)response.StatusCode,
-                                response.Content.ReadAsStringAsync().Result));
-#else
-                            new Exception(response.Content.ReadAsStringAsync().Result));
-#endif
-                    }
-                }
-            }
+            //                    // Prepare the HTTP request message with the proper HTTP method
+            //                    HttpRequestMessage request = new HttpRequestMessage(
+            //                        new HttpMethod(httpMethod), requestUrl);
 
-            return (result);
+            //                    // Set the request content, if any
+            //                    if (requestContent != null)
+            //                    {
+            //                        request.Content = requestContent;
+            //                    }
+
+            //                    // Fire the HTTP request
+            //                    HttpResponseMessage response = httpClient.SendAsync(request).Result;
+
+            //                    if (response.IsSuccessStatusCode)
+            //                    {
+            //                        // If the response is Success and there is a
+            //                        // predicate to retrieve the result, invoke it
+            //                        if (resultPredicate != null)
+            //                        {
+            //                            result = resultPredicate(response);
+            //                        }
+            //                    }
+            //                    else
+            //                    {
+            //                        throw new ApplicationException(
+            //                            String.Format("Exception while invoking endpoint {0}.", requestUrl),
+            //#if !NETSTANDARD2_0
+            //                            new HttpException(
+            //                                (Int32)response.StatusCode,
+            //                                response.Content.ReadAsStringAsync().Result));
+            //#else
+            //                            new Exception(response.Content.ReadAsStringAsync().Result));
+            //#endif
+            //                    }
+            //                }
+            //            }
+
+            //            return (result);
+
+            #endregion
         }
     }
 }

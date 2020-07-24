@@ -21,7 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
             // Prepare the default output
             var result = new CanProvisionResult();
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
 
             Model.ProvisioningTemplate targetTemplate = null;
 
@@ -51,7 +51,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
                 targetTemplate.ParentHierarchy?.Tenant?.AppCatalog?.Packages != null && targetTemplate.ParentHierarchy?.Tenant?.AppCatalog?.Packages.Count > 0))
             {
                 // First of all check if the currently connected user is a Tenant Admin
+#if !ONPREMISES
                 if (!TenantExtensions.IsCurrentUserTenantAdmin(web.Context as ClientContext))
+#else
+                if (!TenantExtensions.IsCurrentUserTenantAdmin(web.Context as ClientContext, this.TenantAdminSiteUrl))
+#endif
                 {
                     result.CanProvision = false;
                     result.Issues.Add(new CanProvisionIssue()
@@ -84,6 +88,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
                     else
                     {
                         // Try to access the AppCatalog with the current user
+
                         try
                         {
                             using (var appCatalogContext = web.Context.Clone(appCatalogUri))
@@ -101,6 +106,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
                                 {
                                     throw new SecurityException("Invalid user's permissions for the AppCatalog");
                                 }
+
+                                // we seem to have access, but is it done fully provisioning?
+
+                                var rootFolder = appCatalogContext.Web.EnsureProperty(w => w.RootFolder);
+                                var timeCreated = rootFolder.TimeCreated;
+
+                                if (DateTime.UtcNow.Subtract(timeCreated).TotalHours < 2)
+                                {
+                                    result.CanProvision = false;
+                                    result.Issues.Add(new CanProvisionIssue()
+                                    {
+                                        Source = this.Name,
+                                        Tag = CanProvisionIssueTags.APP_CATALOG_NOT_YEY_FULLY_PROVISIONED,
+                                        Message = CanProvisionIssuesMessages.App_Catalog_Not_Yet_Fully_Provisioned,
+                                        ExceptionMessage = null, // Here we don't have any specific exception
+                                        ExceptionStackTrace = null, // Here we don't have any specific exception
+                                    });
+                                }
+
                             }
                         }
                         catch (Exception ex)
@@ -112,8 +136,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
                                 Source = this.Name,
                                 Tag = CanProvisionIssueTags.MISSING_APP_CATALOG_PERMISSIONS,
                                 Message = CanProvisionIssuesMessages.Missing_Permissions_for_App_Catalog,
-                                ExceptionMessage = ex.Message, 
-                                ExceptionStackTrace = ex.StackTrace, 
+                                ExceptionMessage = ex.Message,
+                                ExceptionStackTrace = ex.StackTrace,
                             });
                         }
                     }
@@ -122,7 +146,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
 #else
             result.CanProvision = false;
 #endif
-            return result;
+                    return result;
         }
     }
 }

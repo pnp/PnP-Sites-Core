@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.AzureActiveDirectory
     /// <summary>
     /// Collection of AAD Users' Licenses
     /// </summary>
-    public class UserLicenseCollection : BaseProvisioningTemplateObjectCollection<UserLicense>
+    public partial class UserLicenseCollection : BaseProvisioningTemplateObjectCollection<UserLicense>
     {
         /// <summary>
         /// Constructor for UserLicenseCollection class

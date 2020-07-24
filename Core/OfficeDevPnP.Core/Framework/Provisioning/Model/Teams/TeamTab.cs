@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
     /// <summary>
     /// Defines an TeamTab for automated provisiong of Microsoft Teams
     /// </summary>
-    public class TeamTab : BaseModel, IEquatable<TeamTab>
+    public partial class TeamTab : BaseModel, IEquatable<TeamTab>
     {
         #region Public Members
 
@@ -24,9 +24,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         public String TeamsAppId { get; set; }
 
         /// <summary>
+        /// Allows to remove an already existing Tab
+        /// </summary>
+        public bool Remove { get; set; }
+
+        /// <summary>
         /// Defines the Configuration for the Tab
         /// </summary>
         public TeamTabConfiguration Configuration { get; set; }
+
+        /// <summary>
+        /// Declares the ID for the Tab
+        /// </summary>
+        public String ID { get; set; }
 
         #endregion
 
@@ -38,10 +48,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|",
+            return (String.Format("{0}|{1}|{2}|{3}|",
                 DisplayName?.GetHashCode() ?? 0,
                 TeamsAppId?.GetHashCode() ?? 0,
-                Configuration?.GetHashCode() ?? 0
+                Configuration?.GetHashCode() ?? 0,
+                ID?.GetHashCode() ?? 0
             ).GetHashCode());
         }
 
@@ -60,7 +71,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         }
 
         /// <summary>
-        /// Compares TeamTab object based on DisplayName, TeamsAppId, and Configuration
+        /// Compares TeamTab object based on DisplayName, TeamsAppId, Configuration, and ID
         /// </summary>
         /// <param name="other">TeamTab Class object</param>
         /// <returns>true if the TeamTab object is equal to the current object; otherwise, false.</returns>
@@ -73,7 +84,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
 
             return (this.DisplayName == other.DisplayName &&
                 this.TeamsAppId == other.TeamsAppId &&
-                this.Configuration == other.Configuration
+                this.Configuration == other.Configuration &&
+                this.ID == other.ID
                 );
         }
 

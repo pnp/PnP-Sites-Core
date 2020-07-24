@@ -207,7 +207,18 @@ namespace OfficeDevPnP.Core.Pages
                 var pageHeaderControl = document.All.Where(m => m.HasAttribute(CanvasControl.ControlDataAttribute)).FirstOrDefault();
                 if (pageHeaderControl != null)
                 {
-                    var decoded = WebUtility.HtmlDecode(pageHeaderControl.GetAttribute(ClientSideWebPart.ControlDataAttribute));
+                    string pageHeaderData = pageHeaderControl.GetAttribute(ClientSideWebPart.ControlDataAttribute);
+                    string decoded = "";
+
+                    if (pageHeaderData.Contains("%7B") && pageHeaderData.Contains("%22") && pageHeaderData.Contains("%7D"))
+                    {
+                        decoded = WebUtility.UrlDecode(pageHeaderData);
+                    }
+                    else
+                    {
+                        decoded = WebUtility.HtmlDecode(pageHeaderData);
+                    }
+
                     JObject wpJObject = JObject.Parse(decoded);
 
                     // Store the server processed content as that's needed for full fidelity
@@ -490,12 +501,16 @@ namespace OfficeDevPnP.Core.Pages
                 }
                 else if (ex.Message.Contains("SPWeb.ServerRelativeUrl"))
                 {
-                    // image has to live in the web for which we've set up the client context...if not skip and log a warning
+                    // image resides in a different site collection context, we will simply allow it to be referred in the page header section.                    
                     Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ClientSidePageHeader_ImageInDifferentWeb, imageServerRelativeUrl);
+                    this.headerImageResolved = true;
                 }
                 else
                 {
-                    throw;
+                    // the image can also refer to a path outside SharePoint, that is also allowed, so we will mark it as resolved and move ahead.
+                    Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ClientSidePageHeader_ImageInDifferentWeb, imageServerRelativeUrl);
+                    this.headerImageResolved = true;
+                    //throw;
                 }
             }
         }

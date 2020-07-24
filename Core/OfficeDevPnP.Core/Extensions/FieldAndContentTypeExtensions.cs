@@ -7,6 +7,7 @@ using System.Linq;
 using System.Xml.Linq;
 using Microsoft.SharePoint.Client.DocumentSet;
 using Microsoft.SharePoint.Client.Taxonomy;
+using System.Linq.Expressions;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -16,6 +17,53 @@ namespace Microsoft.SharePoint.Client
     public static partial class FieldAndContentTypeExtensions
     {
         #region Site Columns
+
+        /// <summary>
+        /// Sets the AllowDeletion property on a field.
+        /// Note 1: This method will load <paramref name="field"/>.SchemaXmlWithResourceTokens if it's not already loaded by the caller.
+        /// Note 2: This method does not update the field nor execute the query.
+        /// </summary>
+        /// <param name="field">Field to be processed</param>
+        /// <param name="AllowDeletion">False blocks field deletion, True enables field deletion. Null uses field default behavior.</param>
+        public static void SetAllowDeletion(this Field field, bool? AllowDeletion)
+        {
+            field.EnsureProperty(f => f.SchemaXmlWithResourceTokens);
+            XElement fieldElement = XElement.Parse(field.SchemaXmlWithResourceTokens);
+            fieldElement.SetAttributeValue("AllowDeletion", AllowDeletion.HasValue ? (AllowDeletion.Value ? "TRUE" : "FALSE") : null);
+            field.SchemaXml = fieldElement.ToString();
+        }
+
+        /// <summary>
+        /// Gets the AllowDeletion property from a field.
+        /// Note 1: This method will load <paramref name="field"/>.SchemaXmlWithResourceTokens if not any of the properties <paramref name="field"/>.SchemaXmlWithResourceTokens or <paramref name="field"/>.SchemaXml is already loaded by the caller.
+        /// </summary>
+        /// <param name="field">Field to be processed</param>
+        /// <returns>Returns false if field deletion is not allowed, true if field deletion is allowed, and null if the field default behavior is used to determine if field deletion is allowed.</returns>
+        public static bool? GetAllowDeletion(this Field field)
+        {
+            string schemaXml;
+            if (field.IsPropertyAvailable(f => f.SchemaXml))
+            {
+                schemaXml = field.SchemaXml;
+            }
+            else
+            {
+                field.EnsureProperty(f => f.SchemaXmlWithResourceTokens);
+                schemaXml = field.SchemaXmlWithResourceTokens;
+            }
+
+            XElement fieldElement = XElement.Parse(schemaXml);
+            XAttribute allowDeletion = fieldElement.Attribute("AllowDeletion");
+            
+            if (allowDeletion == null)
+            {
+                return null;
+            }
+            else
+            {
+                return bool.Parse(allowDeletion.Value);
+            }
+        }
 
         /// <summary>
         /// Create field to web remotely
@@ -564,7 +612,17 @@ namespace Microsoft.SharePoint.Client
                 }
             }
 
-#if !ONPREMISES
+            List<string> additionalChildNodesList = new List<string>();
+
+            if (fieldCreationInformation.AdditionalChildNodes != null)
+            {
+                foreach (var keyvaluepair in fieldCreationInformation.AdditionalChildNodes)
+                {
+                    additionalChildNodesList.Add(string.Format(Constants.FIELD_XML_CHILD_NODE, keyvaluepair.Key, keyvaluepair.Value));
+                }
+            }
+
+#if !SP2013 && !SP2016
             if (!additionalAttributesList.Contains("ClientSideComponentId"))
             {
                 if (fieldCreationInformation.ClientSideComponentId != Guid.Empty)
@@ -581,14 +639,32 @@ namespace Microsoft.SharePoint.Client
             }
 #endif
 
-            string newFieldCAML = string.Format(Constants.FIELD_XML_FORMAT,
-                fieldCreationInformation.FieldType,
-                fieldCreationInformation.InternalName,
-                fieldCreationInformation.DisplayName,
-                fieldCreationInformation.Id,
-                fieldCreationInformation.Group,
-                fieldCreationInformation.Required ? "TRUE" : "FALSE",
-                additionalAttributesList.Any() ? string.Join(" ", additionalAttributesList) : "");
+            string newFieldCAML = null; 
+
+            if (additionalChildNodesList.Count > 0)
+            {
+                // Calculated fields require a Formula child node
+                newFieldCAML = string.Format(Constants.FIELD_XML_FORMAT_WITH_CHILD_NODES,
+                    fieldCreationInformation.FieldType,
+                    fieldCreationInformation.InternalName,
+                    fieldCreationInformation.DisplayName,
+                    fieldCreationInformation.Id,
+                    fieldCreationInformation.Group,
+                    fieldCreationInformation.Required ? "TRUE" : "FALSE",
+                    additionalAttributesList.Any() ? string.Join(" ", additionalAttributesList) : "",
+                    string.Join("", additionalChildNodesList));
+            }
+            else
+            {
+                newFieldCAML = string.Format(Constants.FIELD_XML_FORMAT,
+                    fieldCreationInformation.FieldType,
+                    fieldCreationInformation.InternalName,
+                    fieldCreationInformation.DisplayName,
+                    fieldCreationInformation.Id,
+                    fieldCreationInformation.Group,
+                    fieldCreationInformation.Required ? "TRUE" : "FALSE",
+                    additionalAttributesList.Any() ? string.Join(" ", additionalAttributesList) : "");
+            }
 
             return newFieldCAML;
         }
@@ -968,6 +1044,7 @@ namespace Microsoft.SharePoint.Client
             return true;
         }
 
+#if !SP2013 && !SP2016
         /// <summary>
         /// Associates field to content type
         /// </summary>
@@ -975,11 +1052,43 @@ namespace Microsoft.SharePoint.Client
         /// <param name="fieldId">String representation of the id of the field (=Guid)</param>
         /// <param name="required">True if the field is required</param>
         /// <param name="hidden">True if the field is hidden</param>
-        public static void AddFieldById(this ContentType contentType, string fieldId, bool required = false, bool hidden = false)
+        /// <param name="updateChildren">True to update content types that inherit from the content type; otherwise, false.</param>
+        /// <param name="showInDisplayForm">Optionally show this field in the display form.</param>
+        /// <param name="readOnly">Optionally make this a read only field.</param>
+#else
+        /// <summary>
+        /// Associates field to content type
+        /// </summary>
+        /// <param name="contentType">Content Type to add the field to</param>
+        /// <param name="fieldId">String representation of the id of the field (=Guid)</param>
+        /// <param name="required">True if the field is required</param>
+        /// <param name="hidden">True if the field is hidden</param>
+        /// <param name="updateChildren">True to update content types that inherit from the content type; otherwise, false.</param>
+#endif
+        public static void AddFieldById(this ContentType contentType, string fieldId,
+            bool required = false,
+            bool hidden = false,
+            bool updateChildren = true
+#if !SP2013 && !SP2016
+            ,
+            bool showInDisplayForm = true,
+            bool readOnly = false
+#endif
+            )
         {
-            AddFieldById(contentType, Guid.Parse(fieldId), required, hidden);
+            AddFieldById(contentType, Guid.Parse(fieldId), 
+                required, 
+                hidden, 
+                updateChildren
+#if !SP2013 && !SP2016
+                ,
+                showInDisplayForm,
+                readOnly
+#endif 
+                );
         }
 
+#if !SP2013 && !SP2016
         /// <summary>
         /// Associates field to content type
         /// </summary>
@@ -987,15 +1096,47 @@ namespace Microsoft.SharePoint.Client
         /// <param name="fieldId">The Id of the field</param>
         /// <param name="required">True if the field is required</param>
         /// <param name="hidden">True if the field is hidden</param>
-        public static void AddFieldById(this ContentType contentType, Guid fieldId, bool required = false, bool hidden = false)
+        /// <param name="updateChildren">True to update content types that inherit from the content type; otherwise, false.</param>
+        /// <param name="showInDisplayForm">Optionally show this field in the display form.</param>
+        /// <param name="readOnly">Optionally make this a read only field.</param>
+#else
+        /// <summary>
+        /// Associates field to content type
+        /// </summary>
+        /// <param name="contentType">Content Type to add the field to</param>
+        /// <param name="fieldId">The Id of the field</param>
+        /// <param name="required">True if the field is required</param>
+        /// <param name="hidden">True if the field is hidden</param>
+        /// <param name="updateChildren">True to update content types that inherit from the content type; otherwise, false.</param>
+#endif
+        public static void AddFieldById(this ContentType contentType, Guid fieldId, 
+            bool required = false, 
+            bool hidden = false, 
+            bool updateChildren = true
+#if !SP2013 && !SP2016
+            ,
+            bool showInDisplayForm = true,
+            bool readOnly = false
+#endif
+            )
         {
             var ctx = contentType.Context as ClientContext;
             var field = ctx.Web.Fields.GetById(fieldId);
             ctx.Load(field);
             ctx.ExecuteQueryRetry();
-            AddFieldToContentType(ctx.Web, contentType, field, required, hidden);
+            AddFieldToContentType(ctx.Web, contentType, field,
+                required,
+                hidden,
+                updateChildren
+#if !SP2013 && !SP2016
+                ,
+                showInDisplayForm,
+                readOnly
+#endif
+                );
         }
 
+#if !SP2013 && !SP2016
         /// <summary>
         /// Associates field to content type
         /// </summary>
@@ -1003,16 +1144,48 @@ namespace Microsoft.SharePoint.Client
         /// <param name="fieldName">The title or internal name of the field</param>
         /// <param name="required">True if the field is required</param>
         /// <param name="hidden">True if the field is hidden</param>
-        public static void AddFieldByName(this ContentType contentType, string fieldName, bool required = false, bool hidden = false)
+        /// <param name="updateChildren">True to update content types that inherit from the content type; otherwise, false.</param>
+        /// <param name="showInDisplayForm">Optionally show this field in the display form.</param>
+        /// <param name="readOnly">Optionally make this a read only field.</param>
+#else
+        /// <summary>
+        /// Associates field to content type
+        /// </summary>
+        /// <param name="contentType">Content Type to add the field to</param>
+        /// <param name="fieldName">The title or internal name of the field</param>
+        /// <param name="required">True if the field is required</param>
+        /// <param name="hidden">True if the field is hidden</param>
+        /// <param name="updateChildren">True to update content types that inherit from the content type; otherwise, false.</param>
+#endif
+        public static void AddFieldByName(this ContentType contentType, string fieldName,
+            bool required = false,
+            bool hidden = false,
+            bool updateChildren = true
+#if !SP2013 && !SP2016
+            ,
+            bool showInDisplayForm = true,
+            bool readOnly = false
+#endif
+            )
         {
             var ctx = contentType.Context as ClientContext;
             var field = ctx.Web.Fields.GetByInternalNameOrTitle(fieldName);
             ctx.Load(field);
             ctx.ExecuteQueryRetry();
 
-            AddFieldToContentType(ctx.Web, contentType, field, required, hidden);
+            AddFieldToContentType(ctx.Web, contentType, field,
+                required,
+                hidden,
+                updateChildren
+#if !SP2013 && !SP2016
+                ,
+                showInDisplayForm,
+                readOnly
+#endif
+                );
         }
 
+#if !SP2013 && !SP2016
         /// <summary>
         /// Associates field to content type
         /// </summary>
@@ -1021,7 +1194,30 @@ namespace Microsoft.SharePoint.Client
         /// <param name="fieldId">String representation of the field ID (=guid)</param>
         /// <param name="required">True if the field is required</param>
         /// <param name="hidden">True if the field is hidden</param>
-        public static void AddFieldToContentTypeById(this Web web, string contentTypeID, string fieldId, bool required = false, bool hidden = false)
+        /// <param name="updateChildren">True to update content types that inherit from the content type; otherwise, false.</param>
+        /// <param name="showInDisplayForm">Optionally show this field in the display form.</param>
+        /// <param name="readOnly">Optionally make this a read only field.</param>
+#else
+        /// <summary>
+        /// Associates field to content type
+        /// </summary>
+        /// <param name="web">Site to be processed - can be root web or sub site</param>
+        /// <param name="contentTypeID">String representation of the id of the content type to add the field to</param>
+        /// <param name="fieldId">String representation of the field ID (=guid)</param>
+        /// <param name="required">True if the field is required</param>
+        /// <param name="hidden">True if the field is hidden</param>
+        /// <param name="updateChildren">True to update content types that inherit from the content type; otherwise, false.</param>
+#endif
+        public static void AddFieldToContentTypeById(this Web web, string contentTypeID, string fieldId,
+            bool required = false,
+            bool hidden = false,
+            bool updateChildren = true
+#if !SP2013 && !SP2016
+            ,
+            bool showInDisplayForm = true,
+            bool readOnly = false
+#endif
+            )
         {
             // Get content type
             var ct = web.GetContentTypeById(contentTypeID);
@@ -1033,9 +1229,19 @@ namespace Microsoft.SharePoint.Client
             var fld = web.Fields.GetById(new Guid(fieldId));
 
             // Add field association to content type
-            AddFieldToContentType(web, ct, fld, required, hidden);
+            AddFieldToContentType(web, ct, fld,
+                required,
+                hidden,
+                updateChildren
+#if !SP2013 && !SP2016
+                ,
+                showInDisplayForm,
+                readOnly
+#endif
+                );
         }
 
+#if !SP2013 && !SP2016
         /// <summary>
         /// Associates field to content type
         /// </summary>
@@ -1044,7 +1250,30 @@ namespace Microsoft.SharePoint.Client
         /// <param name="fieldID">Guid representation of the field ID</param>
         /// <param name="required">True if the field is required</param>
         /// <param name="hidden">True if the field is hidden</param>
-        public static void AddFieldToContentTypeByName(this Web web, string contentTypeName, Guid fieldID, bool required = false, bool hidden = false)
+        /// <param name="updateChildren">True to update content types that inherit from the content type; otherwise, false.</param>
+        /// <param name="showInDisplayForm">Optionally show this field in the display form.</param>
+        /// <param name="readOnly">Optionally make this a read only field.</param>
+#else
+        /// <summary>
+        /// Associates field to content type
+        /// </summary>
+        /// <param name="web">Site to be processed - can be root web or sub site</param>
+        /// <param name="contentTypeName">Name of the content type</param>
+        /// <param name="fieldID">Guid representation of the field ID</param>
+        /// <param name="required">True if the field is required</param>
+        /// <param name="hidden">True if the field is hidden</param>
+        /// <param name="updateChildren">True to update content types that inherit from the content type; otherwise, false.</param>
+#endif
+        public static void AddFieldToContentTypeByName(this Web web, string contentTypeName, Guid fieldID,
+            bool required = false,
+            bool hidden = false,
+            bool updateChildren = true
+#if !SP2013 && !SP2016
+            ,
+            bool showInDisplayForm = true,
+            bool readOnly = false
+#endif
+            )
         {
             // Get content type
             var ct = web.GetContentTypeByName(contentTypeName);
@@ -1056,9 +1285,19 @@ namespace Microsoft.SharePoint.Client
             var fld = web.Fields.GetById(fieldID);
 
             // Add field association to content type
-            AddFieldToContentType(web, ct, fld, required, hidden);
+            AddFieldToContentType(web, ct, fld,
+                required,
+                hidden,
+                updateChildren
+#if !SP2013 && !SP2016
+                ,
+                showInDisplayForm,
+                readOnly
+#endif
+                );
         }
 
+#if !SP2013 && !SP2016
         /// <summary>
         /// Associates field to content type
         /// </summary>
@@ -1067,14 +1306,50 @@ namespace Microsoft.SharePoint.Client
         /// <param name="field">Field to associate to the content type</param>
         /// <param name="required">Optionally make this a required field</param>
         /// <param name="hidden">Optionally make this a hidden field</param>
-        public static void AddFieldToContentType(this Web web, ContentType contentType, Field field, bool required = false, bool hidden = false)
+        /// <param name="updateChildren">True to update content types that inherit from the content type; otherwise, false.</param>
+        /// <param name="showInDisplayForm">Optionally show this field in the display form.</param>
+        /// <param name="readOnly">Optionally make this a read only field.</param>
+#else
+        /// <summary>
+        /// Associates field to content type
+        /// </summary>
+        /// <param name="web">Site to be processed - can be root web or sub site</param>
+        /// <param name="contentType">Content type to associate field to</param>
+        /// <param name="field">Field to associate to the content type</param>
+        /// <param name="required">Optionally make this a required field</param>
+        /// <param name="hidden">Optionally make this a hidden field</param>
+        /// <param name="updateChildren">True to update content types that inherit from the content type; otherwise, false.</param>
+#endif
+        public static void AddFieldToContentType(this Web web, ContentType contentType, Field field,
+            bool required = false,
+            bool hidden = false,
+            bool updateChildren = true
+#if !SP2013 && !SP2016
+            ,
+            bool showInDisplayForm = true,
+            bool readOnly = false
+#endif
+            )
         {
             //// Forcibly include Ids of FieldLinks
             //web.Context.Load(contentType, c => c.FieldLinks.Include(fl => fl.Id, fl => fl.Required, fl => fl.Hidden));
             //web.Context.ExecuteQueryRetry();
 
             // Ensure other content-type properties
-            contentType.EnsureProperties(c => c.Id, c => c.SchemaXml, c => c.FieldLinks.Include(fl => fl.Id, fl => fl.Required, fl => fl.Hidden));
+            contentType.EnsureProperties(
+                c => c.Id, 
+                c => c.SchemaXml, 
+                c => c.FieldLinks.Include(
+                    fl => fl.Id, 
+                    fl => fl.Required,
+                    fl => fl.Hidden
+#if !SP2013 && !SP2016
+                    ,
+                    fl => fl.ShowInDisplayForm,
+                    fl => fl.ReadOnly
+#endif
+                    )
+                );
             field.EnsureProperties(f => f.Id, f => f.SchemaXmlWithResourceTokens);
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.FieldAndContentTypeExtensions_AddField0ToContentType1, field.Id, contentType.Id);
@@ -1090,20 +1365,40 @@ namespace Microsoft.SharePoint.Client
                 var fldInfo = new FieldLinkCreationInformation();
                 fldInfo.Field = field;
                 contentType.FieldLinks.Add(fldInfo);
-                contentType.Update(true);
+                contentType.Update(updateChildren);
                 web.Context.ExecuteQueryRetry();
 
                 flink = contentType.FieldLinks.GetById(field.Id);
             }
 
             //update field link required and hidden properties
-            flink.EnsureProperties(f => f.Required, f => f.Hidden);
+            flink.EnsureProperties(
+                f => f.Required, 
+                f => f.Hidden
+#if !SP2013 && !SP2016
+                ,
+                f => f.ShowInDisplayForm,
+                f => f.ReadOnly
+#endif
+                );
 
-            if ((required != flink.Required) || (hidden != flink.Hidden))
+            if (
+                (required != flink.Required)
+                || (hidden != flink.Hidden)
+#if !SP2013 && !SP2016
+                || (showInDisplayForm != flink.ShowInDisplayForm)
+                || (readOnly != flink.ReadOnly)
+#endif
+                )
             {
                 // Update FieldLink
                 flink.Required = required;
                 flink.Hidden = hidden;
+#if !SP2013 && !SP2016
+                flink.ShowInDisplayForm = showInDisplayForm;
+                flink.ReadOnly = readOnly;
+#endif
+
                 contentType.Update(true);
                 web.Context.ExecuteQueryRetry();
             }
@@ -1667,9 +1962,10 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Web to be processed</param>
         /// <param name="contentTypeId">Complete ID for the content type</param>
+        /// <param name="retrievals">Specify additional data to load when retrieving the content types</param>
         /// <param name="searchInSiteHierarchy">Searches accross all content types in the site up to the root site</param>
         /// <returns>Content type object or null if was not found</returns>
-        public static ContentType GetContentTypeById(this Web web, string contentTypeId, bool searchInSiteHierarchy = false)
+        public static ContentType GetContentTypeById(this Web web, string contentTypeId, Expression<Func<ContentTypeCollection, object>> retrievals, bool searchInSiteHierarchy = false)
         {
             if (string.IsNullOrEmpty(contentTypeId))
             {
@@ -1677,8 +1973,14 @@ namespace Microsoft.SharePoint.Client
             }
 
             var ctCol = searchInSiteHierarchy ? web.AvailableContentTypes : web.ContentTypes;
-
-            web.Context.Load(ctCol);
+            if (retrievals != null)
+            {
+                web.Context.Load(ctCol, retrievals);
+            }
+            else
+            {
+                web.Context.Load(ctCol);
+            }
             web.Context.ExecuteQueryRetry();
             foreach (var item in ctCol)
             {
@@ -1689,6 +1991,18 @@ namespace Microsoft.SharePoint.Client
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Return content type by Id
+        /// </summary>
+        /// <param name="web">Web to be processed</param>
+        /// <param name="contentTypeId">Complete ID for the content type</param>
+        /// <param name="searchInSiteHierarchy">Searches accross all content types in the site up to the root site</param>
+        /// <returns>Content type object or null if was not found</returns>
+        public static ContentType GetContentTypeById(this Web web, string contentTypeId, bool searchInSiteHierarchy = false)
+        {
+            return GetContentTypeById(web, contentTypeId, null, searchInSiteHierarchy);
         }
 
         /// <summary>
@@ -2138,7 +2452,7 @@ namespace Microsoft.SharePoint.Client
 
         #endregion
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
 
         #region Localization
 

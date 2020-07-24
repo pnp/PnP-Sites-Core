@@ -688,6 +688,27 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_SerializeDeserialize_201909()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201909Serializer();
+            var template1 = provider.GetTemplate("ProvisioningSchema-2019-09-FullSample-01.xml", serializer);
+            Assert.IsNotNull(template1);
+
+            provider.SaveAs(template1, "ProvisioningSchema-2019-09-FullSample-01-OUT.xml", serializer);
+            Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningSchema-2019-03-FullSample-01-OUT.xml"));
+
+            var template2 = provider.GetTemplate("ProvisioningSchema-2019-09-FullSample-01-OUT.xml", serializer);
+            Assert.IsNotNull(template2);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_ProvisioningHierarchyIsValid_201807()
         {
             XMLTemplateProvider provider =
@@ -742,17 +763,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             var hierarchy = provider.GetHierarchy("ProvisioningSchema-2018-07-FullSample-01.xml");
 
-            //var serializer = new XMLPnPSchemaV201807Serializer();
-            //serializer.Initialize(provider);
-
-            //var hierarchy = serializer.ToProvisioningHierarchy(provider.Connector.GetFileStream("ProvisioningSchema-2018-07-FullSample-01.xml"));
-
             // Save the hierarchy
             var outputFile = "ProvisioningSchema-2018-07-FullSample-01-OUT.xml";
-            //var mem = serializer.ToFormattedHierarchy(hierarchy);
-            //provider.Connector.SaveFileStream(outputFile, mem);
-
-            provider.SaveAs(hierarchy, outputFile);
+            var serializer = new XMLPnPSchemaV201807Serializer();
+            provider.SaveAs(hierarchy, outputFile, serializer);
 
             Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{outputFile}"));
 
@@ -790,6 +804,45 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             // Save the hierarchy
             var outputFile = "ProvisioningSchema-2019-03-FullSample-01-OUT.xml";
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            provider.SaveAs(hierarchy, outputFile, serializer);
+
+            Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{outputFile}"));
+
+            var hierarchy2 = provider.GetHierarchy(outputFile);
+            Assert.IsNotNull(hierarchy2);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_ProvisioningHierarchy_Load_201909()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var hierarchy = provider.GetHierarchy("ProvisioningSchema-2019-09-FullSample-01.xml");
+
+            Assert.IsNotNull(hierarchy);
+            Assert.IsNotNull(hierarchy.Templates);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_ProvisioningHierarchy_Save_201909()
+        {
+            XMLTemplateProvider provider =
+                 new XMLFileSystemTemplateProvider(
+                     String.Format(@"{0}\..\..\Resources",
+                     AppDomain.CurrentDomain.BaseDirectory),
+                     "Templates");
+
+            var hierarchy = provider.GetHierarchy("ProvisioningSchema-2019-09-FullSample-01.xml");
+
+            // Save the hierarchy
+            var outputFile = "ProvisioningSchema-2019-09-FullSample-01-OUT.xml";
             provider.SaveAs(hierarchy, outputFile);
 
             Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{outputFile}"));

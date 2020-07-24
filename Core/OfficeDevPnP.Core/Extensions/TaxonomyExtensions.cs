@@ -1762,7 +1762,7 @@ namespace Microsoft.SharePoint.Client
             }
             if (systemUpdate)
             {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                 item.SystemUpdate();
 #else
                 item.Update();

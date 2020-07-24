@@ -123,6 +123,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 ManualStartBypassesActivationLimit = s.ManualStartBypassesActivationLimit,
                                 Name = s.Name,
                                 ListId = s.EventSourceId != web.Id ? String.Format("{{listid:{0}}}", lists.First(l => l.Id == s.EventSourceId).Title) : null,
+#if !SP2013
+                                ParentContentTypeId = s.ParentContentTypeId,
+#endif
                                 StatusFieldName = s.StatusFieldName,
                             }
                             );
@@ -339,7 +342,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     Enabled = subscription.Enabled,
                                     EventSourceId = (!String.IsNullOrEmpty(subscription.EventSourceId)) ? Guid.Parse(parser.ParseString(subscription.EventSourceId)) : web.Id,
                                     EventTypes = subscription.EventTypes,
-#if !ONPREMISES
+#if !SP2013
                                     ParentContentTypeId = subscription.ParentContentTypeId,
 #endif
                                     ManualStartBypassesActivationLimit =  subscription.ManualStartBypassesActivationLimit,

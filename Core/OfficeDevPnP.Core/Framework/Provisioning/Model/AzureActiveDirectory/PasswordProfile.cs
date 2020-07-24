@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.AzureActiveDirectory
     /// <summary>
     /// Defines the Password Profile for a User in AAD
     /// </summary>
-    public class PasswordProfile : BaseModel, IEquatable<PasswordProfile>
+    public partial class PasswordProfile : BaseModel, IEquatable<PasswordProfile>
     {
         #region Public Members
 

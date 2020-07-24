@@ -56,6 +56,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private SiteFooter _footer = null;
         private Theme _theme = null;
         private ProvisioningTemplateWebhookCollection _provisioningTemplateWebhooks;
+        private SiteSettings _siteSettings = null;
 
         #endregion
 
@@ -687,6 +688,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
+        /// The Site Settings of the Provisioning Template
+        /// </summary>
+        public SiteSettings SiteSettings
+        {
+            get { return this._siteSettings; }
+            set
+            {
+                if (this._siteSettings != null)
+                {
+                    this._siteSettings.ParentTemplate = null;
+                }
+                this._siteSettings = value;
+                if (this._siteSettings != null)
+                {
+                    this._siteSettings.ParentTemplate = this;
+                }
+            }
+        }
+
+        /// <summary>
         /// The Image Preview Url of the Provisioning Template
         /// </summary>
         public String ImagePreviewUrl { get; set; }
@@ -740,7 +761,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|{27}|{28}|{29}|{30}|{31}|{32}|{33}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|{27}|{28}|{29}|{30}|{31}|{32}|{33}|{34}|",
                 (this.ComposedLook != null ? this.ComposedLook.GetHashCode() : 0),
                 this.ContentTypes.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.CustomActions.SiteCustomActions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
@@ -776,7 +797,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.ClientSidePages.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.TemplateCultureInfo?.GetHashCode() ?? 0,
                 this.Scope.GetHashCode(),
-                this.Tenant.GetHashCode()
+                this.Tenant.GetHashCode(),
+                this.SiteSettings.GetHashCode()
             ).GetHashCode());
         }
 
@@ -797,7 +819,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Compares ProvisioningTemplate object based on ComposedLook, ContentTypes, CustomActions, SiteFeature, WebFeatures, Files, Id, Lists,
         /// PropertyBagEntries, Providers, Security, SiteFields, SitePolicy, Version, Pages, TermGroups, Workflows, AddIns, Publishing, Loaclizations,
-        /// WebSettings, SiteWebhooks, ClientSidePages, and Tenant properties.
+        /// WebSettings, SiteWebhooks, ClientSidePages, Tenant, and SiteSettings properties.
         /// </summary>
         /// <param name="other">ProvisioningTemplate object</param>
         /// <returns>true if the ProvisioningTemplate object is equal to the current object; otherwise, false.</returns>
@@ -844,7 +866,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 ((this.ClientSidePages != null && other.ClientSidePages != null) ? this.ClientSidePages.DeepEquals(other.ClientSidePages) : this.ClientSidePages == other.ClientSidePages) &&
                 this.TemplateCultureInfo == other.TemplateCultureInfo &&
                 this.Scope == other.Scope &&
-                this.Tenant == other.Tenant
+                this.Tenant == other.Tenant &&
+                this.SiteSettings == other.SiteSettings
             );
         }
 

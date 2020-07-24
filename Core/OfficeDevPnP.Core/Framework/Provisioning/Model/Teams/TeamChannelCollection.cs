@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
     /// <summary>
     /// Defines a collection of Channels for the Team
     /// </summary>
-    public class TeamChannelCollection : BaseProvisioningTemplateObjectCollection<TeamChannel>
+    public partial class TeamChannelCollection : BaseProvisioningTemplateObjectCollection<TeamChannel>
     {
         /// <summary>
         /// Constructor for TeamChannelCollection class

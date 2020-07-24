@@ -3,9 +3,13 @@ using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration;
+using Configuration = OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
 {
@@ -18,13 +22,64 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
         {
             using (var context = TestCommon.CreateClientContext())
             {
-                OfficeDevPnP.Core.Sites.SiteCollection.GetGroupInfo(context, "demo1").GetAwaiter().GetResult();
+                OfficeDevPnP.Core.Sites.SiteCollection.GetGroupInfoAsync(context, "demo1").GetAwaiter().GetResult();
             }
         }
+
+        //[TestMethod]
+        //public void GetTenantTemplateTest()
+        //{
+        //    using (new PnPProvisioningContext((resource, scope) => Task.FromResult(TestCommon.AcquireTokenAsync(resource, string.Join(" ", scope)))))
+        //    {
+        //        using (var context = TestCommon.CreateTenantClientContext())
+        //        {
+        //            var tenant = new Tenant(context);
+        //            var configuration = new ExtractConfiguration();
+        //            //configuration.Tenant.Sequence = new Configuration.Tenant.Sequence.ExtractSequenceConfiguration()
+        //            //{
+        //            //    IncludeJoinedSites = true,
+        //            //    IncludeSubsites = true,
+        //            //    MaxSubsiteDepth = 2,
+        //            //    SiteUrls = { "https://erwinmcm.sharepoint.com/sites/demo1" }
+        //            //};
+
+        //            configuration.Tenant.Teams = new Configuration.Tenant.Teams.ExtractTeamsConfiguration()
+        //            {
+        //                TeamSiteUrls = { "https://erwinmcm.sharepoint.com/sites/teamchild" },
+        //                IncludeMessages = true
+        //            };
+                    
+        //            //      configuration.Handlers.Add(ConfigurationHandler.Lists);
+        //            //configuration.Handlers.Add(ConfigurationHandler.WebSettings);
+
+        //            //configuration.Lists.Lists.Add(new Core.Framework.Provisioning.Model.Configuration.Lists.Lists.ExtractConfiguration()
+        //            //{
+        //            //    Title = "Test"
+        //            //});
+        //            //configuration.ProgressAction = (message, step, total) =>
+        //            //{
+        //            //    Trace.Write($"{step}|{total}|{message}");
+        //            //};
+        //            var tenantTemplate = new SiteToTemplateConversion().GetTenantTemplate(tenant, configuration);
+        //        }
+        //    }
+        //}
 
         [TestMethod]
         public void ProvisionTenantTemplate()
         {
+            if (TestCommon.AppOnlyTesting())
+            {
+                Assert.Inconclusive("This test does not yet work with app-only due to group connected site creation");
+            }
+            
+            string tenantNameParamValue = new Uri(TestCommon.DevSiteUrl).DnsSafeHost.Split('.')[0];
+            string accountDomainParamValue = TestCommon.O365AccountDomain;
+            if (string.IsNullOrEmpty(accountDomainParamValue))
+            {
+                accountDomainParamValue = "contoso.com";
+            }
+
             var resourceFolder = string.Format(@"{0}\..\..\Resources\Templates", AppDomain.CurrentDomain.BaseDirectory);
             XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(resourceFolder, "");
 
@@ -49,20 +104,34 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
 
             hierarchy.Parameters.Add("CompanyName", "Contoso");
 
-            var sequence = new ProvisioningSequence();
+            if (!string.IsNullOrEmpty(tenantNameParamValue))
+            {
+                hierarchy.Parameters.Add("O365TenantName", tenantNameParamValue);
+            }
 
-            sequence.TermStore = new ProvisioningTermStore();
+            if (!string.IsNullOrEmpty(accountDomainParamValue))
+            {
+                hierarchy.Parameters.Add("O365AccountDomain", accountDomainParamValue);
+            }
+
+            var sequence = new ProvisioningSequence
+            {
+                ID = Guid.NewGuid().ToString(),
+
+                TermStore = new ProvisioningTermStore()
+            };
+            
             var termGroup = new TermGroup() { Name = "Contoso TermGroup" };
             var termSet = new TermSet() { Name = "Projects", Id = Guid.NewGuid(), IsAvailableForTagging = true, Language = 1033 };
             var term = new Term() { Name = "Contoso Term" };
 
             termSet.Terms.Add(term);
-           // termGroup.TermSets.Add(termSet);
-            
+            // termGroup.TermSets.Add(termSet);
+
             var existingTermSet = existingTemplate.TermGroups[0].TermSets[0];
             termGroup.TermSets.Add(existingTermSet);
 
-           // sequence.TermStore.TermGroups.Add(termGroup);
+            // sequence.TermStore.TermGroups.Add(termGroup);
 
             var teamSite1 = new TeamSiteCollection()
             {
@@ -108,8 +177,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
 
             using (var tenantContext = TestCommon.CreateTenantClientContext())
             {
-                var applyingInformation = new ProvisioningTemplateApplyingInformation();
-                applyingInformation.ProgressDelegate = (message, step, total) =>
+                var applyConfiguration = new ApplyConfiguration();
+                applyConfiguration.ProgressDelegate = (message, step, total) =>
                 {
                     if (message != null)
                     {
@@ -120,7 +189,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
 
                 var tenant = new Tenant(tenantContext);
 
-                tenant.ApplyProvisionHierarchy(hierarchy, sequence.ID, applyingInformation);
+                tenant.ApplyTenantTemplate(hierarchy, sequence.ID, applyConfiguration);
             }
         }
     }

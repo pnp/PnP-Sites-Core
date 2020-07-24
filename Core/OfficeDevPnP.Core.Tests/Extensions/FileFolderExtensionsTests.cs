@@ -35,6 +35,19 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             if (documentLibrary == null)
             {
                 documentLibrary = clientContext.Web.CreateList(ListTemplateType.DocumentLibrary, DocumentLibraryName, false);
+#if SP2013 // SharePoint 2013 Server Side default behaviour does not create a library with major versioning enabled. 
+                documentLibrary.EnsureProperties(
+                    d => d.EnableVersioning,
+                    d => d.MajorVersionLimit);
+
+                if (documentLibrary.EnableVersioning == false)
+                {
+                    documentLibrary.EnableVersioning = true;
+                    documentLibrary.MajorVersionLimit = 10;
+                    documentLibrary.Update();
+                    clientContext.ExecuteQueryRetry();
+                }
+#endif
             }
 
             clientContext.Load(documentLibrary.RootFolder.Folders);
@@ -164,6 +177,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             Assert.AreEqual(fileNameExpected, file.Name);
         }
 
+#if !NETSTANDARD2_0
         [TestMethod]
         public void UploadFileWebDavTest()
         {
@@ -177,6 +191,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 
             Assert.AreEqual(fileNameExpected, file.Name);
         }
+#endif
 
         [TestMethod]
         public void VerifyIfUploadRequiredTest()
@@ -224,9 +239,9 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             var file3 = folder.GetFile(fileName2);
             Assert.IsNull(file3, "File should not exist, but test shows it does.");
         }
-        #endregion
+#endregion
 
-        #region Folder tests
+#region Folder tests
         [TestMethod]
         public void EnsureSiteFolderTest()
         {
@@ -344,7 +359,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             Assert.IsNotNull(ensureLibraryFolderTest);
             Assert.AreEqual(ensureLibraryFolderTest.ServerRelativeUrl.TrimEnd('/'), libraryFolder.ServerRelativeUrl.TrimEnd('/'));
         }
-        #endregion
+#endregion
 
     }
 }

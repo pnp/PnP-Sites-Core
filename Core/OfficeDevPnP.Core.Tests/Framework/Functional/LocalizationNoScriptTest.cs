@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
-#if !ONPREMISES   
+#if !SP2013 && !SP2016 
     /// <summary>
     /// Test cases for the provisioning engine Publishing functionality
     /// </summary>

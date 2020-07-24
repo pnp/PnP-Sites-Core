@@ -57,8 +57,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
                         group.Description = parsedDescription;
 
-#if !ONPREMISES
-
                         // Handle TermGroup Contributors, if any
                         if (modelTermGroup.Contributors != null && modelTermGroup.Contributors.Count > 0)
                         {
@@ -76,8 +74,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                 group.AddGroupManager(m.Name);
                             }
                         }
-
-#endif
 
                         termStore.CommitAll();
                         context.Load(group);
@@ -165,13 +161,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             var term = terms.FirstOrDefault(t => t.Id == modelTerm.Id);
                             if (term == null)
                             {
-                                var normalizedTermName = TaxonomyItem.NormalizeName(context, modelTerm.Name);
+                                var normalizedTermName = TaxonomyItem.NormalizeName(context, parser.ParseString(modelTerm.Name));
                                 context.ExecuteQueryRetry();
 
                                 term = terms.FirstOrDefault(t => t.Name == normalizedTermName.Value);
                                 if (term == null)
                                 {
-                                    var returnTuple = CreateTerm<TermSet>(context, modelTerm, set, termStore, parser, scope);
+                                    var returnTuple = CreateTerm(context, modelTerm, set, termStore, parser, scope);
                                     if (returnTuple != null)
                                     {
                                         modelTerm.Id = returnTuple.Item1;
@@ -198,7 +194,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         }
                         else
                         {
-                            var returnTuple = CreateTerm<TermSet>(context, modelTerm, set, termStore, parser, scope);
+                            var returnTuple = CreateTerm(context, modelTerm, set, termStore, parser, scope);
                             if (returnTuple != null)
                             {
                                 modelTerm.Id = returnTuple.Item1;
@@ -209,7 +205,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     }
                     else
                     {
-                        var returnTuple = CreateTerm<TermSet>(context, modelTerm, set, termStore, parser, scope);
+                        var returnTuple = CreateTerm(context, modelTerm, set, termStore, parser, scope);
                         if (returnTuple != null)
                         {
                             modelTerm.Id = returnTuple.Item1;
@@ -264,8 +260,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             return existingTerm.ServerObjectIsNull == true;
         }
 
-        internal static Tuple<Guid, TokenParser, List<ReusedTerm>> CreateTerm<T>(ClientContext context, Model.Term modelTerm, TaxonomyItem parent,
-           TermStore termStore, TokenParser parser, PnPMonitoredScope scope) where T : TaxonomyItem
+        internal static Tuple<Guid, TokenParser, List<ReusedTerm>> CreateTerm(ClientContext context, Model.Term modelTerm, TaxonomyItem parent,
+           TermStore termStore, TokenParser parser, PnPMonitoredScope scope)
         {
 
             var reusedTerms = new List<ReusedTerm>();
@@ -278,7 +274,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     Parent = parent,
                     TermStore = termStore
                 });
-                return Tuple.Create(modelTerm.Id, parser, reusedTerms); ;
+                return Tuple.Create(modelTerm.Id, parser, reusedTerms);
             }
 
             // Create new term
@@ -407,7 +403,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             termTerm = termTerms.FirstOrDefault(t => t.Name == modelTermTerm.Name);
                             if (termTerm == null)
                             {
-                                var returnTuple = CreateTerm<Term>(context, modelTermTerm, term, termStore, parser, scope);
+                                var returnTuple = CreateTerm(context, modelTermTerm, term, termStore, parser, scope);
                                 if (returnTuple != null)
                                 {
                                     modelTermTerm.Id = returnTuple.Item1;
@@ -426,7 +422,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     }
                     else
                     {
-                        var returnTuple = CreateTerm<Term>(context, modelTermTerm, term, termStore, parser, scope);
+                        var returnTuple = CreateTerm(context, modelTermTerm, term, termStore, parser, scope);
                         if (returnTuple != null)
                         {
                             modelTermTerm.Id = returnTuple.Item1;
@@ -575,7 +571,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             term = terms.FirstOrDefault(t => t.Name == normalizedTermName.Value);
                             if (term == null)
                             {
-                                var returnTuple = CreateTerm<TermSet>(context, childTerm, parentTerm, termStore, parser, scope);
+                                var returnTuple = CreateTerm(context, childTerm, parentTerm, termStore, parser, scope);
                                 if (returnTuple != null)
                                 {
                                     childTerm.Id = returnTuple.Item1;
@@ -599,7 +595,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     }
                     else
                     {
-                        var returnTuple = CreateTerm<TermSet>(context, childTerm, parentTerm, termStore, parser, scope);
+                        var returnTuple = CreateTerm(context, childTerm, parentTerm, termStore, parser, scope);
                         if (returnTuple != null)
                         {
                             childTerm.Id = returnTuple.Item1;

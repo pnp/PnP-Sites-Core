@@ -9,6 +9,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Field = OfficeDevPnP.Core.Framework.Provisioning.Model.Field;
@@ -90,7 +91,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var fieldSchemaElement = XElement.Parse(parser.ParseXmlString(field.SchemaXml));
                     var fieldId = fieldSchemaElement.Attribute("ID").Value;
                     var fieldInternalName = fieldSchemaElement.Attribute("InternalName")?.Value ?? fieldSchemaElement.Attribute("Name")?.Value;
-                    WriteMessage($"Field|{(!string.IsNullOrWhiteSpace(fieldInternalName) ? fieldInternalName : fieldId)}|{currentFieldIndex}|{fields.Count}", ProvisioningMessageType.Progress);
+                    WriteSubProgress("Field",!string.IsNullOrWhiteSpace(fieldInternalName) ? fieldInternalName : fieldId,currentFieldIndex,fields.Count);
                     if (!existingFieldIds.Contains(Guid.Parse(fieldId)))
                     {
                         try
@@ -187,9 +188,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             web.Context.ExecuteQueryRetry();
                         }
-                        catch (ServerException se)
+                        catch (Exception ex)
                         {
-                            if (se.ServerErrorTypeName == "Microsoft.SharePoint.Client.ClientServiceTimeoutException")
+                            if ((ex is ServerException && (ex as ServerException).ServerErrorTypeName == "Microsoft.SharePoint.Client.ClientServiceTimeoutException")
+                               || (ex is WebException && (ex as WebException).Status == WebExceptionStatus.Timeout))
                             {
                                 string fieldName = existingFieldElement.Attribute("Name") != null ? existingFieldElement.Attribute("Name").Value : existingFieldElement.Attribute("StaticName").Value;
                                 WriteMessage(string.Format(CoreResources.Provisioning_ObjectHandlers_Fields_Updating_field__0__timeout, fieldName), ProvisioningMessageType.Warning);
@@ -407,7 +409,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private static string GetTaxonomyFieldValidatedValue(TaxonomyField field, string defaultValue)
+        internal static string GetTaxonomyFieldValidatedValue(TaxonomyField field, string defaultValue)
         {
             string res = null;
             object parsedValue = null;
@@ -502,7 +504,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var field in existingFields)
                 {
                     currentFieldIndex++;
-                    WriteMessage($"Field|{field.InternalName}|{currentFieldIndex}|{fieldsToProcessCount}", ProvisioningMessageType.Progress);
+                    WriteSubProgress("Field", field.InternalName, currentFieldIndex, fieldsToProcessCount);
                     if (!BuiltInFieldId.Contains(field.Id))
                     {
                         var fieldXml = field.SchemaXml;

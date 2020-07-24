@@ -76,7 +76,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             }
             #endregion
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
             #region Custom Action
             if (!isNoScriptSite)
             {
@@ -95,6 +95,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             {
                 return true;
             }
+
+#if SP2019
+            if (web.Context.IsAppOnlyWithDelegation())
+            {
+                return true;
+            }
+#endif
 
             var currentUser = web.EnsureProperty(w => w.CurrentUser);
             PeopleManager peopleManager = new PeopleManager(web.Context);

@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
     /// <summary>
     /// Defines a user for a the Team
     /// </summary>
-    public class TeamSecurityUser : BaseModel, IEquatable<TeamSecurityUser>
+    public partial class TeamSecurityUser : BaseModel, IEquatable<TeamSecurityUser>
     {
         #region Public Members
 

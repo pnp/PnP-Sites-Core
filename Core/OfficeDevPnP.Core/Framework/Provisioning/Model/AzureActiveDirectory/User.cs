@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.AzureActiveDirectory
     /// <summary>
     /// Defines an AAD User
     /// </summary>
-    public class User : BaseModel, IEquatable<User>
+    public partial class User : BaseModel, IEquatable<User>
     {
         #region Public Members
 
@@ -135,7 +135,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.AzureActiveDirectory
         }
 
         /// <summary>
-        /// Compares User object based on PackagePath and source
+        /// Compares User object based on PasswordProfile, AccountEnabled, DisplayName, MailNickname, 
+        /// PasswordPolicies, UserPrincipalName, ProfilePhoto, and Licenses
         /// </summary>
         /// <param name="other">User Class object</param>
         /// <returns>true if the User object is equal to the current object; otherwise, false.</returns>

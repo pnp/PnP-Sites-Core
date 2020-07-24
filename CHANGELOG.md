@@ -6,15 +6,309 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.24.2008.0 August 2020 release - not released]
+
+## Added
+
+- Added ability to delete modern sites to SiteCollection helper class #2298 [gautamdsheth - Gautam Sheth]
+
+## Changed
+- Improved modern site extraction with the provisioning engine #2629 [gautamdsheth - Gautam Sheth]
+- Fixed ability to set field values on modern pages #2344 [heinrich-ulbricht Heinrich Ulbricht]
+- Added functionality to the provisioning engine to refer to list fields that have been added in the same list. By means of {fieldtitle:[fieldname]}. The enables for instance the ability to refer to fields in the list when creating a validation formula #2299 [koenzomers - Koen Zomers]
+
+## [3.23.2007.0 July 2020 release]
+
+## Added
+
+- Added possibility to set AllowDeletion for a field #2688 [jensotto - Jens Otto Hatlevold]
+
+## Changed
+
+- Added an {fqdn} token to the provisioning engine which resolves to yourtenant.sharepoint.com (full qualified domain name) without scheme (unlike {hosturl} which does include the scheme) [erwinvanhunen - Erwin van Hunen]
+- Updated the token parser in the provisioning engine: you can now use {pageuniqueid:/path/topage.aspx} tokens to reference to pages that are not in the template. If the token at application time cannot be resolved it will not be replaced with "" but kept in place as is. [erwinvanhunen - Erwin van Hunen]
+- Fixed issue when extract a template with a page from the rootsite when choosing to extract assets [erwinvanhunen - Erwin van Hunen]
+- Adding authentication cookies for SPO Admin domain #2687 [koenzomers - Koen Zomers]
+- Call ParseString for webSettings.SearchCenterUrl #2686 [cebud - Martin Dubec]
+- Fix incorrect onprem eventreceiver reference #2684 [jensotto - Jens Otto Hatlevold]
+- Added methods for adding/removing/clearing members and owners of M365 Groups #2683 [koenzomers - Koen Zomers]
+- Fix for GetProvisioningTemplate and ApplyProvisioningTemplate to being stucked in Windows Forms applications. #2681 [brank - Brandon Victoria]
+- Improve exception message when a file is not found during the provisioning #2679 [jackpoz - Giacomo Pozzoni]
+- Doc fix: Fixing duplicated sitecollectionidencoded token #2675 [cmzaragoza - Cristian M. Zaragoza]
+- Enhanced OnPremises Support (SP2019) + UnitTests #2654 [gzdev]
+- Fix preserve SPGroup Config also for Associated Groups #2611 [czullu - Christian Zuellig]
+- Parse user names when adding them as part of the teams security element during provisioning
+- Fix UpdateListItem: Ignore ID column. ID column cannot be updated. #2692 [gzdev]
+- Updated version of SP-Responsive-UI files (js, css) #2693 [gzdev]
+- Fix: Token parsing changes #2701 [gautamdsheth - Gautam Sheth]
+- Fix: Site collection admin timeout issue #2702 [gautamdsheth - Gautam Sheth]
+
+## [3.22.2006.2 - June 2020 release]
+
+### Added
+
+- Adding CRUD operations for Microsoft Graph Subscriptions #2641 [koenzomers - Koen Zomers]
+- Adding GetValidSiteUrlFromAliasAsync and GetIsAliasAvailableAsync #2657 [koenzomers - Koen Zomers]
+- Added option to retrieve AAD user by its UPN optionally with specific properties #2644 [koenzomers - Koen Zomers]
+- Added support for Sensitivity Label while creating modern sites #2668 [gautamdsheth - Gautam Sheth]
+- Include Default ListFields if they are Pinned/Showed in FiltersPane or have CustomFormatter set #2650 [czullu - Christian Zuellig]
+- Added option to provide a PreferredDataLocation during site collection creation (for supporting multi-geo tenants) #2672 [koenzomers - Koen Zomers]
+- Client side page API: added support for Cortex topic pages (read/save using API + import/export using provisioning templates)
+- Added SetUnifiedGroupVisibility to allow toggling the visibility of a unified group #2674 [koenzomers - Koen Zomers]
+
+### Changed
+
+- Fix: #2649 - Added correct document set content type check #2652 [gautamdsheth - Gautam Sheth]
+- Fix: Paging for retrieving AAD Users #2643 [koenzomers - Koen Zomers]
+- Fix: ClientSidePageContent/ExtractObject - The Url for SitePages library was wrong for the root site collection #2662 [czullu - Christian Zuellig]
+- Fix: CreateFolder leads to version count increase of 2 while it should be 1 #2660 [czullu - Christian Zuellig]
+- Fix: PnpHttpHandler SendAync retry did not recreate the HttpRequestMessage on retry #2658 [czullu - Christian Zuellig]
+- Fix: Clone OnExecutingWebRequest handler for credential auth #2646 [PowershellNinja - Raphael]
+- Fix: 403 error on GetWebPartXML in on-premises SharePoint. Fixes #1438, #2371 and #2677 #2667 [jay1050]
+- Fix: Remove tokens from TokenDictionary and ListTokenDictionary when rebuilding the token cache #2638 [ZeroneBit]
+- Change: Removing requirement for a description to be provided for unified group creation #2670 [koenzomers - Koen Zomers]
+- Change: Avoided providing HubSiteId on new sitecollection creation if no HubSite has been provided #2671 [koenzomers - Koen Zomers]
+- Fix: Bugfix in LoadFooterNavigation + added Footer Title & Logo methods #2673 [koenzomers - Koen Zomers]
+- Fix: Retrieve all groups from Graph endpoint #2594 [ohaak - Ole Rühaak]
+- Fix: AuthenticationManager implements IDisposable and will release created threads (to invalidate requested tokens) on dispose
+
+## [3.21.2005.2 - May 2020 release - intermediate release]
+
+### Changed
+
+- Fix: Modern page translation api's did not take in account the access token
+
+## [3.21.2005.0 - May 2020 release]
+
+### Added
+
+- Adding support for retrieval of Users from Azure Active Directory #2622 [koenzomers - Koen Zomers]
+- Add YAML metadata for PnP-Sites-Core #2631 [nokafor - Sylvia Okafor]
+- Added UnifiedGroupsUtility.RenewUnifiedGroup #2630 [koenzomers - Koen Zomers]
+- Added GetNestedUnifiedGroupMembers method #2377 [anoopt - Anoop Tatti]
+
+### Changed
+
+- Fix: Bug while provisioning teams without security settings in the template got fixed
+- Fix: ExtractClientSidePage check isNews when PromotedState is null #2618 [czullu - Christian Zuellig]
+- Fix: Handle special char in SiteTile beeing replaced by _ for SP-Groupnames #2617 [czullu - Christian Zuellig]
+- Fix: NullReferenceException in case the authentication with credentials fails #2634 [koenzomers - Koen Zomers]
+- Fix: Enable changing view title casing #2584 [jensotto - Jens Otto Hatlevold]
+
+## [3.20.2004.0 - April 2020 release]
+
+### Added
+
+- Added EnsureAppCatalogAsync extension method on Tenant to create and register a new app catalog
+- Added support for creating modern team sites with app-only access token
+- Added functionality to allow PnP Templates to update docsets #2600 [koenzomers - Koen Zomers]
+
+### Changed
+
+- Fix: IsChildOfDocumentSetContentType in ContentType Provisioning #2585 [koenzomers - Koen Zomers]
+- Fix: UnitTest SP2013 - ResetFileToPreviousVersionTest #2577 [gszdev]
+- Fix: Resx-Issue if names contain char handled by Regex.Escape #2578 [czullu - Christian Zuellig]
+- Improve logging when waiting for a site collection to be created #2581 [jackpoz - Giacomo Pozzoni]
+- Fix: Encoding in fileuniqueid token dedection in navigationlink #2579 [czullu - Christian Zuellig]
+- Fix: Bugfix for authenticating with credentials containing special characters #2599 [koenzomers - Koen Zomers]
+- Fix: Added HasTeam boolean to UnifiedGroupEntity #2614 [koenzomers - Koen Zomers]
+- Fix: Make all the Framework Handler use ExecuteQueryRetry #2590 [czullu - Christian Zuellig]
+- For AzureFunctions allow SharePointPnPUserAgent to be set in Environment #2591 [czullu - Christian Zuellig]
+- Make PnPHttpProvider respect SharePointPnPUserAgent setting #2592 [czullu - Christian Zuellig]
+- Fix: Additional check to determine whether theme exists in the tenant #2603 [gautamdsheth - Gautam Sheth]
+- Fix: Client side web part parser description was mapped to title #2606 [czullu - Christian Zuellig]
+- Fix: Site Logo file url needs be stored url decoded in the template #2608 [czullu - Christian Zuellig]
+- Fix: Set file properties before checkin/publish. #2610 [czullu - Christian Zuellig]
+- Fix: Resolves issue where sharing settings defaults to disbled even when not set in the template #2596 [SteveClements - Steve Clements]
+- Fix: ensuring correct usage of EnsureProperties method #2602 [gautamdsheth - Gautam Sheth]
+
+## [3.19.2003.0 - March 2020 release]
+
+### Added
+
+- Option to use an access token in the TimerJob framework
+- Option specify the Azure environment being used by the timerjob framework
+
+### Changed
+
+- Respect the set Azure environment in the GetAzureADCredentialsContext AuthenticationManager method
+- Added fallback to check for web setting on search redirect url on a root site if sc setting is empty in the SearchExtensions SetWebSearchCenterUrl method
+- Fix: Improve error message when uploading a file with invalid characters in the file name #2575 [jackpoz - Giacomo Pozzoni]
+- Fix: Catch WebException with Timeout status to fix timeout on update field and push changes #2557 [NicolajHedeager - Nicolaj Hedeager Larsen]
+- Fix: Ensure null value is never set for MaterPageUrl and ColorPaletteUrl #2558 [NicolajHedeager - Nicolaj Hedeager Larsen]
+- Fix: Added SP2019 RTM CSOM Assemblies #2573 [jensotto - Jens Otto Hatlevold]
+- Fix: Skip update of read only content type unless readonly is changed to false #2569 [NicolajHedeager - Nicolaj Hedeager Larsen]
+- Fix: Added list content type id token to support specifying list content types in the NewDocumentTemplates node for the default view #2570 [jensotto - Jens Otto Hatlevold]
+- Fix: Added guid prefix in webhook API call #2574 [gzukula]
+
+## [3.18.2002.0 - February 2020 release]
+
+### Added
+
+- EnableCommunicationSite extension method to transform a classic, non publishing, site into a communication site
+- February 2020 schema version was added and set as default schema
+- Support for SharingSettings, Search Center URL, new Teams settings, and Groupify of STS#3 sites in the Provisioning Engine
+
+### Changed
+
+- Reliability improvements in pages API to load some very old pages
+- Add Folder UniqueID to parser token as fileuniqueid #2524 [czullu - Christian Zuellig]
+- Fix: Change indentation back to spaces. #2529 [jensotto - Jens Otto Hatlevold]
+- Added option to set requesting access to a web to the default owners + marked the methods supporting multiple email addresses as obsolete #2533 / #2534 [KoenZomers - Koen Zomers]
+
+## [3.17.2001.2 - January 2020 release]
+
+### Changed
+
+- Reverted the apply part of #2478 as this is a breaking change for folks that did not have QuickLaunchEnabled set in their templates
+
+## [3.17.2001.0 - January 2020 release]
+
+### Added
+
+- Support for folder level properties [czullu - Christian Zuellig]
+- Multi-lingual page status and generation methods on the ClientSidePage object
+- Multi-lingual page support for provisioning templates
+- Support for Microsoft Spaces pages (API and provisioning templates)
+
+### Changed
+
+- Improved code for exporting Teams from Microsoft Teams [JarbasHorst - Jarbas Horst]
+- Fixed QuickLaunchEnabled provisioning / extract #2478 [kezack - zackariya el khalfaoui]
+- Bumped the minimal .Net version from 4.5 to 4.6.1
+- Fix #2407 by adding hidden fields to the list prior to the content type. #2408 [stevebeauge - Steve Beaugé]
+- Fix provisioning ReadOnly content type #2501 [SchauDK - Michael Schau]
+
+## [3.16.1912.0 - December 2019 release]
+
+### Added
+
+- UnifiedGroupsUtility.HasTeamsTeam checks if an Office 365 group also has a Teams team
+- SiteExistsAnywhere method to improve SiteExists internal behavior
+
+### Changed
+
+- Added support for tokens in Term names [fzbm - Florian Zink]
+- Improved ObjectApplicationLifecycleManagement inner logic [gautamdsheth - Gautam Sheth]
+- Fixed support for calculated fields in PowerShell [jackpoz - Giacomo Pozzoni]
+
+## [3.15.1911.0 - November 2019 release]
+
+### Added
+
+- Added ApplyTenantTemplate and GetTenantTemplate methods
+- Added new configuration support for extraction and applying of site and tenant templates. See https://docs.microsoft.com/en-us/sharepoint/dev/solution-guidance/configuring-the-pnp-provisioning-engine
+- Added initial TenantTemplate extraction, supporting Sequences and Teams
+- Limiting lists to extract now supports besides filtering on title also filtering on list url
+- Support for User Profile properties upload [gautamdsheth]
+- Support for UpdateChildren="true" in fields definition for content types [SteveClements]
+
+### Changed
+
+- Deprecated ApplyProvisioningHierarchy and replaced with ApplyTenantTemplate
+- IsProvisioningComplete waits for max 20 minutes and logs a warning instead of throwing an exception when a longer wait is needed
+- Fix: reading/setting search redirect URL on a root site
+- Fix: Updated handling SharePoint groups and groups' owners #2444 [NicolajHedeager]
+- Fix: Update us gov auth endpoint #2463 [gobigfoot]
+- Fix: Add null guard to catch block in GetAccess*Token #2435 [fowl2]
+- Fix: ObjectSiteSettings provisioning - SearchBoxInNavBar property was not always initialized #2474 [czullu]
+- Fix: Added support for new taxonomy field default values for fields #2329 [KoenZomers]
+
+## [3.14.1910.1 - October 2019 intermediate release]
+
+### Added
+
+- You can now specify to overwrite a tenant theme if already present when using the 201909 schema of the provisioning engine [gautamdsheth]
+
+### Changed
+
+- When you create a modern site and don't specify a wait time after site creation we'll now use the IsProvisioningComplete attribute to wait until all server side async provisioning processes are done
+- Fix: Make sure to load item when exporting datarows and no attachment exists [czullu]
+- Fix: provisioning a content type to a folder will now change the folder to a documentset if the contenttype is a documentset [czullu]
+- Fix: default document of a documentset will now be exported if PersistAssetFiles has been set to true in the extraction configuration [czullu]
+- Fix: fixes issue when using configuration file for list extraction, includeAttachments=true, but no viewfields have been specified where only the attachments would have been extracted instead of all expected list field values. [czullu]
+- Fix: fixes issue where security is not set on new listitems when adding datarows from a provisioning template [czullu]
+- Fix: fixes issue where multichoice fields were not exported correctly to datarows when extracting a template.
+- Fix: fixes issue with null templates while invoking provisioning webhooks [gautamdsheth]
+
+## [3.14.1910.0 - October 2019 release]
+
+### Added
+
+- Vertical section support for extracting and importing provisioning templates
+- Export of list items, based upon #2326 [czullu]
+- Added HubSiteTitle property on Site Sequences when provisioning a Tenant Template
+- Added a ThumbnailUrl property on Client Side Pages to set the page thumbnail
+- Added additional modern web parts to our enums (CallToAction, Button, Sites)
+- Added support for schema 201909, this schema is the default as of the October 2019 release
+- Option to configure the export of a site to a provisioning template via the ExtractConfiguration class
+- S2S user delegation in Hightrust app scenario #2363 [tmeckel]
+- Added support to teamify and hide the teamify prompt via a tenant template #2423 [gautamdsheth]
+
+### Changed
+
+- Fix: Regex based detection of assets used by modern web parts now correctly handles guid that where wrapped in curly brackets
+- The Promote as News state of a page will now be persisted in an exported template
+- Extracting a template will now persist the files referred to in page thumbnails to the Files collection of the template
+- Extracting a template will now persist the footer logo to the Files collection of the template
+- Only load tenant CDN settings whenever there are public/private CDN settings defined in the template
+- Fix: register as hubsite will not throw an exception anymore when creating a new hubsite through a tenant template and also setting the logo for the hubsite.
+- Fix: Added retry logic to the appcatalog/AvailableApps/GetById ALM API calls to handle cases where this API is called too soon after an app has been installed in the appcatalog
+- Fix: Use UpdateOverwriteVersion instead of Update when creating a page using the client side page API, this will prevent unneeded intermediate versions showing up in the version history of the created page
+- Fix: CPU Load and Performance for ExtractClientSidePage #2395 [czullu]
+- Fix: conversion of zoneEmphasis in EmphasisJsonConverter #2402 [czullu]
+- Fix: fields reference in lists #2163 [czullu]
+- Fix: Localization only done when relevant (when destination single Language and PnP-Template Multilanguage) #2366 [czullu]
+- Fix: Localization token now handles the case where there are multiple resource files used in a single template #2367 [luismanez]
+- Enabled functionality (e.g. exporting and provisioning client side pages) for SP2019 that was disabled #2412 [jensotto]
+- Fix: Handle null reference exception in WebAPIHelper.GetClientContext #2426 [patrikhellgren]
+- Enable no script site detection for SP2019 #2428 [jensotto]
+- Fix: Don't process tenant hierarchy settings when template doesn't use them. #2300 [gautamdsheth]
+- Fix: Corrected issues reported by static analysis #2422 [jackpoz]
+- Additional overrides for UpdateTaxonomyFieldDefaultValue + doc updates #2328 [KoenZomers]
+- Fix: Better error handling when template contains DataRows for document libraries + improved Author/Editor handling #2341
+- Fix: Tenant Templates - sub sites now get the correct template applied. #2271 [SteveClements]
+- Enabled several functionalities in TenantExtensions for onpremises #2433 [jensotto]
+
+## [3.13.1909.0 - September 2019 release]
+
+### Added
+
+- Vertical section support (read, update and create) for the modern page API
+- Add extension to create team site with no group using SPSiteManager #2364 [NicolajHedeager]
+- Improved image extraction when extracting modern pages: header image and images linked by quick links webparts are now included #2336 [heinrich-ulbricht]
+- Added support for page header images which reside outside current site collection #2360 [gautamdsheth]
+- Added support for additional teamify methods #2359 [gautamdsheth]
+- Added support for Teal theme #2376 [gautamdsheth]
+
+### Changed
+
+- Fix: Handle SPSiteManager/Create with SiteStatus = 1 (provisioning status)
+- Fix: Avoid 'object reference not found' error [kachihro]
+- Fix: Allow ZoneEmphasis in ClientSidePage to be undefined #2318 [KoenZomers]
+- Fix: Corrected AssociatedGroup Tokens documentation #2348 [pmatthews05]
+- Fix: Improve check for empty ComposedLook #2354 [heinrich-ulbricht]
+- Fix: Don't pass formatted string to logger #2368 [SchauDK]
+- Fix: Enabled custom action functionality for SharePoint 2019 that was incorrectly disabled. #2371 [jensotto]
+- Fix: use JsonConvert.ToString to handle special char in Title and Description #2372 [czullu]
+- Modified TeamNoGroup provisioning to use the new SPSiteManager API #2375 [gautamdsheth]
+- Fix: Modern page API now supports the two versions of News (older NewsreelWebPart vs newer NewsWebPart) #2389 [bogeorge]
+- Fix: Minor bugfixes for Channels and Tabs #2340 [PBLPointwork]
+- Fix: Additional null checks and content rating fix while creating team #2296 [gautamdsheth]
+
+### Deprecated
+
+- Deprecated GetGroupInfo in favor of GetGroupInfoAsync (OfficeDevPnP.Core.Sites.SiteCollection class)
+- Deprecated SetGroupImage in favor of SetGroupImageAsync (OfficeDevPnP.Core.Sites.SiteCollection class)
+
 ## [3.12.1908.0 - August 2019 release]
 
 ### Added
 
-
 ### Changed
 
 - Fix: Added Built in CT Html Page layout #2321 [SchauDK]
-- Fix: Handle CreateGroupEx with SiteStatus = 1 (provisioning status)
+- Fix: Handle GroupSiteManager/CreateGroupEx with SiteStatus = 1 (provisioning status)
 - Fix: Increase default timeout for ALM API calls
 
 ## [3.11.1907.0 - July 2019 release]

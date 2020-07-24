@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
     /// <summary>
     /// Defines Team for automated provisiong/update of Microsoft Teams
     /// </summary>
-    public class Team : BaseTeam, IEquatable<Team>
+    public partial class Team : BaseTeam, IEquatable<Team>
     {
         #region Public Members
 
@@ -34,6 +34,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// </summary>
         public TeamMessagingSettings MessagingSettings { get; set; }
 
+        /// <summary>
+        /// The Discovery Settings for the Team
+        /// </summary>
+        public TeamDiscoverySettings DiscoverySettings { get; set; }
+        
         /// <summary>
         /// Defines the Security settings for the Team
         /// </summary>

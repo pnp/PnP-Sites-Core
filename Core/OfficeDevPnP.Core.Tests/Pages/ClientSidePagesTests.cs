@@ -9,13 +9,14 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using System.Threading.Tasks;
-#if !ONPREMISES
+using System.Globalization;
+#if !SP2013 && !SP2016
 using OfficeDevPnP.Core.Pages;
 #endif
 
 namespace OfficeDevPnP.Core.Tests.Authentication
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     [TestClass]
     public class ClientSidePagesTests
     {
@@ -38,17 +39,18 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         #endregion
 
         //[TestMethod]
-        //public void PageTest()
+        //public void ExportPagesTest()
         //{
-        //    using (var clientContext = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/ProvisioningTest"))
+        //    using (var clientContext = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/KnowledgeCenter"))
         //    {
         //        ProvisioningTemplateCreationInformation ptci = new ProvisioningTemplateCreationInformation(clientContext.Web)
         //        {
         //            // Limit the amount of handlers in this demo
         //            HandlersToProcess = Handlers.PageContents,
         //            // Create FileSystemConnector, so that we can store composed files temporarely somewhere 
-        //            FileConnector = new FileSystemConnector(@"C:\temp", ""),
+        //            FileConnector = new FileSystemConnector(@"d:\temp\topicpages", ""),
         //            PersistBrandingFiles = true,
+        //            IncludeAllClientSidePages = true,
         //            ProgressDelegate = delegate (String message, Int32 progress, Int32 total)
         //            {
         //                // Only to output progress for console UI
@@ -60,16 +62,16 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         //        ProvisioningTemplate template = clientContext.Web.GetProvisioningTemplate(ptci);
 
         //        // Serialize to XML using the beta 201705 schema
-        //        XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(@"C:\temp", "");
-        //        var formatter = XMLPnPSchemaFormatter.GetSpecificFormatter(XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2019_03);
-        //        provider.SaveAs(template, "PnPProvisioningDemo201903.xml", formatter);
+        //        XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(@"d:\temp\topicpages", "");
+        //        var formatter = XMLPnPSchemaFormatter.GetSpecificFormatter(XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2020_02);
+        //        provider.SaveAs(template, "PnPProvisioningDemo202002.xml", formatter);
         //    }
         //}
 
         //[TestMethod]
-        //public void Page2Test()
+        //public void ApplyPagesTest()
         //{
-        //    using (var clientContext = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/provisioningtest"))
+        //    using (var clientContext = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/KnowledgeCenter"))
         //    {
         //        ProvisioningTemplateApplyingInformation ptai = new ProvisioningTemplateApplyingInformation()
         //        {
@@ -81,8 +83,9 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         //            }
         //        };
 
-        //        XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(@".", "");
-        //        ProvisioningTemplate sourceTemplate = provider.GetTemplate("PnPProvisioningDemo201903.xml");
+        //        XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(@"d:\temp\topicpages", "");
+        //        ProvisioningTemplate sourceTemplate = provider.GetTemplate("PnPProvisioningDemo202002.xml");
+        //        sourceTemplate.Connector = new FileSystemConnector(@"d:\temp\topicpages", "");
 
         //        // Execute actual extraction of the tepmplate
         //        clientContext.Web.ApplyProvisioningTemplate(sourceTemplate);
@@ -90,14 +93,90 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         //}
 
         //[TestMethod]
+        //public void MUITest()
+        //{
+        //    //using (var cc = new AuthenticationManager().GetWebLoginClientContext("https://contoso.sharepoint.com/teams/TEST_Provisioning"))
+        //    using (var cc = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/KnowledgeCenter"))
+        //    {
+        //        var page = cc.Web.LoadClientSidePage("pnp2.aspx");
+
+
+        //        page.Save("pnpclone.aspx");
+
+
+        //    }
+        //}
+
+        //[TestMethod]
         //public void BertTest5()
         //{
-        //    using (var cc = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/ComSiteDemo"))
+        //    using (var cc = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/blabla"))
         //    {
-        //        var page = cc.Web.LoadClientSidePage("home.aspx");
+        // var page = cc.Web.LoadClientSidePage("vertical-section.aspx");
+        //        //page.Save("home2_normal.aspx");
 
-        //        page.Save("home2_normal.aspx");
+        //        var newPage = new Pages.ClientSidePage(cc);
+        //        newPage.AddSection(CanvasSectionTemplate.TwoColumnVerticalSection, 1);
 
+        //        newPage.Sections[0].Columns[0].VerticalSectionEmphasis = 2;
+        //        newPage.Sections[0].VerticalSectionColumn.VerticalSectionEmphasis = 2;
+        //        newPage.Sections[0].ZoneEmphasis = 3;
+
+        //        var t1 = new ClientSideText()
+        //        {
+        //            Text = "AA"
+        //        };
+        //        var t2 = new ClientSideText()
+        //        {
+        //            Text = "BB"
+        //        };
+        //        var t3 = new ClientSideText()
+        //        {
+        //            Text = "CC"
+        //        };
+        //        var t4 = new ClientSideText()
+        //        {
+        //            Text = "DD"
+        //        };
+        //        var t5 = new ClientSideText()
+        //        {
+        //            Text = "EE"
+        //        };
+        //        var t6 = new ClientSideText()
+        //        {
+        //            Text = "FF"
+        //        };
+
+        //        newPage.AddControl(t1, newPage.Sections[0].Columns[0]);
+        //        newPage.AddControl(t2, newPage.Sections[0].Columns[0]);
+        //        newPage.AddControl(t3, newPage.Sections[0].Columns[1]);
+        //        newPage.AddControl(t4, newPage.Sections[0].Columns[2]);
+        //        newPage.AddControl(t5, newPage.Sections[0].Columns[2]);
+        //        newPage.AddControl(t6, newPage.Sections[0].Columns[2]);
+
+        //        newPage.AddSection(CanvasSectionTemplate.ThreeColumn, 2);
+        //        var t7 = new ClientSideText()
+        //        {
+        //            Text = "DD"
+        //        };
+        //        var t8 = new ClientSideText()
+        //        {
+        //            Text = "EE"
+        //        };
+        //        var t9 = new ClientSideText()
+        //        {
+        //            Text = "FF"
+        //        };
+
+        //        newPage.AddControl(t7, newPage.Sections[1].Columns[0]);
+        //        newPage.AddControl(t9, newPage.Sections[1].Columns[2]);
+
+        //        newPage.Sections[1].ZoneEmphasis = 1;
+
+        //        newPage.AddSection(CanvasSectionTemplate.TwoColumnLeft, 3);
+        //        newPage.AddControl(t8, newPage.Sections[2].Columns[0]);
+
+        //        newPage.Save("verticalsectiontest1.aspx");
         //    }
         //}
 

@@ -21,6 +21,8 @@ namespace OfficeDevPnP.Core.Pages
         public const string ControlDataAttribute = "data-sp-controldata";
 
         private int columnFactor;
+        private int layoutIndex;
+        private int? zoneEmphasis;
         private CanvasSection section;
         private string DataVersion = "1.0";
         #endregion
@@ -37,6 +39,7 @@ namespace OfficeDevPnP.Core.Pages
             this.section = section;
             this.columnFactor = 12;
             this.Order = 0;
+            this.layoutIndex = 1;
         }
 
         internal CanvasColumn(CanvasSection section, int order)
@@ -48,6 +51,7 @@ namespace OfficeDevPnP.Core.Pages
 
             this.section = section;
             this.Order = order;
+            this.layoutIndex = 1;
         }
 
         internal CanvasColumn(CanvasSection section, int order, int? sectionFactor)
@@ -59,8 +63,21 @@ namespace OfficeDevPnP.Core.Pages
 
             this.section = section;
             this.Order = order;
-            // if the sectionFactor was undefined is was not defined as there was no section in the original markup. Since we however provision back as one column page let's set the sectionFactor to 12.
             this.columnFactor = sectionFactor.HasValue ? sectionFactor.Value : 12;
+            this.layoutIndex = 1;
+        }
+
+        internal CanvasColumn(CanvasSection section, int order, int? sectionFactor, int? layoutIndex)
+        {
+            if (section == null)
+            {
+                throw new ArgumentNullException("Passed section cannot be null");
+            }
+
+            this.section = section;
+            this.Order = order;
+            this.columnFactor = sectionFactor.HasValue ? sectionFactor.Value : 12;
+            this.layoutIndex = layoutIndex.HasValue ? layoutIndex.Value : 1;
         }
         #endregion
 
@@ -90,6 +107,17 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
+        /// Returns the layout index. Defaults to 1, except for the vertical section column this is 2
+        /// </summary>
+        public int LayoutIndex
+        {
+            get
+            {
+                return this.layoutIndex;
+            }
+        }
+
+        /// <summary>
         /// List of <see cref="CanvasControl"/> instances that are hosted in this section
         /// </summary>
         public System.Collections.Generic.List<CanvasControl> Controls
@@ -97,6 +125,47 @@ namespace OfficeDevPnP.Core.Pages
             get
             {
                 return this.Section.Page.Controls.Where(p => p.Section == this.Section && p.Column == this).ToList<CanvasControl>();
+            }
+        }
+
+        /// <summary>
+        /// Is this a vertical section column?
+        /// </summary>
+        public bool IsVerticalSectionColumn
+        {
+            get
+            {
+                return this.LayoutIndex == 2;
+            }
+        }
+
+        /// <summary>
+        /// Color emphasis of the column (used for the vertical section column) 
+        /// </summary>
+        public int? VerticalSectionEmphasis
+        {
+            get
+            {
+                if (this.LayoutIndex == 2)
+                {
+                    return this.zoneEmphasis;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                if (this.LayoutIndex == 2)
+                {
+                    if (value < 0 || value > 3)
+                    {
+                        throw new ArgumentException($"The zoneEmphasis value needs to be between 0 and 3. See the Microsoft.SharePoint.Client.SPVariantThemeType values for the why.");
+                    }
+
+                    this.zoneEmphasis = value;
+                }
             }
         }
         #endregion
@@ -138,6 +207,9 @@ namespace OfficeDevPnP.Core.Pages
                             ZoneIndex = this.Section.Order,
                             SectionIndex = this.Order,
                             SectionFactor = this.ColumnFactor,
+#if !SP2019
+                            LayoutIndex = this.LayoutIndex,
+#endif
                         },
 
                         Emphasis = new ClientSideSectionEmphasis()
@@ -177,6 +249,14 @@ namespace OfficeDevPnP.Core.Pages
             this.Order = order;
             this.columnFactor = columnFactor;
         }
+
+        #region Internal and helper methods
+        internal void MoveTo(CanvasSection section)
+        {
+            this.section = section;
+        }
+        #endregion
+
         #endregion
     }
 #endif

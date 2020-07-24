@@ -923,14 +923,14 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Sets the default value for a managed metadata column in the specified list. This operation will not change existing items in the list
+        /// Sets the default value for a managed metadata column in the specified list. This operation will not change existing items in the list.
         /// </summary>
         /// <param name="web">Extension web</param>
-        /// <param name="termName">Name of a specific term</param>
-        /// <param name="listName">Name of list</param>
-        /// <param name="fieldInternalName">Internal name of field</param>
-        /// <param name="groupGuid">TermGroup Guid</param>
-        /// <param name="termSetGuid">TermSet Guid</param>
+        /// <param name="termName">Name of a specific term which should be set as the default on the managed metadata field</param>
+        /// <param name="listName">Name of list which contains the managed metadata field of which the default needs to be set</param>
+        /// <param name="fieldInternalName">Internal name of the managed metadata field for which the default needs to be set</param>
+        /// <param name="groupGuid">TermGroup Guid of the Term Group which contains the managed metadata item which should be set as the default</param>
+        /// <param name="termSetGuid">TermSet Guid of the Term Set which contains the managed metadata item which should be set as the default</param>
         /// <param name="systemUpdate">If set to true, will do a system udpate to the item. Default value is false.</param>
         public static void UpdateTaxonomyFieldDefaultValue(this Web web, string termName, string listName, string fieldInternalName, Guid groupGuid, Guid termSetGuid, bool systemUpdate = false)
         {
@@ -944,6 +944,36 @@ namespace Microsoft.SharePoint.Client
 
             var foundTerm = term.First();
 
+            web.UpdateTaxonomyFieldDefaultValue(listName, fieldInternalName, foundTerm, systemUpdate);
+        }
+
+        /// <summary>
+        /// Sets the default value for a managed metadata column in the specified list. This operation will not change existing items in the list.
+        /// </summary>
+        /// <param name="web">Extension web</param>
+        /// <param name="listName">Name of list which contains the managed metadata field of which the default needs to be set</param>
+        /// <param name="fieldInternalName">Internal name of the managed metadata field for which the default needs to be set</param>
+        /// <param name="termGuid">Term Guid of the Term which represents the managed metadata item which should be set as the default</param>
+        /// <param name="systemUpdate">If set to true, will do a system udpate to the item. Default value is false.</param>
+        public static void UpdateTaxonomyFieldDefaultValue(this Web web, string listName, string fieldInternalName, Guid termGuid, bool systemUpdate = false)
+        {
+            TaxonomySession taxonomySession = TaxonomySession.GetTaxonomySession(web.Context);
+            var foundTerm = taxonomySession.GetTerm(termGuid);
+
+            web.UpdateTaxonomyFieldDefaultValue(listName, fieldInternalName, foundTerm, systemUpdate);
+
+        }
+
+        /// <summary>
+        /// Sets the default value for a managed metadata column in the specified list. This operation will not change existing items in the list.
+        /// </summary>
+        /// <param name="web">Extension web</param>
+        /// <param name="listName">Name of list which contains the managed metadata field of which the default needs to be set</param>
+        /// <param name="fieldInternalName">Internal name of the managed metadata field for which the default needs to be set</param>
+        /// <param name="term">Managed metadata Term which represents the managed metadata item which should be set as the default</param>
+        /// <param name="systemUpdate">If set to true, will do a system udpate to the item. Default value is false.</param>
+        public static void UpdateTaxonomyFieldDefaultValue(this Web web, string listName, string fieldInternalName, Term term, bool systemUpdate = false)
+        {
             var list = web.GetListByTitle(listName);
 
             var fields = web.Context.LoadQuery(list.Fields.Where(f => f.InternalName == fieldInternalName));
@@ -959,7 +989,7 @@ namespace Microsoft.SharePoint.Client
                 LeafName = string.Concat("Temporary_Folder_For_WssId_Creation_", DateTime.Now.ToFileTime().ToString())
             });
 
-            item.SetTaxonomyFieldValue(taxField.Id, foundTerm.Name, foundTerm.Id, systemUpdate);
+            item.SetTaxonomyFieldValue(taxField.Id, term.Name, term.Id, systemUpdate);
 
             web.Context.Load(item);
             web.Context.ExecuteQueryRetry();
@@ -1031,7 +1061,7 @@ namespace Microsoft.SharePoint.Client
         }
 
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
         /// <summary>
         /// Can be used to set translations for different cultures. 
         /// <see href="http://blogs.msdn.com/b/vesku/archive/2014/03/20/office365-multilingual-content-types-site-columns-and-site-other-elements.aspx"/>
@@ -1073,9 +1103,7 @@ namespace Microsoft.SharePoint.Client
             List list = web.GetList(listTitle);
             SetLocalizationLabelsForList(list, cultureName, titleResource, descriptionResource);
         }
-#endif
 
-#if !ONPREMISES
         /// <summary>
         /// Can be used to set translations for different cultures. 
         /// </summary>
@@ -1624,7 +1652,11 @@ namespace Microsoft.SharePoint.Client
                         path = path.Equals("/") ? list.RootFolder.ServerRelativeUrl : UrlUtility.Combine(list.RootFolder.ServerRelativeUrl, path);
                         // Find all in the same path:
                         var defaultColumnValuesInSamePath = columnValues.Where(x => x.FolderRelativePath == defaultColumnValue.FolderRelativePath);
+#if !NETSTANDARD2_0
                         path = Utilities.HttpUtility.UrlPathEncode(path, false);
+#else
+                        path = System.Web.HttpUtility.UrlEncode(path);
+#endif
 
                         var xATag = new XElement("a", new XAttribute("href", path));
 
@@ -1704,10 +1736,10 @@ namespace Microsoft.SharePoint.Client
                         EventReceiverDefinitionCreationInformation eventCi = new EventReceiverDefinitionCreationInformation();
                         eventCi.Synchronization = EventReceiverSynchronization.Synchronous;
                         eventCi.EventType = EventReceiverType.ItemAdded;
-#if !ONPREMISES
-                        eventCi.ReceiverAssembly = "Microsoft.Office.DocumentManagement, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c";
-#else
+#if SP2013
                         eventCi.ReceiverAssembly = "Microsoft.Office.DocumentManagement, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c";
+#else
+                        eventCi.ReceiverAssembly = "Microsoft.Office.DocumentManagement, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c";
 #endif
                         eventCi.ReceiverClass = "Microsoft.Office.DocumentManagement.LocationBasedMetadataDefaultsReceiver";
                         eventCi.ReceiverName = "LocationBasedMetadataDefaultsReceiver ItemAdded";
@@ -1774,7 +1806,11 @@ namespace Microsoft.SharePoint.Client
                         foreach (var value in values)
                         {
                             var href = value.Attribute("href").Value;
+#if !NETSTANDARD2_0
                             href = Utilities.HttpUtility.UrlKeyValueDecode(href);
+#else
+                            href = System.Web.HttpUtility.UrlDecode(href);
+#endif
                             href = href.Replace(list.RootFolder.ServerRelativeUrl, "/").Replace("//", "/");
                             var defaultValues = from d in value.Descendants("DefaultValue") select d;
                             foreach (var defaultValue in defaultValues)
@@ -1995,7 +2031,12 @@ namespace Microsoft.SharePoint.Client
                         foreach (var value in values)
                         {
                             var href = value.Attribute("href").Value;
+#if !NETSTANDARD2_0
                             href = Utilities.HttpUtility.UrlKeyValueDecode(href);
+#else
+                            href = System.Web.HttpUtility.UrlDecode(href);
+#endif
+
                             href = href.Replace(list.RootFolder.ServerRelativeUrl, "/").Replace("//", "/");
                             var defaultValues = from d in value.Descendants("DefaultValue") select d;
                             foreach (var defaultValue in defaultValues)
@@ -2126,7 +2167,11 @@ namespace Microsoft.SharePoint.Client
                         foreach (var value in values)
                         {
                             var href = value.Attribute("href").Value;
+#if !NETSTANDARD2_0
                             href = Utilities.HttpUtility.UrlKeyValueDecode(href);
+#else
+                            href = System.Web.HttpUtility.UrlDecode(href);
+#endif
                             href = href.Replace(list.RootFolder.ServerRelativeUrl, "/").Replace("//", "/");
 
                             var defaultValues = from d in value.Descendants("DefaultValue") select d;

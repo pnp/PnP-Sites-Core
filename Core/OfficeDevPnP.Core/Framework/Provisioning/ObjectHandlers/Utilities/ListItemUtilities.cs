@@ -261,7 +261,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             UpdateOverwriteVersion
         }
 
-        public static void UpdateListItem(ListItem item, TokenParser parser, IDictionary<string, string> valuesToSet, ListItemUpdateType updateType)
+        public static void UpdateListItem(ListItem item, TokenParser parser, IDictionary<string, string> valuesToSet, ListItemUpdateType updateType, bool SkipExecuteQuery = false)
         {
             var itemValues = new List<FieldUpdateValue>();
 
@@ -270,6 +270,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             context.Web.EnsureProperty(w => w.Url);
 
             bool isDocLib = list.EnsureProperty(l => l.BaseType) == BaseType.DocumentLibrary;
+            bool isPagesLib = list.EnsureProperty(l => l.RootFolder).Name.Equals("SitePages", StringComparison.InvariantCultureIgnoreCase);
 
             var clonedContext = context.Clone(context.Web.Url);
             var web = clonedContext.Web;
@@ -284,6 +285,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
                 if (field != null)
                 {
+                    if (field.InternalName.Equals("ID", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        // Ignor ID column. ID column cannot be updated (Exception: This field cannot be updated.)
+                        // Sometimes the ID column is used as KeyColumn for DataRows.
+                        continue;
+                    }
+
                     var value = parser.ParseString(valuesToSet[key]);
 
                     switch (field.TypeAsString)
@@ -329,6 +337,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                     {
                                         itemValues.Add(new FieldUpdateValue(key as string, new FieldUserValue() { LookupId = userId }));
                                     }
+                                }
+                                break;
+                            }
+                        case "MultiChoice":
+                            {
+                                if (value != null)
+                                {
+                                    var array = value.Split(";#");
+                                    itemValues.Add(new FieldUpdateValue(key as string, array));
                                 }
                                 break;
                             }
@@ -439,6 +456,48 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                 itemValues.Add(new FieldUpdateValue(key as string, newVals));
                                 break;
                             }
+                        case "DateTime":
+                            {
+                                if (value == null) goto default;
+                                if (DateTime.TryParse(value, out DateTime dateTimeValue))
+                                {
+                                    itemValues.Add(new FieldUpdateValue(key as string, dateTimeValue));
+                                }
+                                break;
+                            }
+                        case "URL":
+                            {
+
+                                if (value == null) goto default;
+                                if (value.Contains(",") || value.Contains(";"))
+                                {
+                                    var urlValueArray = value.Split(new char[] { ',', ';' });
+                                    if (urlValueArray.Length == 2)
+                                    {
+                                        var urlValue = new FieldUrlValue
+                                        {
+                                            Url = value.Split(new char[] { ',', ';' })[0],
+                                            Description = value.Split(new char[] { ',', ';' })[1]
+                                        };
+                                        itemValues.Add(new FieldUpdateValue(key as string, urlValue));
+                                    }
+                                    else
+                                    {
+                                        itemValues.Add(new FieldUpdateValue(key as string, value));
+                                    }
+                                }
+                                else
+                                {
+                                    var urlValue = new FieldUrlValue
+                                    {
+                                        Url = value,
+                                        Description = value
+                                    };
+                                    itemValues.Add(new FieldUpdateValue(key as string, urlValue));
+                                }
+
+                                break;
+                            }
                         default:
                             {
                                 itemValues.Add(new FieldUpdateValue(key as string, value));
@@ -451,17 +510,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             if (isDocLib)
             {
                 // check if we have both editor and author in the item.
-                if (itemValues.FirstOrDefault(v => v.Key.Equals("author", StringComparison.InvariantCultureIgnoreCase)) == null || itemValues.FirstOrDefault(v => v.Key.Equals("editor", StringComparison.InvariantCultureIgnoreCase)) == null)
+                var setAuthor = itemValues.FirstOrDefault(v => v.Key.Equals("author", StringComparison.InvariantCultureIgnoreCase)) != null;
+                var setEditor = itemValues.FirstOrDefault(v => v.Key.Equals("editor", StringComparison.InvariantCultureIgnoreCase)) != null;
+                if ((!setAuthor || !setEditor) && (setAuthor || setEditor))
                 {
-                    if (itemValues.FirstOrDefault(v => v.Key.Equals("author", StringComparison.InvariantCultureIgnoreCase)) == null)
+                    if (!setAuthor)
                     {
-                        // We only have the editor field, set the author to the old value
-                        itemValues.Add(new FieldUpdateValue("Author", item["Author"] as FieldUserValue));
+                        var currentAuthor = item["Author"];
+                        // the null check catches the case where somebody tries to add new list items to a doc lib and the server says No
+                        if (currentAuthor != null)
+                        {
+                            // We only have the editor field, set the author to the old value
+                            itemValues.Add(new FieldUpdateValue("Author", currentAuthor));
+                        }
                     }
-                    if (itemValues.FirstOrDefault(v => v.Key.Equals("editor", StringComparison.InvariantCultureIgnoreCase)) == null)
+                    if (!setEditor)
                     {
-                        // We opnly have the author field, set the editor to the old value
-                        itemValues.Add(new FieldUpdateValue("Editor", item["Editor"] as FieldUserValue));
+                        var currentEditor = item["Editor"];
+                        // the null check catches the case where somebody tries to add new list items to a doc lib and the server says No
+                        if (currentEditor != null)
+                        {
+                            // We opnly have the author field, set the editor to the old value
+                            itemValues.Add(new FieldUpdateValue("Editor", currentEditor));
+                        }
                     }
                 }
             }
@@ -482,11 +553,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                 if (itemValue.Value is TaxonomyFieldValueCollection)
                                 {
                                     taxField.SetFieldValueByValueCollection(item, itemValue.Value as TaxonomyFieldValueCollection);
-                                } else
+                                }
+                                else
                                 {
                                     taxField.SetFieldValueByValue(item, itemValue.Value as TaxonomyFieldValue);
                                 }
-                                 
+
                                 break;
                             }
                         case "TaxonomyFieldType":
@@ -499,7 +571,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     }
                 }
             }
-#if !ONPREMISES
+#if !SP2013 && !SP2016
             switch (updateType)
             {
                 case ListItemUpdateType.Update:
@@ -514,14 +586,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     }
                 case ListItemUpdateType.UpdateOverwriteVersion:
                     {
-                        item.UpdateOverwriteVersion();
+                        var itemIsModernClientSidePage = isPagesLib && item["File_x0020_Type"]?.ToString() == "aspx";
+                        if (itemIsModernClientSidePage)
+                        {
+                            // when updating fields of modern client side pages UpdateOverwriteVersion throws this error: "Additions to this Web site have been blocked."
+                            // so use SystemUpdate instead
+                            item.SystemUpdate();
+                        }
+                        else
+                        {
+                            item.UpdateOverwriteVersion();
+                        }
                         break;
                     }
             }
 #else
             item.Update();
 #endif
-            context.ExecuteQueryRetry();
+            if (!SkipExecuteQuery)
+                context.ExecuteQueryRetry();
         }
 
         [Obsolete("Use UpdateListItem(ListItem item, TokenParser parser, IDictionary<string, string> valuesToSet, ListItemUpdateType updateType) instead")]

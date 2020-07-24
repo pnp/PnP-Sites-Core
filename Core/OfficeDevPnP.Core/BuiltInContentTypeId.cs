@@ -101,7 +101,7 @@ namespace OfficeDevPnP.Core
         /// </summary>
         public const string ModernArticlePage = "0x0101009D1CB255DA76424F860D91F20E6C4118";
         public const string RepostPage = "0x0101009D1CB255DA76424F860D91F20E6C4118002A50BFCFB7614729B56886FADA02339B";
-
+        public const string SpacesPage = "0x0101009D1CB255DA76424F860D91F20E6C41180043153F945E98468297E67C3EEE43AB70";
 
         private static Dictionary<string, bool> s_dict = (Dictionary<string, bool>) null;
 

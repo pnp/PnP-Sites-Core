@@ -265,7 +265,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers
         /// </summary>
         /// <param name="hierarchy">Provisioning Hierarchy</param>
         /// <param name="uri">The target uri</param>
-        public abstract void SaveAs(ProvisioningHierarchy hierarchy, string uri);
+        /// <param name="formatter">Provisioning Template Formatter</param>
+        public abstract void SaveAs(ProvisioningHierarchy hierarchy, string uri, ITemplateFormatter formatter = null);
 
         /// <summary>
         /// Saves ProvisioningTemplate

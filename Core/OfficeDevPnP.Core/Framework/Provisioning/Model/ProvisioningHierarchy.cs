@@ -18,6 +18,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this.Tenant = new ProvisioningTenant();
             this.Teams = new Teams.ProvisioningTeams();
             this.AzureActiveDirectory = new AzureActiveDirectory.ProvisioningAzureActiveDirectory();
+            this.Drive = new Drive.Drive();
+            this.ProvisioningWebhooks = new ProvisioningWebhookCollection(null);
         }
 
         #endregion
@@ -93,6 +95,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Settings for provisioning Azure Active Directory objects, if any
         /// </summary>
         public AzureActiveDirectory.ProvisioningAzureActiveDirectory AzureActiveDirectory { get; private set; }
+
+        /// <summary>
+        /// Settings for provisioning Drive objects, if any
+        /// </summary>
+        public Drive.Drive Drive { get; private set; }
+
+        /// <summary>
+        /// A collection of Provisioning Webhooks
+        /// </summary>
+        public ProvisioningWebhookCollection ProvisioningWebhooks { get; private set; }
+
 
         #endregion
     }

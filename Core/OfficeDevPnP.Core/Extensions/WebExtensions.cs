@@ -314,7 +314,9 @@ namespace Microsoft.SharePoint.Client
 
 
         /// <summary>
-        /// Detects if the site in question has no script enabled or not. Detection is done by verifying if the AddAndCustomizePages permission is missing.
+        /// Performs a best effort detection of if the site in question has no script enabled or not.
+        /// Detection is done by verifying if the authenticated user has AddAndCustomizePages permission on the web.
+        /// Detection will return a false positive if the current user does not have the AddAndCustomizePages permission. 
         ///
         /// See https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f
         /// for the effects of NoScript
@@ -328,8 +330,10 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Detects if the site in question has no script enabled or not. Detection is done by verifying if the AddAndCustomizePages permission is missing.
-        ///
+        /// Performs a best effort detection of if the site in question has no script enabled or not.
+        /// Detection is done by verifying if the authenticated user has AddAndCustomizePages permission on the web.
+        /// Detection will return a false positive if the current user does not have the AddAndCustomizePages permission. 
+        /// 
         /// See https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f
         /// for the effects of NoScript
         ///
@@ -338,7 +342,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if noscript, false otherwise</returns>
         public static bool IsNoScriptSite(this Web web)
         {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
             web.EnsureProperties(w => w.EffectiveBasePermissions);
 
             // Definition of no-script is not having the AddAndCustomizePages permission
@@ -1135,7 +1139,7 @@ namespace Microsoft.SharePoint.Client
         #endregion
 
         #region Localization
-#if !ONPREMISES
+#if !SP2013 && !SP2016
         /// <summary>
         /// Can be used to set translations for different cultures.
         /// </summary>
@@ -1241,11 +1245,25 @@ namespace Microsoft.SharePoint.Client
             web.Context.ExecuteQueryRetry();
         }
 
+#if !ONPREMISES
+        /// <summary>
+        /// Enables request access for the default owners group of the site.
+        /// </summary>
+        /// <param name="web">The web to enable request access.</param>
+        public static void EnableRequestAccess(this Web web)
+        {
+            web.SetUseAccessRequestDefaultAndUpdate(true);
+            web.Update();
+            web.Context.ExecuteQueryRetry();
+        }
+#endif
+
         /// <summary>
         /// Enables request access for the specified e-mail addresses.
         /// </summary>
         /// <param name="web">The web to enable request access.</param>
         /// <param name="emails">The e-mail addresses to send access requests to.</param>
+        [Obsolete("Only one e-mail address can be set for receiving access requests, use the EnableRequestAccess with string email instead")]
         public static void EnableRequestAccess(this Web web, params string[] emails)
         {
             web.EnableRequestAccess(emails.AsEnumerable());
@@ -1256,6 +1274,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">The web to enable request access.</param>
         /// <param name="emails">The e-mail addresses to send access requests to.</param>
+        [Obsolete("Only one e-mail address can be set for receiving access requests, use the EnableRequestAccess with string email instead")]
         public static void EnableRequestAccess(this Web web, IEnumerable<string> emails)
         {
             // keep them unique, but keep order
@@ -1285,7 +1304,25 @@ namespace Microsoft.SharePoint.Client
             if (skippedEmails.Count > 0)
                 Log.Warning(Constants.LOGGING_SOURCE, CoreResources.WebExtensions_RequestAccessEmailLimitExceeded, string.Join(", ", skippedEmails));
 
+#if !ONPREMISES
+            web.SetUseAccessRequestDefaultAndUpdate(false);
+#endif
             web.RequestAccessEmail = sb.ToString();
+            web.Update();
+            web.Context.ExecuteQueryRetry();
+        }
+
+        /// <summary>
+        /// Enables request access for the specified e-mail address.
+        /// </summary>
+        /// <param name="web">The web to enable request access.</param>
+        /// <param name="email">The e-mail address to send access requests to.</param>
+        public static void EnableRequestAccess(this Web web, string email)
+        {
+#if !ONPREMISES
+            web.SetUseAccessRequestDefaultAndUpdate(false);
+#endif
+            web.RequestAccessEmail = email;
             web.Update();
             web.Context.ExecuteQueryRetry();
         }
@@ -1309,6 +1346,24 @@ namespace Microsoft.SharePoint.Client
 
             return emails;
         }
+        #endregion
+
+        #region Security checks
+
+#if !ONPREMISES
+
+        /// <summary>
+        /// Checks if the site is the SharePoint Admin site
+        /// </summary>
+        /// <param name="web"></param>
+        /// <returns></returns>
+        public static bool IsAdminSite(this Web web)
+        {
+            return web.Url.Contains("-admin.sharepoint.com");
+        }
+
+#endif
+
         #endregion
 
         /// <summary>
@@ -1346,7 +1401,7 @@ namespace Microsoft.SharePoint.Client
         }
 
 #if !SP2013 && !SP2016
-        #region ClientSide Package Deployment
+#region ClientSide Package Deployment
         /// <summary>
         /// Gets the Uri for the tenant's app catalog site (if that one has already been created)
         /// </summary>
@@ -1465,8 +1520,24 @@ namespace Microsoft.SharePoint.Client
                 return sppkgFile.ListItemAllFields;
             }
         }
-        #endregion
+#endregion
 #endif
 
+#if ONPREMISES
+
+        /// <summary>
+        /// Provides implementation of GetFileByUrl method for CSOM on-premises
+        /// </summary>
+        /// <param name="web">The web object that is extended by the method</param>
+        /// <param name="fileUrl">The site relative URL of the file to retrieve</param>
+        /// <returns>The retrieved file, which must be retrieved with context.Load and context.ExecuteQuery</returns>
+        public static Microsoft.SharePoint.Client.File GetFileByUrl(this Web web, string fileUrl)
+        {
+            string fileServerRelativeUrl = $"{web.ServerRelativeUrl}/{fileUrl}";
+            var result = web.GetFileByServerRelativeUrl(fileServerRelativeUrl);
+            return (result);
+        }
+
+#endif
     }
 }

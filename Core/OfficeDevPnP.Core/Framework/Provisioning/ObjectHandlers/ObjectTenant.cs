@@ -2,6 +2,7 @@
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
 using OfficeDevPnP.Core.Utilities;
 
@@ -34,7 +35,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         var tenant = new Tenant(tenantContext);
                         TenantHelper.ProcessCdns(tenant, template.Tenant, parser, scope, MessagesDelegate);
-                        parser = TenantHelper.ProcessApps(tenant, template.Tenant, template.Connector, parser, scope, applyingInformation, MessagesDelegate);
+                        parser = TenantHelper.ProcessApps(tenant, template.Tenant, template.Connector, parser, scope, ApplyConfiguration.FromApplyingInformation(applyingInformation), MessagesDelegate);
 
                         try
                         {
@@ -47,8 +48,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         parser = TenantHelper.ProcessSiteScripts(tenant, template.Tenant, template.Connector, parser, scope, MessagesDelegate);
                         parser = TenantHelper.ProcessSiteDesigns(tenant, template.Tenant, parser, scope, MessagesDelegate);
-                        parser = TenantHelper.ProcessStorageEntities(tenant, template.Tenant, parser, scope, applyingInformation, MessagesDelegate);
+                        parser = TenantHelper.ProcessStorageEntities(tenant, template.Tenant, parser, scope, ApplyConfiguration.FromApplyingInformation(applyingInformation), MessagesDelegate);
                         parser = TenantHelper.ProcessThemes(tenant, template.Tenant, parser, scope, MessagesDelegate);
+                        parser = TenantHelper.ProcessUserProfiles(tenant, template.Tenant, parser, scope, MessagesDelegate);
+                        parser = TenantHelper.ProcessSharingSettings(tenant, template.Tenant, parser, scope, MessagesDelegate);
                     }
                 }
             }
@@ -58,8 +61,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            // By default we don't extract the packages
-            return (false);
+            // By default we don't extract the tenant settings
+            return false;
         }
 
         public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
@@ -72,7 +75,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 (template.Tenant.SiteScripts!= null && template.Tenant.SiteScripts.Count > 0) ||
                                 (template.Tenant.StorageEntities != null && template.Tenant.StorageEntities.Count > 0) ||
                                 (template.Tenant.WebApiPermissions!= null && template.Tenant.WebApiPermissions.Count > 0) ||
-                                (template.Tenant.Themes != null && template.Tenant.Themes.Count > 0)
+                                (template.Tenant.Themes != null && template.Tenant.Themes.Count > 0) ||
+                                template.Tenant.SharingSettings != null
                                 );
             }
             return (_willProvision.Value);
