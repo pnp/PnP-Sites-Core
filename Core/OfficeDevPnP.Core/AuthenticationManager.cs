@@ -446,6 +446,16 @@ namespace OfficeDevPnP.Core
                 ctx.DisableReturnValueCache = true;
 #endif
                 ctx.ExecutingWebRequest += (sender, e) => e.WebRequestExecutor.WebRequest.CookieContainer = authCookiesContainer;
+
+                ClientContextSettings clientContextSettings = new ClientContextSettings()
+                {
+                    Type = ClientContextType.Cookie,
+                    SiteUrl = siteUrl,
+                    AuthenticationManager = this
+                };
+
+                ctx.AddContextSettings(clientContextSettings);
+
                 return ctx;
             }
 
