@@ -18,10 +18,12 @@ namespace Microsoft.SharePoint.Client
             return await GetRequestDigestAsync(context);
         }
 
+#if !ONPREMISES
         [Obsolete("Use HideTeamifyPromptAsync. The method will be removed in the November 2020 release.")]
         public static async Task<bool> HideTeamifyPrompt(this ClientContext clientContext)
         {
             return await HideTeamifyPromptAsync(clientContext);
         }
+#endif
     }
 }
