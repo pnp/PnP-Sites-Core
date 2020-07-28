@@ -14,12 +14,12 @@ using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
-#if !ONPREMISES
-   /// <summary>
-   /// Test cases for the provisioning engine search settings functionality
-   /// </summary>
-   [TestClass]
-   public class RegionalSettingsNoScriptTests : FunctionalTestBase
+#if !SP2013 && !SP2016
+    /// <summary>
+    /// Test cases for the provisioning engine search settings functionality
+    /// </summary>
+    [TestClass]
+    public class RegionalSettingsNoScriptTests : FunctionalTestBase
     {
         #region Construction
         public RegionalSettingsNoScriptTests()

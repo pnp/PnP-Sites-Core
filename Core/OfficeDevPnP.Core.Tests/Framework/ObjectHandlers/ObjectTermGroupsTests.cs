@@ -260,8 +260,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 ctx.ExecuteQueryRetry();
 
                 var createdReusedTerm = set1.GetTerm(reusedTerm.Id);
-                ctx.Load(createdReusedTerm, c => c.SourceTerm, c => c.IsReused);
+                ctx.Load(createdReusedTerm, 
+                    c => c.SourceTerm.Id,
+                    c => c.IsReused                    
+                    );
                 ctx.ExecuteQueryRetry();
+
+                // createdReusedTerm.SourceTerm.EnsureProperty(s => s.Id);
+
                 Assert.IsTrue(createdReusedTerm.SourceTerm.Id == sourceTerm.Id);
                 Assert.IsTrue(createdReusedTerm.IsReused);
             }
@@ -316,7 +322,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 {
                     var parser = new TokenParser(ctx.Web, template);
                     new ObjectTermGroups().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                }
 
+                using (ClientContext ctx = TestCommon.CreateClientContext())
+                {
                     TaxonomySession session = TaxonomySession.GetTaxonomySession(ctx);
 
                     var store = session.GetDefaultKeywordsTermStore();
@@ -373,7 +382,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 {
                     var parser = new TokenParser(ctx.Web, template);
                     new ObjectTermGroups().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                }
 
+                using (ClientContext ctx = TestCommon.CreateClientContext())
+                {
                     TaxonomySession session = TaxonomySession.GetTaxonomySession(ctx);
 
                     var store = session.GetDefaultKeywordsTermStore();

@@ -2054,8 +2054,8 @@ namespace OfficeDevPnP.Core.Utilities
 
 #if !NETSTANDARD2_0
             clientContext.AuthenticationMode = ClientAuthenticationMode.Anonymous;
-#endif
             clientContext.FormDigestHandlingEnabled = false;
+#endif
             clientContext.ExecutingWebRequest +=
                 delegate (object oSender, WebRequestEventArgs webRequestEventArgs)
                 {

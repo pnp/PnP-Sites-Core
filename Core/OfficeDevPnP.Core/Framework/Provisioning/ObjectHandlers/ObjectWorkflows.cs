@@ -123,6 +123,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 ManualStartBypassesActivationLimit = s.ManualStartBypassesActivationLimit,
                                 Name = s.Name,
                                 ListId = s.EventSourceId != web.Id ? String.Format("{{listid:{0}}}", lists.First(l => l.Id == s.EventSourceId).Title) : null,
+#if !SP2013
+                                ParentContentTypeId = s.ParentContentTypeId,
+#endif
                                 StatusFieldName = s.StatusFieldName,
                             }
                             );
