@@ -6,15 +6,68 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [3.23.2007.0 July 2020 release]
+
+## Added
+
+- Added possibility to set AllowDeletion for a field #2688 [jensotto - Jens Otto Hatlevold]
+
+## Changed
+
+- Added an {fqdn} token to the provisioning engine which resolves to yourtenant.sharepoint.com (full qualified domain name) without scheme (unlike {hosturl} which does include the scheme) [erwinvanhunen - Erwin van Hunen]
+- Updated the token parser in the provisioning engine: you can now use {pageuniqueid:/path/topage.aspx} tokens to reference to pages that are not in the template. If the token at application time cannot be resolved it will not be replaced with "" but kept in place as is. [erwinvanhunen - Erwin van Hunen]
+- Fixed issue when extract a template with a page from the rootsite when choosing to extract assets [erwinvanhunen - Erwin van Hunen]
+- Adding authentication cookies for SPO Admin domain #2687 [koenzomers - Koen Zomers]
+- Call ParseString for webSettings.SearchCenterUrl #2686 [cebud - Martin Dubec]
+- Fix incorrect onprem eventreceiver reference #2684 [jensotto - Jens Otto Hatlevold]
+- Added methods for adding/removing/clearing members and owners of M365 Groups #2683 [koenzomers - Koen Zomers]
+- Fix for GetProvisioningTemplate and ApplyProvisioningTemplate to being stucked in Windows Forms applications. #2681 [brank - Brandon Victoria]
+- Improve exception message when a file is not found during the provisioning #2679 [jackpoz - Giacomo Pozzoni]
+- Doc fix: Fixing duplicated sitecollectionidencoded token #2675 [cmzaragoza - Cristian M. Zaragoza]
+- Enhanced OnPremises Support (SP2019) + UnitTests #2654 [gzdev]
+- Fix preserve SPGroup Config also for Associated Groups #2611 [czullu - Christian Zuellig]
+- Parse user names when adding them as part of the teams security element during provisioning
+- Fix UpdateListItem: Ignore ID column. ID column cannot be updated. #2692 [gzdev]
+- Updated version of SP-Responsive-UI files (js, css) #2693 [gzdev]
+- Fix: Token parsing changes #2701 [gautamdsheth - Gautam Sheth]
+- Fix: Site collection admin timeout issue #2702 [gautamdsheth - Gautam Sheth]
+
+## [3.22.2006.2 - June 2020 release]
 
 ### Added
+
+- Adding CRUD operations for Microsoft Graph Subscriptions #2641 [koenzomers - Koen Zomers]
+- Adding GetValidSiteUrlFromAliasAsync and GetIsAliasAvailableAsync #2657 [koenzomers - Koen Zomers]
+- Added option to retrieve AAD user by its UPN optionally with specific properties #2644 [koenzomers - Koen Zomers]
+- Added support for Sensitivity Label while creating modern sites #2668 [gautamdsheth - Gautam Sheth]
+- Include Default ListFields if they are Pinned/Showed in FiltersPane or have CustomFormatter set #2650 [czullu - Christian Zuellig]
+- Added option to provide a PreferredDataLocation during site collection creation (for supporting multi-geo tenants) #2672 [koenzomers - Koen Zomers]
+- Client side page API: added support for Cortex topic pages (read/save using API + import/export using provisioning templates)
+- Added SetUnifiedGroupVisibility to allow toggling the visibility of a unified group #2674 [koenzomers - Koen Zomers]
+
+### Changed
+
+- Fix: #2649 - Added correct document set content type check #2652 [gautamdsheth - Gautam Sheth]
+- Fix: Paging for retrieving AAD Users #2643 [koenzomers - Koen Zomers]
+- Fix: ClientSidePageContent/ExtractObject - The Url for SitePages library was wrong for the root site collection #2662 [czullu - Christian Zuellig]
+- Fix: CreateFolder leads to version count increase of 2 while it should be 1 #2660 [czullu - Christian Zuellig]
+- Fix: PnpHttpHandler SendAync retry did not recreate the HttpRequestMessage on retry #2658 [czullu - Christian Zuellig]
+- Fix: Clone OnExecutingWebRequest handler for credential auth #2646 [PowershellNinja - Raphael]
+- Fix: 403 error on GetWebPartXML in on-premises SharePoint. Fixes #1438, #2371 and #2677 #2667 [jay1050]
+- Fix: Remove tokens from TokenDictionary and ListTokenDictionary when rebuilding the token cache #2638 [ZeroneBit]
+- Change: Removing requirement for a description to be provided for unified group creation #2670 [koenzomers - Koen Zomers]
+- Change: Avoided providing HubSiteId on new sitecollection creation if no HubSite has been provided #2671 [koenzomers - Koen Zomers]
+- Fix: Bugfix in LoadFooterNavigation + added Footer Title & Logo methods #2673 [koenzomers - Koen Zomers]
+- Fix: Retrieve all groups from Graph endpoint #2594 [ohaak - Ole Rühaak]
+- Fix: AuthenticationManager implements IDisposable and will release created threads (to invalidate requested tokens) on dispose
+
+## [3.21.2005.2 - May 2020 release - intermediate release]
 
 ### Changed
 
 - Fix: Modern page translation api's did not take in account the access token
 
-## [3.20.2005.0 - May 2020 release]
+## [3.21.2005.0 - May 2020 release]
 
 ### Added
 

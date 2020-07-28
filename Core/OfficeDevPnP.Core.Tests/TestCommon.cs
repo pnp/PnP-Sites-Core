@@ -26,6 +26,9 @@ namespace OfficeDevPnP.Core.Tests
 
         public static string AppSetting(string key)
         {
+#if !NETSTANDARD2_0
+            return ConfigurationManager.AppSettings[key];
+#else
             //return ConfigurationManager.AppSettings[key];
             try
             {
@@ -35,9 +38,10 @@ namespace OfficeDevPnP.Core.Tests
             {
                 return null;
             }
+#endif
         }
 
-        #region Constructor
+#region Constructor
         static TestCommon()
         {
 #if NETSTANDARD2_0
@@ -51,7 +55,19 @@ namespace OfficeDevPnP.Core.Tests
 
             // Read configuration data
             TenantUrl = AppSetting("SPOTenantUrl");
-            DevSiteUrl = AppSetting("SPODevSiteUrl");            
+            DevSiteUrl = AppSetting("SPODevSiteUrl");
+            O365AccountDomain = AppSetting("O365AccountDomain");
+            DefaultSiteOwner = AppSetting("DefaultSiteOwner");
+
+
+            if (string.IsNullOrEmpty(DefaultSiteOwner))
+            {
+#if !ONPREMISES
+                DefaultSiteOwner = AppSetting("SPOUserName");
+#else
+                DefaultSiteOwner = $"{AppSetting("OnPremDomain")}\\{AppSetting("OnPremUserName")}";
+#endif
+            }
 
 #if !ONPREMISES
             if (string.IsNullOrEmpty(TenantUrl))
@@ -103,7 +119,7 @@ namespace OfficeDevPnP.Core.Tests
                     Credentials = new SharePointOnlineCredentials(UserName, Password);
                 }
                 else 
-#endif                
+#endif
                 if (!String.IsNullOrEmpty(AppSetting("OnPremUserName")) &&
                          !String.IsNullOrEmpty(AppSetting("OnPremDomain")) &&
                          !String.IsNullOrEmpty(AppSetting("OnPremPassword")))
@@ -159,6 +175,13 @@ namespace OfficeDevPnP.Core.Tests
         public static ICredentials Credentials { get; set; }
         public static string AppId { get; set; }
         static string AppSecret { get; set; }
+
+        public static string O365AccountDomain { get; set; }
+
+        /// <summary>
+        /// Specifies the SiteOwner if needed (AppOnly Context, ...).
+        /// </summary>
+        public static string DefaultSiteOwner { get; set; }
 
         /// <summary>
         /// The path to the PFX file for the High Trust
@@ -226,6 +249,15 @@ namespace OfficeDevPnP.Core.Tests
                 return AppSetting("AzureADClientId");
             }
         }
+
+        public static String AzureADCertificateFilePath
+        {
+            get
+            {
+                return AppSetting("AzureADCertificateFilePath");
+            }
+        }
+
         public static String NoScriptSite
         {
             get
@@ -374,7 +406,7 @@ namespace OfficeDevPnP.Core.Tests
             //var tenantId = GetTenantIdByUrl(TestCommon.AppSetting("SPOTenantUrl"));
             if (tenantId == null) return null;
 
-            var clientId = TestCommon.AppSetting("AppId");
+            var clientId = TestCommon.AppSetting("AzureADClientId");
 
             if (string.IsNullOrEmpty(clientId) || Password == null || string.IsNullOrEmpty(UserName))
             {
@@ -389,18 +421,28 @@ namespace OfficeDevPnP.Core.Tests
             if (scope == null) // use v1 endpoint
             {
                 body = $"grant_type=password&client_id={clientId}&username={username}&password={password}&resource={resource}";
+
+                // TODO: If your app is a public client, then the client_secret or client_assertion cannot be included. If the app is a confidential client, then it must be included.
+                // https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth-ropc
+                //body = $"grant_type=password&client_id={clientId}&client_secret={clientSecret}&username={username}&password={password}&resource={resource}";
+
                 response = HttpHelper.MakePostRequestForString($"https://login.microsoftonline.com/{tenantId}/oauth2/token", body, "application/x-www-form-urlencoded");
             }
             else // use v2 endpoint
             {
                 body = $"grant_type=password&client_id={clientId}&username={username}&password={password}&scope={scope}";
+                
+                // TODO: If your app is a public client, then the client_secret or client_assertion cannot be included. If the app is a confidential client, then it must be included.
+                // https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth-ropc
+                //body = $"grant_type=password&client_id={clientId}&client_secret={clientSecret}&username={username}&password={password}&scope={scope}";
+
                 response = HttpHelper.MakePostRequestForString($"https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/token", body, "application/x-www-form-urlencoded");
             }
 
             var json = JToken.Parse(response);
             return json["access_token"].ToString();
-        }
-
+        }        
+#endif
         private static Assembly _newtonsoftAssembly;
         private static string _assemblyName;
 
@@ -427,7 +469,7 @@ namespace OfficeDevPnP.Core.Tests
         {
             return args.Name.StartsWith(_assemblyName) ? _newtonsoftAssembly : AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(assembly => assembly.FullName == args.Name);
         }
-#endif
+
         public static void DeleteFile(ClientContext ctx, string serverRelativeFileUrl)
         {
             var file = ctx.Web.GetFileByServerRelativeUrl(serverRelativeFileUrl);

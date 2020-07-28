@@ -53,6 +53,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 		/// </summary>
 		public bool UpdateChildren { get; set; } = true;
 
+#if !SP2013 && !SP2016
+        /// <summary>
+        /// Gets or sets if the field is shown in the display form
+        /// </summary>
+        public bool ShowInDisplayForm { get; set; }
+
+        /// <summary>
+        /// Gets or sets if the field is read only
+        /// </summary>
+        public bool ReadOnly { get; set; }
+#endif
         #endregion
 
         #region Constructors
@@ -81,12 +92,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|",
+            return (String.Format(
+                "{0}|{1}|{2}|{3}|{4}|"
+#if !SP2013 && !SP2016
+                + "{5}|{6}|"
+#endif
+                ,
                 (this.Id != null ? this.Id.GetHashCode() : 0),
                 this.Required.GetHashCode(),
                 this.Hidden.GetHashCode(),
                 this.Remove.GetHashCode(),
                 this.UpdateChildren.GetHashCode()
+#if !SP2013 && !SP2016
+                ,
+                this.ShowInDisplayForm.GetHashCode(),
+                this.ReadOnly.GetHashCode()
+#endif
             ).GetHashCode());
         }
 
@@ -121,6 +142,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Hidden == other.Hidden &&
                 this.Remove == other.Remove &&
                 this.UpdateChildren == other.UpdateChildren
+#if !SP2013 && !SP2016
+                && this.ShowInDisplayForm == other.ShowInDisplayForm
+                && this.ReadOnly == other.ReadOnly
+#endif
                 );
         }
 

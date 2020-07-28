@@ -859,7 +859,8 @@ namespace Microsoft.SharePoint.Client.Tests
                 clientContext.ExecuteQueryRetry();
 
                 var listDocumentContentType = doclib.ContentTypes.BestMatch(BuiltInContentTypeId.Document);
-                Assert.AreEqual(BuiltInContentTypeId.Document, listDocumentContentType.GetParentIdValue(), true);
+                // Assert.AreEqual(BuiltInContentTypeId.Document, listDocumentContentType.GetParentIdValue(), true);
+                Assert.AreEqual(newCtype1.Id.StringValue, listDocumentContentType.GetParentIdValue(), true);
                 doclib.ContentTypes.GetById(listDocumentContentType.StringValue).DeleteObject();
                 clientContext.ExecuteQueryRetry();
 

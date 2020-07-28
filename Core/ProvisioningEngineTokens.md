@@ -40,7 +40,7 @@ Token|Description|Example|Returns
 {sitecollection}|Returns the server relative url of the site collection|{sitecollection}|/sites/mysitecollection
 {sitecollectionconnectedoffice365groupid}|Returns the ID of the Office 365 group connected to the current site|{sitecollectionconnectedoffice365groupid}|767bc144-e605-4d8c-885a-3a980feb39c6
 {sitecollectionidencoded}|Returns the HTML safe id of the site collection|{sitecollectionidencoded}|767bc144%2De605%2D4d8c%2D885a%2D3a980feb39c6
-{sitecollectionidencoded}|Returns the id of the site collection|{sitecollectionidencoded}|767bc144-e605-4d8c-885a-3a980feb39c6
+{sitecollectionid}|Returns the id of the site collection|{sitecollectionid}|767bc144-e605-4d8c-885a-3a980feb39c6
 {sitecollectiontermgroupid}|Returns the id of the site collection term group|{sitecollectiontermgroupid}|767bc144-e605-4d8c-885a-3a980feb39c6
 {sitecollectiontermgroupname}|Returns the name of the site collection term group|{sitecollectiontermgroupname}|Site Collection - mytenant.sharepoint.com-sites-mysite
 {sitecollectiontermsetid:[termsetname]}|Returns the id of the given termset name located in the sitecollection termgroup|{sitecollectiontermsetid:MyTermset}|9188a794-cfcf-48b6-9ac5-df2048e8aa5d

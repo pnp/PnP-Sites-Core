@@ -1,0 +1,1404 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Field_Lower_values_are_better_DisplayName" xml:space="preserve">
+    <value>Lower values are better</value>
+  </data>
+  <data name="Field_Lower_values_are_better_Description" xml:space="preserve">
+    <value>Whether lower is better or higher is better</value>
+  </data>
+  <data name="Field_Comments_Lookup_DisplayName" xml:space="preserve">
+    <value>Comments Lookup</value>
+  </data>
+  <data name="Field_Instance_Id_DisplayName" xml:space="preserve">
+    <value>Instance Id</value>
+  </data>
+  <data name="Field_Enterprise_Keywords_DisplayName" xml:space="preserve">
+    <value>Enterprise Keywords</value>
+  </data>
+  <data name="Field_Enterprise_Keywords_Description" xml:space="preserve">
+    <value>Enterprise Keywords are shared with other users and applications to allow for ease of search and filtering, as well as metadata consistency and reuse</value>
+  </data>
+  <data name="Field_Total_File_Stream_Size_DisplayName" xml:space="preserve">
+    <value>Total File Stream Size</value>
+  </data>
+  <data name="Field_Number_of_Ratings_DisplayName" xml:space="preserve">
+    <value>Number of Ratings</value>
+  </data>
+  <data name="Field_Number_of_Ratings_Description" xml:space="preserve">
+    <value>Number of ratings submitted</value>
+  </data>
+  <data name="Field_Link_to_Report_DisplayName" xml:space="preserve">
+    <value>Link to Report</value>
+  </data>
+  <data name="Field_Description_DisplayName" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Field_Route_To_External_Location_DisplayName" xml:space="preserve">
+    <value>Route To External Location</value>
+  </data>
+  <data name="Field_Formatted_indicator_warning_DisplayName" xml:space="preserve">
+    <value>Formatted indicator warning</value>
+  </data>
+  <data name="Field_Formatted_indicator_warning_Description" xml:space="preserve">
+    <value>The warning value of the indicator, formatted by its datasource provider</value>
+  </data>
+  <data name="Field_Aggregated_Rating_Count_DisplayName" xml:space="preserve">
+    <value>Aggregated Rating Count</value>
+  </data>
+  <data name="Field_Target_Folder_DisplayName" xml:space="preserve">
+    <value>Target Folder</value>
+  </data>
+  <data name="Field_Auto_folder_configuration_data_DisplayName" xml:space="preserve">
+    <value>Auto folder configuration data</value>
+  </data>
+  <data name="Field_Report_Description_DisplayName" xml:space="preserve">
+    <value>Report Description</value>
+  </data>
+  <data name="Field_Report_Description_Description" xml:space="preserve">
+    <value>A description of the contents of the report</value>
+  </data>
+  <data name="Field_Reputation_Score_DisplayName" xml:space="preserve">
+    <value>Reputation Score</value>
+  </data>
+  <data name="Field_Task_Outcome_DisplayName" xml:space="preserve">
+    <value>Task Outcome</value>
+  </data>
+  <data name="Field_Percent_Expression_DisplayName" xml:space="preserve">
+    <value>Percent Expression</value>
+  </data>
+  <data name="Field_Percent_Expression_Description" xml:space="preserve">
+    <value>Determine whether the expression is used to calculate percentage</value>
+  </data>
+  <data name="Field_Compatible_Managed_Properties_DisplayName" xml:space="preserve">
+    <value>Compatible Managed Properties</value>
+  </data>
+  <data name="Field_Compatible_Managed_Properties_Description" xml:space="preserve">
+    <value>Enter the names of the managed properties that you would like to use this Filter Display Template with. The managed properties with names that start with the values you enter will be able to use this Display Template. </value>
+  </data>
+  <data name="Field_Description_DisplayName" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Field_Description_Description" xml:space="preserve">
+    <value>The description provides information about the purpose of the goal.</value>
+  </data>
+  <data name="Field_Exempt_from_Policy_DisplayName" xml:space="preserve">
+    <value>Exempt from Policy</value>
+  </data>
+  <data name="Field_Priority_DisplayName" xml:space="preserve">
+    <value>Priority</value>
+  </data>
+  <data name="Field_Warning_Cell_DisplayName" xml:space="preserve">
+    <value>Warning Cell</value>
+  </data>
+  <data name="Field_Warning_Cell_Description" xml:space="preserve">
+    <value>Address or name of the cell for the warning</value>
+  </data>
+  <data name="Field_Frame_Width_DisplayName" xml:space="preserve">
+    <value>Frame Width</value>
+  </data>
+  <data name="Field_Template_Id_DisplayName" xml:space="preserve">
+    <value>Template Id</value>
+  </data>
+  <data name="Field_Form_Relative_Url_DisplayName" xml:space="preserve">
+    <value>Form Relative Url</value>
+  </data>
+  <data name="Field_Managed_Property_Mappings_DisplayName" xml:space="preserve">
+    <value>Managed Property Mappings</value>
+  </data>
+  <data name="Field_Managed_Property_Mappings_Description" xml:space="preserve">
+    <value>Enter the slots and the managed properties that map to the slots. This field will be used to determine which managed properties are retrieved from SharePoint Search when you are using this Display Template. Use the format "slot name":"property name", separated by commas.</value>
+  </data>
+  <data name="Field_Indicator_Value_DisplayName" xml:space="preserve">
+    <value>Indicator Value</value>
+  </data>
+  <data name="Field_Report_Parent_Name_DisplayName" xml:space="preserve">
+    <value>Report Parent Name</value>
+  </data>
+  <data name="Field_Goal_from_workbook_DisplayName" xml:space="preserve">
+    <value>Goal from workbook</value>
+  </data>
+  <data name="Field_Goal_from_workbook_Description" xml:space="preserve">
+    <value>Whether the goal comes from the workbook or from the indicator definition</value>
+  </data>
+  <data name="Field_Total_File_Count_DisplayName" xml:space="preserve">
+    <value>Total File Count</value>
+  </data>
+  <data name="Field_Report_Created_By_DisplayName" xml:space="preserve">
+    <value>Report Created By</value>
+  </data>
+  <data name="Field_Number_of_Likes_DisplayName" xml:space="preserve">
+    <value>Number of Likes</value>
+  </data>
+  <data name="Field_Indicator_Comments_DisplayName" xml:space="preserve">
+    <value>Indicator Comments</value>
+  </data>
+  <data name="Field_Indicator_Comments_Description" xml:space="preserve">
+    <value>Comments describe the current status of the indicator, and may provide information about causes or problems.</value>
+  </data>
+  <data name="Field_Detail_Link_DisplayName" xml:space="preserve">
+    <value>Detail Link</value>
+  </data>
+  <data name="Field_Detail_Link_Description" xml:space="preserve">
+    <value>Link for page for clicking through for details </value>
+  </data>
+  <data name="Field_Member_Status_DisplayName" xml:space="preserve">
+    <value>Member Status</value>
+  </data>
+  <data name="Field_Data_Source_DisplayName" xml:space="preserve">
+    <value>Data Source</value>
+  </data>
+  <data name="Field_Data_Source_Description" xml:space="preserve">
+    <value>URL to the data source</value>
+  </data>
+  <data name="Field_Bit_Rate_DisplayName" xml:space="preserve">
+    <value>Bit Rate</value>
+  </data>
+  <data name="Field_Declared_Record_DisplayName" xml:space="preserve">
+    <value>Declared Record</value>
+  </data>
+  <data name="Field_Report_Modified_By_DisplayName" xml:space="preserve">
+    <value>Report Modified By</value>
+  </data>
+  <data name="Field_Save_to_report_history_DisplayName" xml:space="preserve">
+    <value>Save to report history</value>
+  </data>
+  <data name="Field_Save_to_report_history_Description" xml:space="preserve">
+    <value>Every time this document is saved a copy will be added to the report history.</value>
+  </data>
+  <data name="Field_Trend_DisplayName" xml:space="preserve">
+    <value>Trend</value>
+  </data>
+  <data name="Field_Trend_Description" xml:space="preserve">
+    <value>The trend of the Indicator</value>
+  </data>
+  <data name="Field_Indicator_Status_DisplayName" xml:space="preserve">
+    <value>Indicator Status</value>
+  </data>
+  <data name="Field_Indicator_Status_Description" xml:space="preserve">
+    <value>The status of the Indicator</value>
+  </data>
+  <data name="Field_Length_(seconds)_DisplayName" xml:space="preserve">
+    <value>Length (seconds)</value>
+  </data>
+  <data name="Field_WSPublishError_DisplayName" xml:space="preserve">
+    <value>WSPublishError</value>
+  </data>
+  <data name="Field_Crawler_XSL_File_DisplayName" xml:space="preserve">
+    <value>Crawler XSL File</value>
+  </data>
+  <data name="Field_Crawler_XSL_File_Description" xml:space="preserve">
+    <value>Add an XSL file to be used to generate HTML when crawlers are viewing the page.</value>
+  </data>
+  <data name="Field_Field_One_DisplayName" xml:space="preserve">
+    <value>Field One</value>
+  </data>
+  <data name="Field_Field_One_Description" xml:space="preserve">
+    <value>Field One Description</value>
+  </data>
+  <data name="Field_Report_Modified_DisplayName" xml:space="preserve">
+    <value>Report Modified</value>
+  </data>
+  <data name="Field_Custom_Router_DisplayName" xml:space="preserve">
+    <value>Custom Router</value>
+  </data>
+  <data name="Field_Form_Category_DisplayName" xml:space="preserve">
+    <value>Form Category</value>
+  </data>
+  <data name="Field_Description_DisplayName" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Field_Topic_Last_Updated_By_DisplayName" xml:space="preserve">
+    <value>Topic Last Updated By</value>
+  </data>
+  <data name="Field_Most_recent_indicator_data_update_DisplayName" xml:space="preserve">
+    <value>Most recent indicator data update</value>
+  </data>
+  <data name="Field_Most_recent_indicator_data_update_Description" xml:space="preserve">
+    <value>The last indicator update from its datasource provider</value>
+  </data>
+  <data name="Field_Replies_DisplayName" xml:space="preserve">
+    <value>Replies</value>
+  </data>
+  <data name="Field_Default_Encoding_User_Override_DisplayName" xml:space="preserve">
+    <value>Default Encoding User Override</value>
+  </data>
+  <data name="Field_Active_DisplayName" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Field_Form_Description_DisplayName" xml:space="preserve">
+    <value>Form Description</value>
+  </data>
+  <data name="Field_Author's_Number_of_Best_Replies_DisplayName" xml:space="preserve">
+    <value>Author's Number of Best Replies</value>
+  </data>
+  <data name="Field_Status_DisplayName" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Field_WSEnabled_DisplayName" xml:space="preserve">
+    <value>WSEnabled</value>
+  </data>
+  <data name="Field_Posted_by_DisplayName" xml:space="preserve">
+    <value>Posted by</value>
+  </data>
+  <data name="Field_Rated_By_DisplayName" xml:space="preserve">
+    <value>Rated By</value>
+  </data>
+  <data name="Field_Rated_By_Description" xml:space="preserve">
+    <value>Users rated the item.</value>
+  </data>
+  <data name="Field_WSEventSource_DisplayName" xml:space="preserve">
+    <value>WSEventSource</value>
+  </data>
+  <data name="Field_Author's_Number_of_Posts_DisplayName" xml:space="preserve">
+    <value>Author's Number of Posts</value>
+  </data>
+  <data name="Field_TaxKeywordTaxHTField_DisplayName" xml:space="preserve">
+    <value>TaxKeywordTaxHTField</value>
+  </data>
+  <data name="Field_Goal_Cell_DisplayName" xml:space="preserve">
+    <value>Goal Cell</value>
+  </data>
+  <data name="Field_Goal_Cell_Description" xml:space="preserve">
+    <value>Address or name of the cell for the goal</value>
+  </data>
+  <data name="Field_Name_DisplayName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Field_Goal_Sheet_DisplayName" xml:space="preserve">
+    <value>Goal Sheet</value>
+  </data>
+  <data name="Field_Goal_Sheet_Description" xml:space="preserve">
+    <value>Name of the sheet for the goal</value>
+  </data>
+  <data name="Field_Post_DisplayName" xml:space="preserve">
+    <value>Post</value>
+  </data>
+  <data name="Field_Value_Expression_DisplayName" xml:space="preserve">
+    <value>Value Expression</value>
+  </data>
+  <data name="Field_Value_Expression_Description" xml:space="preserve">
+    <value>Expression used to determine the value of the Indicator.</value>
+  </data>
+  <data name="Field_Warning_Sheet_DisplayName" xml:space="preserve">
+    <value>Warning Sheet</value>
+  </data>
+  <data name="Field_Warning_Sheet_Description" xml:space="preserve">
+    <value>Name of the sheet for the warning</value>
+  </data>
+  <data name="Field_Form_Name_DisplayName" xml:space="preserve">
+    <value>Form Name</value>
+  </data>
+  <data name="Field_Form_ID_DisplayName" xml:space="preserve">
+    <value>Form ID</value>
+  </data>
+  <data name="Field_Owner_DisplayName" xml:space="preserve">
+    <value>Owner</value>
+  </data>
+  <data name="Field_Owner_Description" xml:space="preserve">
+    <value>The owner of the Video</value>
+  </data>
+  <data name="Field_Value_Cell_DisplayName" xml:space="preserve">
+    <value>Value Cell</value>
+  </data>
+  <data name="Field_Value_Cell_Description" xml:space="preserve">
+    <value>Address or name of the cell for the value</value>
+  </data>
+  <data name="Field_Form_Version_DisplayName" xml:space="preserve">
+    <value>Form Version</value>
+  </data>
+  <data name="Field_Report_Modified_DisplayName" xml:space="preserve">
+    <value>Report Modified</value>
+  </data>
+  <data name="Field_WSGUID_DisplayName" xml:space="preserve">
+    <value>WSGUID</value>
+  </data>
+  <data name="Field_Discussions_DisplayName" xml:space="preserve">
+    <value>Discussions</value>
+  </data>
+  <data name="Field_Template_Level_DisplayName" xml:space="preserve">
+    <value>Template Level</value>
+  </data>
+  <data name="Field_Template_Level_Description" xml:space="preserve">
+    <value>Select the level of data that this display template expects and is designed to display.  This determines where this template will appear as a selectable option in configuration UIs.</value>
+  </data>
+  <data name="Field_Best_Replies_DisplayName" xml:space="preserve">
+    <value>Best Replies</value>
+  </data>
+  <data name="Field_Submission_Content_Type_(Internal)_DisplayName" xml:space="preserve">
+    <value>Submission Content Type (Internal)</value>
+  </data>
+  <data name="Field_Author's_Number_of_Replies_DisplayName" xml:space="preserve">
+    <value>Author's Number of Replies</value>
+  </data>
+  <data name="Field_Original_Expiration_Date_DisplayName" xml:space="preserve">
+    <value>Original Expiration Date</value>
+  </data>
+  <data name="Field_WSDescription_DisplayName" xml:space="preserve">
+    <value>WSDescription</value>
+  </data>
+  <data name="Field_Default_Encoding_DisplayName" xml:space="preserve">
+    <value>Default Encoding</value>
+  </data>
+  <data name="Field_Show_Download_Link_DisplayName" xml:space="preserve">
+    <value>Show Download Link</value>
+  </data>
+  <data name="Field_Show_Download_Link_Description" xml:space="preserve">
+    <value>Specifies whether a button appears on the video player page that allows the user to download the video being played.</value>
+  </data>
+  <data name="Field_Gifted_Badge_DisplayName" xml:space="preserve">
+    <value>Gifted Badge</value>
+  </data>
+  <data name="Field_WSDisplayName_DisplayName" xml:space="preserve">
+    <value>WSDisplayName</value>
+  </data>
+  <data name="Field_Content_Type_ID_DisplayName" xml:space="preserve">
+    <value>Content Type ID</value>
+  </data>
+  <data name="Field_Target_Control_Type_(Search)_DisplayName" xml:space="preserve">
+    <value>Target Control Type (Search)</value>
+  </data>
+  <data name="Field_Target_Control_Type_(Search)_Description" xml:space="preserve">
+    <value>Select the search controls that will use this Display Template.</value>
+  </data>
+  <data name="Field_Report_Created_DisplayName" xml:space="preserve">
+    <value>Report Created</value>
+  </data>
+  <data name="Field_Author's_last_activity_date_DisplayName" xml:space="preserve">
+    <value>Author's last activity date</value>
+  </data>
+  <data name="Field_Reports_Lookup_DisplayName" xml:space="preserve">
+    <value>Reports Lookup</value>
+  </data>
+  <data name="Field_Report_Status_DisplayName" xml:space="preserve">
+    <value>Report Status</value>
+  </data>
+  <data name="Field_Report_Status_Description" xml:space="preserve">
+    <value>Status of the report</value>
+  </data>
+  <data name="Field_Reports_DisplayName" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <data name="Field_Form_Locale_DisplayName" xml:space="preserve">
+    <value>Form Locale</value>
+  </data>
+  <data name="Field_Indicator_Warning_Threshold_DisplayName" xml:space="preserve">
+    <value>Indicator Warning Threshold</value>
+  </data>
+  <data name="Field_Aggregated_Like_Count_DisplayName" xml:space="preserve">
+    <value>Aggregated Like Count</value>
+  </data>
+  <data name="Field_Warning_from_workbook_DisplayName" xml:space="preserve">
+    <value>Warning from workbook</value>
+  </data>
+  <data name="Field_Warning_from_workbook_Description" xml:space="preserve">
+    <value>Whether the warning comes from the workbook or from the indicator definition</value>
+  </data>
+  <data name="Field_Author's_membership_date_DisplayName" xml:space="preserve">
+    <value>Author's membership date</value>
+  </data>
+  <data name="Field_WSPublishState_DisplayName" xml:space="preserve">
+    <value>WSPublishState</value>
+  </data>
+  <data name="Field_Description_DisplayName" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Field_Description_Description" xml:space="preserve">
+    <value>A description of the Document Set</value>
+  </data>
+  <data name="Field_Show_in_Catalog_DisplayName" xml:space="preserve">
+    <value>Show in Catalog</value>
+  </data>
+  <data name="Field_Last_Modified_Date_DisplayName" xml:space="preserve">
+    <value>Last Modified Date</value>
+  </data>
+  <data name="Field_Last_Post_Date_DisplayName" xml:space="preserve">
+    <value>Last Post Date</value>
+  </data>
+  <data name="Field_Report_Category_DisplayName" xml:space="preserve">
+    <value>Report Category</value>
+  </data>
+  <data name="Field_Report_Category_Description" xml:space="preserve">
+    <value>Category of the report</value>
+  </data>
+  <data name="Field_People_In_Video_DisplayName" xml:space="preserve">
+    <value>People In Video</value>
+  </data>
+  <data name="Field_People_In_Video_Description" xml:space="preserve">
+    <value>The people appearing in the video.</value>
+  </data>
+  <data name="Field_Compatible_Search_Data_Types_DisplayName" xml:space="preserve">
+    <value>Compatible Search Data Types</value>
+  </data>
+  <data name="Field_Compatible_Search_Data_Types_Description" xml:space="preserve">
+    <value>Select the Search managed property data types that this Filter Display Template will be used with. If you don't enter any values, the Display Template will be available for all data types. </value>
+  </data>
+  <data name="Field_Rating_(0-5)_DisplayName" xml:space="preserve">
+    <value>Rating (0-5)</value>
+  </data>
+  <data name="Field_Rating_(0-5)_Description" xml:space="preserve">
+    <value>Average value of all the ratings that have been submitted</value>
+  </data>
+  <data name="Field_Indicator_Goal_Threshold_DisplayName" xml:space="preserve">
+    <value>Indicator Goal Threshold</value>
+  </data>
+  <data name="Field_Condition_XML_DisplayName" xml:space="preserve">
+    <value>Condition XML</value>
+  </data>
+  <data name="Field_Properties_used_in_Conditions_DisplayName" xml:space="preserve">
+    <value>Properties used in Conditions</value>
+  </data>
+  <data name="Field_Rule_Name_DisplayName" xml:space="preserve">
+    <value>Rule Name</value>
+  </data>
+  <data name="Field_View_Guid_DisplayName" xml:space="preserve">
+    <value>View Guid</value>
+  </data>
+  <data name="Field_View_Guid_Description" xml:space="preserve">
+    <value>Guid of the view</value>
+  </data>
+  <data name="Field_Total_Size_DisplayName" xml:space="preserve">
+    <value>Total Size</value>
+  </data>
+  <data name="Field_Name_DisplayName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Field_Update_Error_DisplayName" xml:space="preserve">
+    <value>Update Error</value>
+  </data>
+  <data name="Field_Update_Error_Description" xml:space="preserve">
+    <value>Contains the error message from last update, if any</value>
+  </data>
+  <data name="Field_Target_Library_DisplayName" xml:space="preserve">
+    <value>Target Library</value>
+  </data>
+  <data name="Field_WSEventSourceGUID_DisplayName" xml:space="preserve">
+    <value>WSEventSourceGUID</value>
+  </data>
+  <data name="Field_WSEventContextKeys_DisplayName" xml:space="preserve">
+    <value>WSEventContextKeys</value>
+  </data>
+  <data name="Field_Embed_Code_DisplayName" xml:space="preserve">
+    <value>Embed Code</value>
+  </data>
+  <data name="Field_Property_for_Automatic_Folder_Creation_DisplayName" xml:space="preserve">
+    <value>Property for Automatic Folder Creation</value>
+  </data>
+  <data name="Field_Member_DisplayName" xml:space="preserve">
+    <value>Member</value>
+  </data>
+  <data name="Field_Frame_Height_DisplayName" xml:space="preserve">
+    <value>Frame Height</value>
+  </data>
+  <data name="Field_Hide_Reputation_DisplayName" xml:space="preserve">
+    <value>Hide Reputation</value>
+  </data>
+  <data name="Field_Gifted_Badge_Text_DisplayName" xml:space="preserve">
+    <value>Gifted Badge Text</value>
+  </data>
+  <data name="Field_HashTags_DisplayName" xml:space="preserve">
+    <value>HashTags</value>
+  </data>
+  <data name="Field_HashTags_Description" xml:space="preserve">
+    <value>Some description</value>
+  </data>
+  <data name="Field_Label_DisplayName" xml:space="preserve">
+    <value>Label</value>
+  </data>
+  <data name="Field_Label_Description" xml:space="preserve">
+    <value>The text displayed in the video player for this rendition</value>
+  </data>
+  <data name="Field_Report_Modified_By_DisplayName" xml:space="preserve">
+    <value>Report Modified By</value>
+  </data>
+  <data name="Field_Report_Modified_Link_DisplayName" xml:space="preserve">
+    <value>Report Modified Link</value>
+  </data>
+  <data name="Field_Replies_to_reach_next_level_DisplayName" xml:space="preserve">
+    <value>Replies to reach next level</value>
+  </data>
+  <data name="Field_Show_Embed_Link_DisplayName" xml:space="preserve">
+    <value>Show Embed Link</value>
+  </data>
+  <data name="Field_Show_Embed_Link_Description" xml:space="preserve">
+    <value>Specifies whether a button appears on the video player that allows the user to get an embed code for the video being played.</value>
+  </data>
+  <data name="Field_Topic_page_URL_DisplayName" xml:space="preserve">
+    <value>Topic page URL</value>
+  </data>
+  <data name="Field_Hold_and_Record_Status_DisplayName" xml:space="preserve">
+    <value>Hold and Record Status</value>
+  </data>
+  <data name="Field_Parent_ID_DisplayName" xml:space="preserve">
+    <value>Parent ID</value>
+  </data>
+  <data name="Field_Parent_ID_Description" xml:space="preserve">
+    <value>The Parent Id of this report</value>
+  </data>
+  <data name="Field_Last_Activity_DisplayName" xml:space="preserve">
+    <value>Last Activity</value>
+  </data>
+  <data name="Field_WSEventType_DisplayName" xml:space="preserve">
+    <value>WSEventType</value>
+  </data>
+  <data name="Field_Form_Name_DisplayName" xml:space="preserve">
+    <value>Form Name</value>
+  </data>
+  <data name="Field_External_Link_DisplayName" xml:space="preserve">
+    <value>External Link</value>
+  </data>
+  <data name="Field_Submission_Content_Type_DisplayName" xml:space="preserve">
+    <value>Submission Content Type</value>
+  </data>
+  <data name="Field_Taxonomy_Catch_All_Column1_DisplayName" xml:space="preserve">
+    <value>Taxonomy Catch All Column1</value>
+  </data>
+  <data name="Field_Owner_DisplayName" xml:space="preserve">
+    <value>Owner</value>
+  </data>
+  <data name="Field_Owner_Description" xml:space="preserve">
+    <value>Owner of this document</value>
+  </data>
+  <data name="Field_Indicator_DisplayName" xml:space="preserve">
+    <value>Indicator</value>
+  </data>
+  <data name="Field_Indicator_Description" xml:space="preserve">
+    <value>Name of Microsoft SQL Server 2005 Analysis Services KPI</value>
+  </data>
+  <data name="Field_Field_Two_DisplayName" xml:space="preserve">
+    <value>Field Two</value>
+  </data>
+  <data name="Field_Field_Two_Description" xml:space="preserve">
+    <value>Field Two Description</value>
+  </data>
+  <data name="Field_Author's_membership_status_DisplayName" xml:space="preserve">
+    <value>Author's membership status</value>
+  </data>
+  <data name="Field_Last_Post_By_DisplayName" xml:space="preserve">
+    <value>Last Post By</value>
+  </data>
+  <data name="Field_Expiration_Date_DisplayName" xml:space="preserve">
+    <value>Expiration Date</value>
+  </data>
+  <data name="Field_Renditions_Information_DisplayName" xml:space="preserve">
+    <value>Renditions Information</value>
+  </data>
+  <data name="Field_Thumbnail_Time_Index_DisplayName" xml:space="preserve">
+    <value>Thumbnail Time Index</value>
+  </data>
+  <data name="Field_Report_Created_DisplayName" xml:space="preserve">
+    <value>Report Created</value>
+  </data>
+  <data name="Field_Is_Locked_For_Edit_DisplayName" xml:space="preserve">
+    <value>Is Locked For Edit</value>
+  </data>
+  <data name="Field_Category_DisplayName" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="Field_HashTags_0_DisplayName" xml:space="preserve">
+    <value>HashTags_0</value>
+  </data>
+  <data name="Field_Formatted_indicator_value_DisplayName" xml:space="preserve">
+    <value>Formatted indicator value</value>
+  </data>
+  <data name="Field_Formatted_indicator_value_Description" xml:space="preserve">
+    <value>The value of the indicator, formatted by its datasource provider</value>
+  </data>
+  <data name="Field_Liked_By_DisplayName" xml:space="preserve">
+    <value>Liked By</value>
+  </data>
+  <data name="Field_Include_child_indicators_DisplayName" xml:space="preserve">
+    <value>Include child indicators</value>
+  </data>
+  <data name="Field_Include_child_indicators_Description" xml:space="preserve">
+    <value>To include child KPIs or not</value>
+  </data>
+  <data name="Field_Description_DisplayName" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Field_Description_Description" xml:space="preserve">
+    <value>A summary of the Video</value>
+  </data>
+  <data name="Field_Auto_Update_DisplayName" xml:space="preserve">
+    <value>Auto Update</value>
+  </data>
+  <data name="Field_Auto_Update_Description" xml:space="preserve">
+    <value>Whether to fetch the backend data every time</value>
+  </data>
+  <data name="Field_Display_Folder_DisplayName" xml:space="preserve">
+    <value>Display Folder</value>
+  </data>
+  <data name="Field_Display_Folder_Description" xml:space="preserve">
+    <value>The Display Folder of the Indicator</value>
+  </data>
+  <data name="Field_Author's_Reputation_Score_DisplayName" xml:space="preserve">
+    <value>Author's Reputation Score</value>
+  </data>
+  <data name="Field_Replies_DisplayName" xml:space="preserve">
+    <value>Replies</value>
+  </data>
+  <data name="Field_Hidden_Template_DisplayName" xml:space="preserve">
+    <value>Hidden Template</value>
+  </data>
+  <data name="Field_Hidden_Template_Description" xml:space="preserve">
+    <value>Hide this Display Template where people select from an available list of search Display Templates.</value>
+  </data>
+  <data name="Field_Popularity_DisplayName" xml:space="preserve">
+    <value>Popularity</value>
+  </data>
+  <data name="Field_Discussions_DisplayName" xml:space="preserve">
+    <value>Discussions</value>
+  </data>
+  <data name="Field_Category_Picture_DisplayName" xml:space="preserve">
+    <value>Category Picture</value>
+  </data>
+  <data name="Field_Value_Sheet_DisplayName" xml:space="preserve">
+    <value>Value Sheet</value>
+  </data>
+  <data name="Field_Value_Sheet_Description" xml:space="preserve">
+    <value>Name of the Sheet for the value</value>
+  </data>
+  <data name="Field_Formatted_indicator_goal_DisplayName" xml:space="preserve">
+    <value>Formatted indicator goal</value>
+  </data>
+  <data name="Field_Formatted_indicator_goal_Description" xml:space="preserve">
+    <value>The goal of the indicator, formatted by its datasource provider</value>
+  </data>
+  <data name="Field_History_DisplayName" xml:space="preserve">
+    <value>History</value>
+  </data>
+  <data name="Field_Aliases_DisplayName" xml:space="preserve">
+    <value>Aliases</value>
+  </data>
+  <data name="Field_Target_Path_DisplayName" xml:space="preserve">
+    <value>Target Path</value>
+  </data>
+  <data name="Field_Taxonomy_Catch_All_Column_DisplayName" xml:space="preserve">
+    <value>Taxonomy Catch All Column</value>
+  </data>
+  <data name="Field_User_ratings_DisplayName" xml:space="preserve">
+    <value>User ratings</value>
+  </data>
+  <data name="Field_User_ratings_Description" xml:space="preserve">
+    <value>User ratings for the item</value>
+  </data>
+  <data name="Field_Reporter_Lookup_DisplayName" xml:space="preserve">
+    <value>Reporter Lookup</value>
+  </data>
+  <data name="Field_Report_Created_By_DisplayName" xml:space="preserve">
+    <value>Report Created By</value>
+  </data>
+  <data name="ContentType_Common_Indicator_Columns_Title" xml:space="preserve">
+    <value>Common Indicator Columns</value>
+  </data>
+  <data name="ContentType_Fixed_Value_based_Status_Indicator_Title" xml:space="preserve">
+    <value>Fixed Value based Status Indicator</value>
+  </data>
+  <data name="ContentType_Fixed_Value_based_Status_Indicator_Description" xml:space="preserve">
+    <value>Create a new Status Indicator using manually entered information</value>
+  </data>
+  <data name="ContentType_SharePoint_List_based_Status_Indicator_Title" xml:space="preserve">
+    <value>SharePoint List based Status Indicator</value>
+  </data>
+  <data name="ContentType_SharePoint_List_based_Status_Indicator_Description" xml:space="preserve">
+    <value>Create a new Status Indicator using data from SharePoint Lists</value>
+  </data>
+  <data name="ContentType_Excel_based_Status_Indicator_Title" xml:space="preserve">
+    <value>Excel based Status Indicator</value>
+  </data>
+  <data name="ContentType_Excel_based_Status_Indicator_Description" xml:space="preserve">
+    <value>Create a new Status Indicator using data from Excel Services</value>
+  </data>
+  <data name="ContentType_SQL_Server_Analysis_Services_based_Status_Indicator_Title" xml:space="preserve">
+    <value>SQL Server Analysis Services based Status Indicator</value>
+  </data>
+  <data name="ContentType_SQL_Server_Analysis_Services_based_Status_Indicator_Description" xml:space="preserve">
+    <value>Create a new Status Indicator using data from SQL Server Analysis Services</value>
+  </data>
+  <data name="ContentType_Category_Title" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="ContentType_Category_Description" xml:space="preserve">
+    <value>(Category Content Type Description)</value>
+  </data>
+  <data name="ContentType_Site_Membership_Title" xml:space="preserve">
+    <value>Site Membership</value>
+  </data>
+  <data name="ContentType_Site_Membership_Description" xml:space="preserve">
+    <value>Add a new member</value>
+  </data>
+  <data name="ContentType_Community_Member_Title" xml:space="preserve">
+    <value>Community Member</value>
+  </data>
+  <data name="ContentType_Community_Member_Description" xml:space="preserve">
+    <value>Add a new community member</value>
+  </data>
+  <data name="ContentType_WorkflowServiceDefinition_Title" xml:space="preserve">
+    <value>WorkflowServiceDefinition</value>
+  </data>
+  <data name="ContentType_WorkflowServiceDefinition_Description" xml:space="preserve">
+    <value>WorkflowServiceDefinition</value>
+  </data>
+  <data name="ContentType_Project_Policy_Title" xml:space="preserve">
+    <value>Project Policy</value>
+  </data>
+  <data name="ContentType_Project_Policy_Description" xml:space="preserve">
+    <value>Container content type for Project Policy definitions</value>
+  </data>
+  <data name="ContentType_WorkflowServiceSubscription_Title" xml:space="preserve">
+    <value>WorkflowServiceSubscription</value>
+  </data>
+  <data name="ContentType_WorkflowServiceSubscription_Description" xml:space="preserve">
+    <value>WorkflowServiceSubscription</value>
+  </data>
+  <data name="ContentType_Rule_Title" xml:space="preserve">
+    <value>Rule</value>
+  </data>
+  <data name="ContentType_Rule_Description" xml:space="preserve">
+    <value>Create a rule that moves content submitted to this site to the correct library or folder.</value>
+  </data>
+  <data name="ContentType_Display_Template_Title" xml:space="preserve">
+    <value>Display Template</value>
+  </data>
+  <data name="ContentType_Display_Template_Description" xml:space="preserve">
+    <value>Base Content Type containing common Display Template columns. Use one of Control, Group, Item or Filter Display Template content types to create a display type. </value>
+  </data>
+  <data name="ContentType_Display_Template_Code_Title" xml:space="preserve">
+    <value>Display Template Code</value>
+  </data>
+  <data name="ContentType_Display_Template_Code_Description" xml:space="preserve">
+    <value>Display Template Code javascript that registers and executes Display Template rendering logic.</value>
+  </data>
+  <data name="ContentType_Report_Title" xml:space="preserve">
+    <value>Report</value>
+  </data>
+  <data name="ContentType_ContentType_One_Title" xml:space="preserve">
+    <value>ContentType One</value>
+  </data>
+  <data name="ContentType_ContentType_One_Description" xml:space="preserve">
+    <value>ContentType One Description</value>
+  </data>
+  <data name="ContentType_ContentType_Two_Title" xml:space="preserve">
+    <value>ContentType Two</value>
+  </data>
+  <data name="ContentType_ContentType_Two_Description" xml:space="preserve">
+    <value>ContentType Two Description</value>
+  </data>
+  <data name="ContentType_Rich_Media_Asset_Title" xml:space="preserve">
+    <value>Rich Media Asset</value>
+  </data>
+  <data name="ContentType_Rich_Media_Asset_Description" xml:space="preserve">
+    <value>Upload an asset.</value>
+  </data>
+  <data name="ContentType_Video_Rendition_Title" xml:space="preserve">
+    <value>Video Rendition</value>
+  </data>
+  <data name="ContentType_Video_Rendition_Description" xml:space="preserve">
+    <value>Upload a video file.</value>
+  </data>
+  <data name="ContentType_Audio_Title" xml:space="preserve">
+    <value>Audio</value>
+  </data>
+  <data name="ContentType_Audio_Description" xml:space="preserve">
+    <value>Upload an audio file.</value>
+  </data>
+  <data name="ContentType_Image_Title" xml:space="preserve">
+    <value>Image</value>
+  </data>
+  <data name="ContentType_Image_Description" xml:space="preserve">
+    <value>Upload an image.</value>
+  </data>
+  <data name="ContentType_Web_Part_Page_with_Status_List_Title" xml:space="preserve">
+    <value>Web Part Page with Status List</value>
+  </data>
+  <data name="ContentType_Web_Part_Page_with_Status_List_Description" xml:space="preserve">
+    <value>Create a page that displays Status Indicators and Excel workbooks.</value>
+  </data>
+  <data name="ContentType_Design_File_Title" xml:space="preserve">
+    <value>Design File</value>
+  </data>
+  <data name="ContentType_Design_File_Description" xml:space="preserve">
+    <value>HTML, JavaScript, CSS, images, and other supporting files in the Master Page Gallery used by HTML Master Pages, HTML Page Layouts, and Display Templates.</value>
+  </data>
+  <data name="ContentType_InfoPath_Form_Template_Title" xml:space="preserve">
+    <value>InfoPath Form Template</value>
+  </data>
+  <data name="ContentType_InfoPath_Form_Template_Description" xml:space="preserve">
+    <value>A Microsoft InfoPath Form Template.</value>
+  </data>
+  <data name="ContentType_Master_Page_Preview_Title" xml:space="preserve">
+    <value>Master Page Preview</value>
+  </data>
+  <data name="ContentType_Master_Page_Preview_Description" xml:space="preserve">
+    <value>Create a new master page preview.</value>
+  </data>
+  <data name="ContentType_Workflow_Task_(SharePoint_2013)_Title" xml:space="preserve">
+    <value>Workflow Task (SharePoint 2013)</value>
+  </data>
+  <data name="ContentType_Workflow_Task_(SharePoint_2013)_Description" xml:space="preserve">
+    <value>Create a SharePoint 2013 Workflow Task</value>
+  </data>
+  <data name="ContentType_SharePoint_Server_Workflow_Task_Title" xml:space="preserve">
+    <value>SharePoint Server Workflow Task</value>
+  </data>
+  <data name="ContentType_SharePoint_Server_Workflow_Task_Description" xml:space="preserve">
+    <value>A work item created by a workflow that you or your team needs to complete.</value>
+  </data>
+  <data name="ContentType_Post_Title" xml:space="preserve">
+    <value>Post</value>
+  </data>
+  <data name="ContentType_Post_Description" xml:space="preserve">
+    <value>Create a new blog post.</value>
+  </data>
+  <data name="ContentType_Document_Collection_Folder_Title" xml:space="preserve">
+    <value>Document Collection Folder</value>
+  </data>
+  <data name="ContentType_Document_Collection_Folder_Description" xml:space="preserve">
+    <value>Create a new Document Collection Folder</value>
+  </data>
+  <data name="ContentType_System_Media_Collection_Title" xml:space="preserve">
+    <value>System Media Collection</value>
+  </data>
+  <data name="ContentType_System_Media_Collection_Description" xml:space="preserve">
+    <value>System type for a collection of rich media assets.</value>
+  </data>
+  <data name="ContentType_Video_Title" xml:space="preserve">
+    <value>Video</value>
+  </data>
+  <data name="ContentType_Video_Description" xml:space="preserve">
+    <value>Upload or link to a video.</value>
+  </data>
+  <data name="List_Documents_Title" xml:space="preserve">
+    <value>Documents</value>
+  </data>
+  <data name="ListView_Documents_All_Documents_Title" xml:space="preserve">
+    <value>All Documents</value>
+  </data>
+  <data name="List_Form_Templates_Title" xml:space="preserve">
+    <value>Form Templates</value>
+  </data>
+  <data name="List_Form_Templates_Description" xml:space="preserve">
+    <value>This library contains administrator-approved form templates that were activated to this site collection.</value>
+  </data>
+  <data name="ListView_Form_Templates_All_Documents_Title" xml:space="preserve">
+    <value>All Documents</value>
+  </data>
+  <data name="ListView_Form_Templates_All_Forms_Title" xml:space="preserve">
+    <value>All Forms</value>
+  </data>
+  <data name="List_LI_2_Title" xml:space="preserve">
+    <value>LI_2</value>
+  </data>
+  <data name="List_LI_2_Description" xml:space="preserve">
+    <value>List Two Description</value>
+  </data>
+  <data name="ListView_LI_2_All_Items_Title" xml:space="preserve">
+    <value>All Items</value>
+  </data>
+  <data name="Field_List_Field_One_DisplayName_DisplayName" xml:space="preserve">
+    <value>List Field One DisplayName</value>
+  </data>
+  <data name="Field_List_Field_One_DisplayName_Description" xml:space="preserve">
+    <value>List Field One Description</value>
+  </data>
+  <data name="Field_List_Field_Second_DisplayName_DisplayName" xml:space="preserve">
+    <value>List Field Second DisplayName</value>
+  </data>
+  <data name="Field_List_Field_Second_DisplayName_Description" xml:space="preserve">
+    <value>List Field Second Description</value>
+  </data>
+  <data name="List_List_One_Title" xml:space="preserve">
+    <value>List One</value>
+  </data>
+  <data name="List_List_One_Description" xml:space="preserve">
+    <value>List One Description</value>
+  </data>
+  <data name="ListView_List_One_List_View_Title_Title" xml:space="preserve">
+    <value>List View Title</value>
+  </data>
+  <data name="List_List_Three_Title" xml:space="preserve">
+    <value>List Three</value>
+  </data>
+  <data name="List_List_Three_Description" xml:space="preserve">
+    <value>List Three Description</value>
+  </data>
+  <data name="ListView_List_Three_All_Items_Title" xml:space="preserve">
+    <value>All Items</value>
+  </data>
+  <data name="List_MicroFeed_Title" xml:space="preserve">
+    <value>MicroFeed</value>
+  </data>
+  <data name="List_MicroFeed_Description" xml:space="preserve">
+    <value>MySite MicroFeed Persistent Storage List</value>
+  </data>
+  <data name="ListView_MicroFeed_All_Items_Title" xml:space="preserve">
+    <value>All Items</value>
+  </data>
+  <data name="Field_MicroBlogType_DisplayName" xml:space="preserve">
+    <value>MicroBlogType</value>
+  </data>
+  <data name="Field_PostAuthor_DisplayName" xml:space="preserve">
+    <value>PostAuthor</value>
+  </data>
+  <data name="Field_DefinitionId_DisplayName" xml:space="preserve">
+    <value>DefinitionId</value>
+  </data>
+  <data name="Field_RootPostID_DisplayName" xml:space="preserve">
+    <value>RootPostID</value>
+  </data>
+  <data name="Field_RootPostOwnerID_DisplayName" xml:space="preserve">
+    <value>RootPostOwnerID</value>
+  </data>
+  <data name="Field_RootPostUniqueID_DisplayName" xml:space="preserve">
+    <value>RootPostUniqueID</value>
+  </data>
+  <data name="Field_ReplyCount_DisplayName" xml:space="preserve">
+    <value>ReplyCount</value>
+  </data>
+  <data name="Field_ReferenceID_DisplayName" xml:space="preserve">
+    <value>ReferenceID</value>
+  </data>
+  <data name="Field_Attributes_DisplayName" xml:space="preserve">
+    <value>Attributes</value>
+  </data>
+  <data name="Field_Content_DisplayName" xml:space="preserve">
+    <value>Content</value>
+  </data>
+  <data name="Field_ContentData_DisplayName" xml:space="preserve">
+    <value>ContentData</value>
+  </data>
+  <data name="Field_SearchContent_DisplayName" xml:space="preserve">
+    <value>SearchContent</value>
+  </data>
+  <data name="Field_RefRoot_DisplayName" xml:space="preserve">
+    <value>RefRoot</value>
+  </data>
+  <data name="Field_RefReply_DisplayName" xml:space="preserve">
+    <value>RefReply</value>
+  </data>
+  <data name="Field_PostSource_DisplayName" xml:space="preserve">
+    <value>PostSource</value>
+  </data>
+  <data name="Field_PeopleCount_DisplayName" xml:space="preserve">
+    <value>PeopleCount</value>
+  </data>
+  <data name="Field_PeopleList_DisplayName" xml:space="preserve">
+    <value>PeopleList</value>
+  </data>
+  <data name="Field_MediaLinkType_DisplayName" xml:space="preserve">
+    <value>MediaLinkType</value>
+  </data>
+  <data name="Field_MediaLinkDescription_DisplayName" xml:space="preserve">
+    <value>MediaLinkDescription</value>
+  </data>
+  <data name="Field_PostSourceUri_DisplayName" xml:space="preserve">
+    <value>PostSourceUri</value>
+  </data>
+  <data name="Field_MediaLinkURI_DisplayName" xml:space="preserve">
+    <value>MediaLinkURI</value>
+  </data>
+  <data name="Field_MediaLinkUISnippet_DisplayName" xml:space="preserve">
+    <value>MediaLinkUISnippet</value>
+  </data>
+  <data name="Field_MediaLinkContentURI_DisplayName" xml:space="preserve">
+    <value>MediaLinkContentURI</value>
+  </data>
+  <data name="Field_MediaLength_DisplayName" xml:space="preserve">
+    <value>MediaLength</value>
+  </data>
+  <data name="Field_MediaWidth_DisplayName" xml:space="preserve">
+    <value>MediaWidth</value>
+  </data>
+  <data name="Field_MediaHeight_DisplayName" xml:space="preserve">
+    <value>MediaHeight</value>
+  </data>
+  <data name="Field_MediaPreviewWidth_DisplayName" xml:space="preserve">
+    <value>MediaPreviewWidth</value>
+  </data>
+  <data name="Field_MediaPreviewHeight_DisplayName" xml:space="preserve">
+    <value>MediaPreviewHeight</value>
+  </data>
+  <data name="Field_MediaActionWidth_DisplayName" xml:space="preserve">
+    <value>MediaActionWidth</value>
+  </data>
+  <data name="Field_MediaActionHeight_DisplayName" xml:space="preserve">
+    <value>MediaActionHeight</value>
+  </data>
+  <data name="Field_MediaActionClickUrl_DisplayName" xml:space="preserve">
+    <value>MediaActionClickUrl</value>
+  </data>
+  <data name="Field_MediaActionClickKind_DisplayName" xml:space="preserve">
+    <value>MediaActionClickKind</value>
+  </data>
+  <data name="Field_eMailSubscribers_DisplayName" xml:space="preserve">
+    <value>eMailSubscribers</value>
+  </data>
+  <data name="Field_eMailUnsubscribed_DisplayName" xml:space="preserve">
+    <value>eMailUnsubscribed</value>
+  </data>
+  <data name="Field_RemoteLocation_DisplayName" xml:space="preserve">
+    <value>RemoteLocation</value>
+  </data>
+  <data name="List_Site_Assets_Title" xml:space="preserve">
+    <value>Site Assets</value>
+  </data>
+  <data name="List_Site_Assets_Description" xml:space="preserve">
+    <value>Use this library to store files which are included on pages within this site, such as images on Wiki pages.</value>
+  </data>
+  <data name="ListView_Site_Assets_All_Documents_Title" xml:space="preserve">
+    <value>All Documents</value>
+  </data>
+  <data name="List_Site_Pages_Title" xml:space="preserve">
+    <value>Site Pages</value>
+  </data>
+  <data name="ListView_Site_Pages_All_Pages_Title" xml:space="preserve">
+    <value>All Pages</value>
+  </data>
+  <data name="ListView_Site_Pages_Recent_Changes_Title" xml:space="preserve">
+    <value>Recent Changes</value>
+  </data>
+  <data name="ListView_Site_Pages_Created_By_Me_Title" xml:space="preserve">
+    <value>Created By Me</value>
+  </data>
+  <data name="ListView_Site_Pages_By_Author_Title" xml:space="preserve">
+    <value>By Author</value>
+  </data>
+  <data name="ListView_Site_Pages_By_Editor_Title" xml:space="preserve">
+    <value>By Editor</value>
+  </data>
+  <data name="List_Style_Library_Title" xml:space="preserve">
+    <value>Style Library</value>
+  </data>
+  <data name="List_Style_Library_Description" xml:space="preserve">
+    <value>Use the style library to store style sheets, such as CSS or XSL files. The style sheets in this gallery can be used by this site or any of its subsites.</value>
+  </data>
+  <data name="ListView_Style_Library_All_Documents_Title" xml:space="preserve">
+    <value>All Documents</value>
+  </data>
+  <data name="NavigationNode_0_2008_Title" xml:space="preserve">
+    <value>Navigation One</value>
+  </data>
+  <data name="NavigationNode_0_1031_Title" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="NavigationNode_0_2001_Title" xml:space="preserve">
+    <value>Notebook</value>
+  </data>
+  <data name="NavigationNode_0_2002_Title" xml:space="preserve">
+    <value>Documents</value>
+  </data>
+  <data name="NavigationNode_0_1033_Title" xml:space="preserve">
+    <value>Recent</value>
+  </data>
+  <data name="NavigationNode_1033_2007_Title" xml:space="preserve">
+    <value>List Three</value>
+  </data>
+  <data name="NavigationNode_1033_2006_Title" xml:space="preserve">
+    <value>LI_2</value>
+  </data>
+  <data name="NavigationNode_0_1034_Title" xml:space="preserve">
+    <value>Site Contents</value>
+  </data>
+  <data name="List_Documents_Title" xml:space="preserve">
+    <value>Documents</value>
+  </data>
+  <data name="ListView_Documents_All_Documents_Title" xml:space="preserve">
+    <value>All Documents</value>
+  </data>
+  <data name="List_LI_2_Title" xml:space="preserve">
+    <value>LI_2</value>
+  </data>
+  <data name="List_LI_2_Description" xml:space="preserve">
+    <value>List Two Description</value>
+  </data>
+  <data name="ListView_LI_2_All_Items_Title" xml:space="preserve">
+    <value>All Items</value>
+  </data>
+  <data name="Field_List_Field_One_DisplayName_DisplayName" xml:space="preserve">
+    <value>List Field One DisplayName</value>
+  </data>
+  <data name="Field_List_Field_One_DisplayName_Description" xml:space="preserve">
+    <value>List Field One Description</value>
+  </data>
+  <data name="Field_List_Field_Second_DisplayName_DisplayName" xml:space="preserve">
+    <value>List Field Second DisplayName</value>
+  </data>
+  <data name="Field_List_Field_Second_DisplayName_Description" xml:space="preserve">
+    <value>List Field Second Description</value>
+  </data>
+  <data name="List_List_One_Title" xml:space="preserve">
+    <value>List One</value>
+  </data>
+  <data name="List_List_One_Description" xml:space="preserve">
+    <value>List One Description</value>
+  </data>
+  <data name="ListView_List_One_List_View_Title_Title" xml:space="preserve">
+    <value>List View Title</value>
+  </data>
+  <data name="List_List_Three_Title" xml:space="preserve">
+    <value>List Three</value>
+  </data>
+  <data name="List_List_Three_Description" xml:space="preserve">
+    <value>List Three Description</value>
+  </data>
+  <data name="ListView_List_Three_All_Items_Title" xml:space="preserve">
+    <value>All Items</value>
+  </data>
+  <data name="List_MicroFeed_Title" xml:space="preserve">
+    <value>MicroFeed</value>
+  </data>
+  <data name="List_MicroFeed_Description" xml:space="preserve">
+    <value>MySite MicroFeed Persistent Storage List</value>
+  </data>
+  <data name="ListView_MicroFeed_All_Items_Title" xml:space="preserve">
+    <value>All Items</value>
+  </data>
+  <data name="Field_MicroBlogType_DisplayName" xml:space="preserve">
+    <value>MicroBlogType</value>
+  </data>
+  <data name="Field_PostAuthor_DisplayName" xml:space="preserve">
+    <value>PostAuthor</value>
+  </data>
+  <data name="Field_DefinitionId_DisplayName" xml:space="preserve">
+    <value>DefinitionId</value>
+  </data>
+  <data name="Field_RootPostID_DisplayName" xml:space="preserve">
+    <value>RootPostID</value>
+  </data>
+  <data name="Field_RootPostOwnerID_DisplayName" xml:space="preserve">
+    <value>RootPostOwnerID</value>
+  </data>
+  <data name="Field_RootPostUniqueID_DisplayName" xml:space="preserve">
+    <value>RootPostUniqueID</value>
+  </data>
+  <data name="Field_ReplyCount_DisplayName" xml:space="preserve">
+    <value>ReplyCount</value>
+  </data>
+  <data name="Field_ReferenceID_DisplayName" xml:space="preserve">
+    <value>ReferenceID</value>
+  </data>
+  <data name="Field_Attributes_DisplayName" xml:space="preserve">
+    <value>Attributes</value>
+  </data>
+  <data name="Field_Content_DisplayName" xml:space="preserve">
+    <value>Content</value>
+  </data>
+  <data name="Field_ContentData_DisplayName" xml:space="preserve">
+    <value>ContentData</value>
+  </data>
+  <data name="Field_SearchContent_DisplayName" xml:space="preserve">
+    <value>SearchContent</value>
+  </data>
+  <data name="Field_RefRoot_DisplayName" xml:space="preserve">
+    <value>RefRoot</value>
+  </data>
+  <data name="Field_RefReply_DisplayName" xml:space="preserve">
+    <value>RefReply</value>
+  </data>
+  <data name="Field_PostSource_DisplayName" xml:space="preserve">
+    <value>PostSource</value>
+  </data>
+  <data name="Field_PeopleCount_DisplayName" xml:space="preserve">
+    <value>PeopleCount</value>
+  </data>
+  <data name="Field_PeopleList_DisplayName" xml:space="preserve">
+    <value>PeopleList</value>
+  </data>
+  <data name="Field_MediaLinkType_DisplayName" xml:space="preserve">
+    <value>MediaLinkType</value>
+  </data>
+  <data name="Field_MediaLinkDescription_DisplayName" xml:space="preserve">
+    <value>MediaLinkDescription</value>
+  </data>
+  <data name="Field_PostSourceUri_DisplayName" xml:space="preserve">
+    <value>PostSourceUri</value>
+  </data>
+  <data name="Field_MediaLinkURI_DisplayName" xml:space="preserve">
+    <value>MediaLinkURI</value>
+  </data>
+  <data name="Field_MediaLinkUISnippet_DisplayName" xml:space="preserve">
+    <value>MediaLinkUISnippet</value>
+  </data>
+  <data name="Field_MediaLinkContentURI_DisplayName" xml:space="preserve">
+    <value>MediaLinkContentURI</value>
+  </data>
+  <data name="Field_MediaLength_DisplayName" xml:space="preserve">
+    <value>MediaLength</value>
+  </data>
+  <data name="Field_MediaWidth_DisplayName" xml:space="preserve">
+    <value>MediaWidth</value>
+  </data>
+  <data name="Field_MediaHeight_DisplayName" xml:space="preserve">
+    <value>MediaHeight</value>
+  </data>
+  <data name="Field_MediaPreviewWidth_DisplayName" xml:space="preserve">
+    <value>MediaPreviewWidth</value>
+  </data>
+  <data name="Field_MediaPreviewHeight_DisplayName" xml:space="preserve">
+    <value>MediaPreviewHeight</value>
+  </data>
+  <data name="Field_MediaActionWidth_DisplayName" xml:space="preserve">
+    <value>MediaActionWidth</value>
+  </data>
+  <data name="Field_MediaActionHeight_DisplayName" xml:space="preserve">
+    <value>MediaActionHeight</value>
+  </data>
+  <data name="Field_MediaActionClickUrl_DisplayName" xml:space="preserve">
+    <value>MediaActionClickUrl</value>
+  </data>
+  <data name="Field_MediaActionClickKind_DisplayName" xml:space="preserve">
+    <value>MediaActionClickKind</value>
+  </data>
+  <data name="Field_eMailSubscribers_DisplayName" xml:space="preserve">
+    <value>eMailSubscribers</value>
+  </data>
+  <data name="Field_eMailUnsubscribed_DisplayName" xml:space="preserve">
+    <value>eMailUnsubscribed</value>
+  </data>
+  <data name="Field_RemoteLocation_DisplayName" xml:space="preserve">
+    <value>RemoteLocation</value>
+  </data>
+  <data name="List_Site_Assets_Title" xml:space="preserve">
+    <value>Site Assets</value>
+  </data>
+  <data name="List_Site_Assets_Description" xml:space="preserve">
+    <value>Use this library to store files which are included on pages within this site, such as images on Wiki pages.</value>
+  </data>
+  <data name="ListView_Site_Assets_All_Documents_Title" xml:space="preserve">
+    <value>All Documents</value>
+  </data>
+  <data name="List_Site_Pages_Title" xml:space="preserve">
+    <value>Site Pages</value>
+  </data>
+  <data name="ListView_Site_Pages_All_Pages_Title" xml:space="preserve">
+    <value>All Pages</value>
+  </data>
+  <data name="ListView_Site_Pages_Recent_Changes_Title" xml:space="preserve">
+    <value>Recent Changes</value>
+  </data>
+  <data name="ListView_Site_Pages_Created_By_Me_Title" xml:space="preserve">
+    <value>Created By Me</value>
+  </data>
+  <data name="ListView_Site_Pages_By_Author_Title" xml:space="preserve">
+    <value>By Author</value>
+  </data>
+  <data name="ListView_Site_Pages_By_Editor_Title" xml:space="preserve">
+    <value>By Editor</value>
+  </data>
+</root>

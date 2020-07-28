@@ -1,6 +1,14 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2018/05/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.9.1905.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.21.2005.0, Culture=neutral, PublicKeyToken=null">
+    <pnp:Parameters>
+      <pnp:Parameter Key="O365TenantName">contoso</pnp:Parameter>
+      <pnp:Parameter Key="CodeProvidedParam" />
+      <pnp:Parameter Key="YammerNetwork">contoso.com</pnp:Parameter>
+      <pnp:Parameter Key="lcid">1033</pnp:Parameter>
+      <pnp:Parameter Key="CompanyName">Contoso Inc.</pnp:Parameter>
+    </pnp:Parameters>
+  </pnp:Preferences>
   <pnp:Localizations>
     <pnp:Localization LCID="1033" Name="core" ResourceFile="resources-core.en-us.resx" />
     <pnp:Localization LCID="1040" Name="core" ResourceFile="resources-core.it-it.resx" />

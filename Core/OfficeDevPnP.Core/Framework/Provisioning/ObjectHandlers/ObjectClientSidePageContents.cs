@@ -55,8 +55,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 var clientSidePageContentsHelper = new ClientSidePageContentsHelper();
 
-                var baseUrl = web.EnsureProperty(w => w.ServerRelativeUrl) + "/SitePages/";
-
                 // Extract the Home Page
                 web.EnsureProperties(w => w.RootFolder.WelcomePage, w => w.ServerRelativeUrl, w => w.Url);
                 var homePageUrl = web.RootFolder.WelcomePage;
@@ -78,6 +76,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (sitePagesLibrary != null)
                 {
+                    var baseUrl = $"{sitePagesLibrary.RootFolder.ServerRelativeUrl}/";
+
                     var templateFolderName = OfficeDevPnP.Core.Pages.ClientSidePage.DefaultTemplatesFolder;// string.Empty;
                     var templateFolderString = sitePagesLibrary.GetPropertyBagValueString(TemplatesFolderGuid, null);
                     Guid.TryParse(templateFolderString, out Guid templateFolderGuid);

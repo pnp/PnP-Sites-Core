@@ -1549,7 +1549,13 @@ namespace Microsoft.SharePoint.Client
                             if (jsFile == null)
                             {
                                 linkUrl = UploadStringAsFile(infrastructureContext.Web, targetFolder,
-                                    CoreResources.SP_Responsive_UI, "SP-Responsive-UI.js");
+#if DEBUG || DEBUG15 || DEBUG16 || DEBUG19
+                                    CoreResources.SP_Responsive_UI
+#else
+                                    CoreResources.SP_Responsive_UI_min
+#endif
+                                    , 
+                                    "SP-Responsive-UI.js");
                             }
                             else
                             {
@@ -1561,7 +1567,13 @@ namespace Microsoft.SharePoint.Client
                             if (targetFolder.GetFile("SP-Responsive-UI.css") == null)
                             {
                                 UploadStringAsFile(infrastructureContext.Web, targetFolder,
-                                    CoreResources.SP_Responsive_UI_CSS, "SP-Responsive-UI.css");
+#if DEBUG || DEBUG15 || DEBUG16 || DEBUG19
+                                    CoreResources.SP_Responsive_UI_CSS
+#else
+                                    CoreResources.SP_Responsive_UI_CSS_min
+#endif
+                                    , 
+                                    "SP-Responsive-UI.css");
                             }
                         }
                     }
@@ -1569,8 +1581,22 @@ namespace Microsoft.SharePoint.Client
                     {
                         var targetFolder = web.EnsureFolderPath("Style Library/SP.Responsive.UI");
 
-                        linkUrl = UploadStringAsFile(web, targetFolder, CoreResources.SP_Responsive_UI, "SP-Responsive-UI.js");
-                        UploadStringAsFile(web, targetFolder, CoreResources.SP_Responsive_UI_CSS, "SP-Responsive-UI.css");
+                        linkUrl = UploadStringAsFile(web, targetFolder,
+#if DEBUG || DEBUG15 || DEBUG16 || DEBUG19
+                            CoreResources.SP_Responsive_UI
+#else
+                            CoreResources.SP_Responsive_UI_min
+#endif
+                            ,
+                            "SP-Responsive-UI.js");
+                        UploadStringAsFile(web, targetFolder,
+#if DEBUG || DEBUG15 || DEBUG16 || DEBUG19
+                            CoreResources.SP_Responsive_UI_CSS
+#else
+                            CoreResources.SP_Responsive_UI_CSS_min
+#endif
+                            , 
+                            "SP-Responsive-UI.css");
                     }
 
                     // Deactive mobile feature
@@ -1671,7 +1697,11 @@ namespace Microsoft.SharePoint.Client
             catch (ServerException ex)
             {
                 // Handling the exception stating the "The object specified does not belong to a list."
+#if !ONPREMISES
+                if (ex.ServerErrorCode != -2113929210)
+#else
                 if (ex.ServerErrorCode != -2146232832)
+#endif
                 {
                     throw;
                 }

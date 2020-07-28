@@ -12,7 +12,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
       Returns = "My Value")]
     internal class StorageEntityValueToken : TokenDefinition
     {
-        private string _key;
         private string _value;
         public StorageEntityValueToken(Web web, string key, string value)
             : base(web, $"{{storageentityvalue:{Regex.Escape(key)}}}")

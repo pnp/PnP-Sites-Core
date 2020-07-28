@@ -293,7 +293,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
 
                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Adding_field__0__to_content_type, fieldId);
-                    web.AddFieldToContentType(existingContentType, field, fieldRef.Required, fieldRef.Hidden, fieldRef.UpdateChildren);
+                    web.AddFieldToContentType(existingContentType, field, 
+                        fieldRef.Required, 
+                        fieldRef.Hidden, 
+                        fieldRef.UpdateChildren
+#if !SP2013 && !SP2016
+                        ,
+                        fieldRef.ShowInDisplayForm,
+                        fieldRef.ReadOnly
+#endif
+                        );
                 }
             }
 
@@ -489,13 +498,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 // Add it to the target content type
                 // Notice that this code will fail if the field does not exist
-                web.AddFieldToContentType(createdCT, field, fieldRef.Required, fieldRef.Hidden, fieldRef.UpdateChildren);
+                web.AddFieldToContentType(createdCT, field,
+                    fieldRef.Required, 
+                    fieldRef.Hidden,
+                    fieldRef.UpdateChildren
+#if !SP2013 && !SP2016
+                    ,
+                    fieldRef.ShowInDisplayForm,
+                    fieldRef.ReadOnly
+#endif
+                    );
             }
 
             // Add new CTs
             parser.AddToken(new ContentTypeIdToken(web, name, id));
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
             // Set resources
             if (templateContentType.Name.ContainsResourceToken())
             {
@@ -738,7 +756,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private IEnumerable<ContentType> GetEntities(Web web, PnPMonitoredScope scope, ProvisioningTemplateCreationInformation creationInfo, ProvisioningTemplate template)
         {
             var cts = web.ContentTypes;
-            web.Context.Load(cts, ctCollection => ctCollection.IncludeWithDefaultProperties(ct => ct.FieldLinks, ct => ct.SchemaXmlWithResourceTokens));
+            web.Context.Load(cts, 
+                ctCollection => ctCollection.IncludeWithDefaultProperties(
+                    ct => ct.FieldLinks,
+                    ct => ct.SchemaXmlWithResourceTokens
+#if !SP2013 && !SP2016
+                    ,
+                    ct => ct.FieldLinks.IncludeWithDefaultProperties(
+                        fl => fl.DisplayName,
+                        fl => fl.ReadOnly, 
+                        fl => fl.ShowInDisplayForm)
+                    
+#endif
+                    )
+                );
+
             web.Context.ExecuteQueryRetry();
 
             if (cts.Count > 0 && web.IsSubSite())
@@ -818,6 +850,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                  Id = fieldLink.Id,
                                  Hidden = fieldLink.Hidden,
                                  Required = fieldLink.Required,
+#if !SP2013 && !SP2016
+                                 DisplayName = fieldLink.DisplayName,
+                                 ShowInDisplayForm = fieldLink.ShowInDisplayForm,
+                                 ReadOnly = fieldLink.ReadOnly,
+#endif
                              })
                         )
                     {

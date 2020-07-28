@@ -1,5 +1,4 @@
 ﻿using System;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Graph;
 
@@ -12,7 +11,7 @@ namespace OfficeDevPnP.Core.Tests.Utilities
         private string _accessToken;
         private string _groupId;
 
-    #region Init and Cleanup code
+        #region Init and Cleanup code
 
         [TestInitialize]
         public void Initialize()
@@ -53,7 +52,7 @@ namespace OfficeDevPnP.Core.Tests.Utilities
                 }
             }
         }
-    #endregion
+        #endregion
 
         [TestMethod]
         public void ListDeletedUnifiedGroups()
