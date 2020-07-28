@@ -152,7 +152,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             Provisioning wrappedResult =
                 XMLSerializer.Deserialize<Provisioning>(xml);
@@ -201,7 +201,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult =
                 XMLSerializer.Deserialize<Provisioning>(xml);
@@ -249,7 +249,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult =
                 XMLSerializer.Deserialize<Provisioning>(xml);
@@ -330,7 +330,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult =
                 XMLSerializer.Deserialize<Provisioning>(xml);
@@ -411,7 +411,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
 
@@ -491,7 +491,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
 
@@ -572,7 +572,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
 
@@ -629,7 +629,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
 
@@ -875,7 +875,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
 
@@ -923,7 +923,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(true, team.MembersSettings.AllowCreateUpdateRemoveConnectors);
             Assert.AreEqual(true, team.MembersSettings.AllowCreateUpdateRemoveTabs);
             Assert.AreEqual(true, team.MembersSettings.AllowCreatePrivateChannels);
-            
+
             // team messaging settings
             Assert.AreEqual(true, team.MessagingSettings.AllowChannelMentions);
             Assert.AreEqual(true, team.MessagingSettings.AllowOwnerDeleteMessages);
@@ -992,7 +992,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
 
@@ -1088,7 +1088,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
             var users = wrappedResult.AzureActiveDirectory.Users;
@@ -1256,7 +1256,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
             var drives = wrappedResult.Drive;
@@ -1327,7 +1327,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
             var packages = wrappedResult.Tenant.AppCatalog;
@@ -1378,7 +1378,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
             var apiPermissions = wrappedResult.Tenant.WebApiPermissions;
@@ -1443,7 +1443,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
             var cdn = wrappedResult.Tenant.ContentDeliveryNetwork;
@@ -1526,7 +1526,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
             var siteDesigns = wrappedResult.Tenant.SiteDesigns;
@@ -1594,7 +1594,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
             var siteScripts = wrappedResult.Tenant.SiteScripts;
@@ -1647,7 +1647,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
             var storageEntities = wrappedResult.Tenant.StorageEntities;
@@ -1700,7 +1700,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
             var themes = wrappedResult.Tenant.Themes;
@@ -1775,7 +1775,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
             var ups = wrappedResult.Tenant.SPUsersProfiles;
@@ -1839,7 +1839,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
             var o365LifecyclePolicies = wrappedResult.Tenant.Office365GroupLifecyclePolicies;
@@ -1889,7 +1889,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
             var o365GroupsSettings = wrappedResult.Tenant.Office365GroupsSettings;
@@ -1959,7 +1959,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
             var sharingSettings = wrappedResult.Tenant.SharingSettings;
@@ -2005,7 +2005,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
 
@@ -2042,7 +2042,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
 
@@ -2139,7 +2139,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
 
@@ -2219,7 +2219,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
 
@@ -2291,7 +2291,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
 
@@ -2344,7 +2344,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
 
@@ -2392,7 +2392,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
 
@@ -2448,7 +2448,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
 
@@ -2658,7 +2658,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
 
@@ -2910,7 +2910,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
 
@@ -3016,7 +3016,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
 
@@ -3134,7 +3134,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
 
@@ -3728,7 +3728,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
 
@@ -4087,7 +4087,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult =
                 XMLSerializer.Deserialize<Provisioning>(xml);
@@ -4215,7 +4215,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult =
                 XMLSerializer.Deserialize<Provisioning>(xml);
@@ -4376,7 +4376,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult =
                 XMLSerializer.Deserialize<Provisioning>(xml);
@@ -4492,7 +4492,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult =
                 XMLSerializer.Deserialize<Provisioning>(xml);
@@ -4634,7 +4634,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             var wrappedResult =
                 XMLSerializer.Deserialize<Provisioning>(xml);
@@ -4709,7 +4709,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             Provisioning wrappedResult =
                 XMLSerializer.Deserialize<Provisioning>(xml);
@@ -4758,7 +4758,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             Provisioning wrappedResult =
                 XMLSerializer.Deserialize<Provisioning>(xml);
@@ -4850,7 +4850,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             Provisioning wrappedResult =
                 XMLSerializer.Deserialize<Provisioning>(xml);
@@ -4910,7 +4910,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             Provisioning wrappedResult =
                 XMLSerializer.Deserialize<Provisioning>(xml);
@@ -5079,7 +5079,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
-            Assert.IsTrue(File.Exists(path));
+            Assert.IsTrue(File.Exists(path)); path = Path.GetFullPath(path);
             var xml = XDocument.Load(path);
             Provisioning wrappedResult =
                 XMLSerializer.Deserialize<Provisioning>(xml);

@@ -165,9 +165,11 @@ namespace Microsoft.SharePoint.Client
             
             // Upload the file, if required, using the specified process for upload.
             if (uploadRequired) {
+#if !NETSTANDARD2_0
                 if (useWebDav)
                     file = folder.UploadFileWebDav(fileName, path, replaceContent);
                 else
+#endif
                     file = folder.UploadFile(fileName, path, replaceContent);
             }
             // Set file properties after upload

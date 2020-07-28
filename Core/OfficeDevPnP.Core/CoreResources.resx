@@ -873,9 +873,6 @@
   <data name="Provisioning_ObjectHandlers_ContentTypes_InvalidDocumentSet_Update_Request" xml:space="preserve">
     <value>Content Type {0} with ID {1} cannot be transformed into a DocumentSet</value>
   </data>
-  <data name="Provisioning_ObjectHandlers_ContentTypes_DocumentSet_DeltaHandling_OnHold" xml:space="preserve">
-    <value>Content Type {0} with ID {1} cannot be updated because delta handling for DocumentSets is on hold.</value>
-  </data>
   <data name="Provisioning_ObjectHandlers_SitePolicy_PolicyAdded" xml:space="preserve">
     <value>Site policy '{0}' applied to site</value>
   </data>
@@ -951,9 +948,11 @@
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="SP_Responsive_UI" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\SP-Responsive-UI.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+    <comment>SP_Responsive_UI comment</comment>
   </data>
   <data name="SP_Responsive_UI_CSS" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\SP-Responsive-UI_CSS.css;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+    <comment>SP_Responsive_UI_CSS comment</comment>
   </data>
   <data name="SiteToTemplateConversion_PersistBrandingFiles_is_set_to_true" xml:space="preserve">
     <value>PersistBrandingFiles is set to true</value>
@@ -1242,5 +1241,13 @@
   </data>
   <data name="TimerJob_Authentication_AccessToken" xml:space="preserve">
     <value>Timer job authentication set to type AccessToken</value>
+  </data>
+  <data name="SP_Responsive_UI_CSS_min" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\sp-responsive-ui_css.min.css;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+    <comment>SP_Responsive_UI_CSS_min comment</comment>
+  </data>
+  <data name="SP_Responsive_UI_min" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\sp-responsive-ui.min.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+    <comment>SP_Responsive_UI_min comment</comment>
   </data>
 </root>

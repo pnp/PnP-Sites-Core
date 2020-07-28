@@ -84,7 +84,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Only configure Security, if Security is configured
                 if (team.Security != null)
                 {
-                    if (!SetGroupSecurity(scope, team, teamId, accessToken)) return null;
+                    if (!SetGroupSecurity(scope, parser, team, teamId, accessToken)) return null;
                 }
                 if (!SetTeamChannels(scope, parser, team, teamId, accessToken)) return null;
                 if (!SetTeamApps(scope, team, teamId, accessToken)) return null;
@@ -204,25 +204,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Prepare the IDs for owners and members
                 string[] desiredOwnerIds;
                 string[] desiredMemberIds;
-                try
+                if (team.Security != null)
                 {
-                    var userIdsByUPN = team.Security.Owners
-                        .Select(o => o.UserPrincipalName)
-                        .Concat(team.Security.Members.Select(m => m.UserPrincipalName))
-                        .Distinct(StringComparer.OrdinalIgnoreCase)
-                        .ToDictionary(k => k, k =>
-                        {
-                            var jsonUser = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{Uri.EscapeDataString(k.Replace("'", "''"))}?$select=id", accessToken);
-                            return JToken.Parse(jsonUser).Value<string>("id");
-                        });
+                    try
+                    {
+                        var userIdsByUPN = team.Security.Owners
+                            .Select(o => o.UserPrincipalName)
+                            .Concat(team.Security.Members.Select(m => m.UserPrincipalName))
+                            .Distinct(StringComparer.OrdinalIgnoreCase)
+                            .ToDictionary(k => k, k =>
+                            {
+                                var jsonUser = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{Uri.EscapeDataString(k.Replace("'", "''"))}?$select=id", accessToken);
+                                return JToken.Parse(jsonUser).Value<string>("id");
+                            });
 
-                    desiredOwnerIds = team.Security.Owners.Select(o => userIdsByUPN[o.UserPrincipalName]).ToArray();
-                    desiredMemberIds = team.Security.Members.Select(o => userIdsByUPN[o.UserPrincipalName]).Union(desiredOwnerIds).ToArray();
+                        desiredOwnerIds = team.Security.Owners.Select(o => userIdsByUPN[o.UserPrincipalName]).ToArray();
+                        desiredMemberIds = team.Security.Members.Select(o => userIdsByUPN[o.UserPrincipalName]).Union(desiredOwnerIds).ToArray();
+                    }
+                    catch (Exception ex)
+                    {
+                        scope.LogError(CoreResources.Provisioning_ObjectHandlers_Teams_Team_FetchingUserError, ex.Message);
+                        return (null);
+                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    scope.LogError(CoreResources.Provisioning_ObjectHandlers_Teams_Team_FetchingUserError, ex.Message);
-                    return (null);
+                    desiredOwnerIds = new string[0];
+                    desiredMemberIds = new string[0];
                 }
 
                 var groupCreationRequest = new
@@ -451,11 +459,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// Synchronizes Owners and Members with Team settings
         /// </summary>
         /// <param name="scope">The PnP Provisioning Scope</param>
+        /// <param name="parser">The PnP Token Parser</param>
         /// <param name="team">The Team settings, including security settings</param>
         /// <param name="teamId">The ID of the target Team</param>
         /// <param name="accessToken">The OAuth 2.0 Access Token</param>
         /// <returns>Whether the Security settings have been provisioned or not</returns>
-        private static bool SetGroupSecurity(PnPMonitoredScope scope, Team team, string teamId, string accessToken)
+        private static bool SetGroupSecurity(PnPMonitoredScope scope, TokenParser parser, Team team, string teamId, string accessToken)
         {
             SetAllowToAddGuestsSetting(scope, teamId, team.Security.AllowToAddGuests, accessToken);
 
@@ -470,7 +479,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     .Distinct(StringComparer.OrdinalIgnoreCase)
                     .ToDictionary(k => k, k =>
                     {
-                        var jsonUser = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{Uri.EscapeDataString(k.Replace("'", "''"))}?$select=id", accessToken);
+                        var parsedUser = parser.ParseString(k);
+                        var jsonUser = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{Uri.EscapeDataString(parsedUser.Replace("'", "''"))}?$select=id", accessToken);
                         return JToken.Parse(jsonUser).Value<string>("id");
                     });
 
@@ -638,7 +648,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             try
             {
                 var groupGuestSettings = GetGroupUnifiedGuestSettings(scope, teamId, accessToken);
-                if (groupGuestSettings["values"] != null && groupGuestSettings["values"].FirstOrDefault(x => x["name"].Value<string>().Equals("AllowToAddGuests")) != null)
+                if (groupGuestSettings != null && groupGuestSettings["values"] != null && groupGuestSettings["values"].FirstOrDefault(x => x["name"].Value<string>().Equals("AllowToAddGuests")) != null)
                 {
                     return groupGuestSettings["values"].First(x => x["name"].ToString() == "AllowToAddGuests").Value<bool>();
                 }
@@ -663,7 +673,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             try
             {
                 var response = JToken.Parse(HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{teamId}/settings", accessToken));
-                 return response["value"]?.FirstOrDefault(x => x["templateId"].ToString() == "08d542b9-071f-4e16-94b0-74abb372e3d9");
+                return response["value"]?.FirstOrDefault(x => x["templateId"].ToString() == "08d542b9-071f-4e16-94b0-74abb372e3d9");
             }
             catch (Exception e)
             {
@@ -785,12 +795,35 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private static string CreateTeamChannel(PnPMonitoredScope scope, Model.Teams.TeamChannel channel, string teamId, string accessToken)
         {
+            // Temporary variable, just in case
+            List<String> channelMembers = null;
+
+            if (channel.Private)
+            {
+                // Get the team owners, who will be set as members of the private channel
+                // if the channel is private
+                var teamOwnersString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/groups/{teamId}/owners", accessToken);
+                channelMembers = new List<String>();
+
+                foreach (var user in JObject.Parse(teamOwnersString)["value"] as JArray)
+                {
+                    channelMembers.Add((string)user["id"]);
+                }
+            }
+
             var channelToCreate = new
             {
                 channel.Description,
                 channel.DisplayName,
                 channel.IsFavoriteByDefault,
-                membershipType = channel.Private ? "private" : "standard"
+                membershipType = channel.Private ? "private" : "standard",
+                members = (channel.Private && channelMembers != null) ? (from m in channelMembers
+                                             select new
+                                             {
+                                                 private_channel_member_odata_type = "#microsoft.graph.aadUserConversationMember",
+                                                 private_channel_user_odata_bind = $"https://graph.microsoft.com/beta/users('{m}')",
+                                                 roles = new String[] { "owner" }
+                                             }).ToArray() : null
             };
 
             var channelId = GraphHelper.CreateOrUpdateGraphObject(scope,
@@ -1165,7 +1198,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         catch (Exception)
                         {
                             retry++;
-                            Thread.Sleep(5000*retry); // wait
+                            Thread.Sleep(5000 * retry); // wait
                         }
                 }
             }
@@ -1227,7 +1260,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return team.ToString();
         }
 
-#region PnP Provisioning Engine infrastructural code
+        #region PnP Provisioning Engine infrastructural code
 
         public override bool WillProvision(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, ApplyConfiguration configuration)
         {
@@ -1379,7 +1412,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 var teamString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{groupId}", accessToken);
                 team = JsonConvert.DeserializeObject<Team>(teamString);
-                if(configuration.Tenant.Teams.IncludeGroupId)
+                if (configuration.Tenant.Teams.IncludeGroupId)
                 {
                     team.GroupId = groupId;
                 }
@@ -1532,7 +1565,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             return tabs;
         }
-#endregion
+        #endregion
 
         private static string CreateMailNicknameFromDisplayName(string displayName)
         {

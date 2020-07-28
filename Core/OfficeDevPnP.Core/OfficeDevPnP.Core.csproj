@@ -484,6 +484,9 @@
     <Compile Include="Entities\WebhookNotification.cs" />
     <Compile Include="Entities\WebhookSubscription.cs" />
     <Compile Include="Enums\AppCatalogScope.cs" />
+    <Compile Include="Enums\GraphSubscriptionChangeType.cs" />
+    <Compile Include="Enums\GraphSubscriptionTlsVersion.cs" />
+    <Compile Include="Enums\Office365Geography.cs" />
     <Compile Include="Enums\SharePointTheme.cs" />
     <Compile Include="Extensions\ClientContextExtensions.cs" />
     <Compile Include="Extensions\ClientObjectExtensions.cs" />
@@ -527,7 +530,14 @@
     <Compile Include="Framework\Graph\Model\DirectorySettingTemplates.cs" />
     <Compile Include="Framework\Graph\GraphHttpClient.cs" />
     <Compile Include="Framework\Graph\Model\DirectorySettingValue.cs" />
+    <Compile Include="Framework\Graph\Model\GroupCreationRequest.cs" />
     <Compile Include="Framework\Graph\Model\SiteClassificationsSettings.cs" />
+    <Compile Include="Framework\Graph\Model\Subscription.cs" />
+    <Compile Include="Framework\Graph\Model\Group.cs" />
+    <Compile Include="Framework\Graph\Model\User.cs" />
+    <Compile Include="Framework\Graph\SubscriptionsUtility.cs" />
+    <Compile Include="Framework\Graph\Model\UserDelta.cs" />
+    <Compile Include="Framework\Graph\UsersUtility.cs" />
     <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionIssueTags.cs" />
     <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionRuleAttribute.cs" />
     <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionRulesManager.cs" />
@@ -714,8 +724,11 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\EveryoneToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\EveryoneButExternalUsersToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FieldIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\GroupSiteTitleToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FqdnToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ListContentTypeIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\O365GroupIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\PropertyBagValueToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SequenceSiteGroupIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SequenceSiteIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SequenceSiteCollectionIdToken.cs" />
@@ -778,6 +791,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV202002Serializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201909Serializer.cs" />
     <Compile Include="Pages\ClientSidePageSettingsSlice.cs" />
+    <Compile Include="Pages\HeaderControlData.cs" />
     <Compile Include="Pages\TranslationStatus.cs" />
     <Compile Include="Pages\TranslationStatusCreationRequest.cs" />
     <Compile Include="Utilities\Graph\GraphHelper.cs" />
@@ -1541,6 +1555,8 @@
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\STS0Template.xml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\SP-Responsive-UI.min.js" />
+    <None Include="Resources\SP-Responsive-UI_CSS.min.css" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\BDR0Template.xml" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\BICENTERSITE0Template.xml" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\BLOG0Template.xml" />

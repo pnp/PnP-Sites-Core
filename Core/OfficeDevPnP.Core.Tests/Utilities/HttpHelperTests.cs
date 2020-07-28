@@ -23,6 +23,9 @@ namespace OfficeDevPnP.Core.Tests.Utilities
         [TestMethod]
         public void MakeGetRequestForStringTest()
         {
+
+            if (string.IsNullOrEmpty(HttpHelperTests.TestAPIUrl)) Assert.Inconclusive("No value set for HttpHelperFunctionAppUrl property in the config file");
+
             var result = HttpHelper.MakeGetRequestForString(
                 $"{HttpHelperTests.TestAPIUrl}&requestType=MakeGetRequestForString");
             Assert.AreEqual(result, "Here is the string response!");
@@ -31,6 +34,8 @@ namespace OfficeDevPnP.Core.Tests.Utilities
         [TestMethod]
         public void MakeGetRequestForStreamTest()
         {
+            if (string.IsNullOrEmpty(HttpHelperTests.TestAPIUrl)) Assert.Inconclusive("No value set for HttpHelperFunctionAppUrl property in the config file");
+
             var mem = HttpHelper.MakeGetRequestForStream(
                 $"{HttpHelperTests.TestAPIUrl}&requestType=MakeGetRequestForStream", 
                 "text/plain");
@@ -44,6 +49,8 @@ namespace OfficeDevPnP.Core.Tests.Utilities
         [TestMethod]
         public void MakeGetRequestForStreamWithResponseHeadersTest()
         {
+            if (string.IsNullOrEmpty(HttpHelperTests.TestAPIUrl)) Assert.Inconclusive("No value set for HttpHelperFunctionAppUrl property in the config file");
+
             System.Net.Http.Headers.HttpResponseHeaders responseHeaders;
             var mem = HttpHelper.MakeGetRequestForStreamWithResponseHeaders(
                 $"{HttpHelperTests.TestAPIUrl}&requestType=MakeGetRequestForStreamWithResponseHeaders", 
@@ -61,6 +68,8 @@ namespace OfficeDevPnP.Core.Tests.Utilities
         [TestMethod]
         public void MakePostRequestTest()
         {
+            if (string.IsNullOrEmpty(HttpHelperTests.TestAPIUrl)) Assert.Inconclusive("No value set for HttpHelperFunctionAppUrl property in the config file");
+
             HttpHelper.MakePostRequest(
                 $"{HttpHelperTests.TestAPIUrl}&requestType=MakePostRequest");
         }
@@ -68,6 +77,8 @@ namespace OfficeDevPnP.Core.Tests.Utilities
         [TestMethod]
         public void MakePostRequestForStringTest()
         {
+            if (string.IsNullOrEmpty(HttpHelperTests.TestAPIUrl)) Assert.Inconclusive("No value set for HttpHelperFunctionAppUrl property in the config file");
+
             var result = HttpHelper.MakePostRequestForString(
                 $"{HttpHelperTests.TestAPIUrl}&requestType=MakePostRequestForString");
             Assert.AreEqual(result, "Here is the string response!");
@@ -76,6 +87,8 @@ namespace OfficeDevPnP.Core.Tests.Utilities
         [TestMethod]
         public void MakePostRequestForHeadersTest()
         {
+            if (string.IsNullOrEmpty(HttpHelperTests.TestAPIUrl)) Assert.Inconclusive("No value set for HttpHelperFunctionAppUrl property in the config file");
+
             var result = HttpHelper.MakePostRequestForHeaders(
                 $"{HttpHelperTests.TestAPIUrl}&requestType=MakePostRequestForHeaders");
             Assert.IsNotNull(result);
@@ -84,6 +97,8 @@ namespace OfficeDevPnP.Core.Tests.Utilities
         [TestMethod]
         public void MakePutRequestTest()
         {
+            if (string.IsNullOrEmpty(HttpHelperTests.TestAPIUrl)) Assert.Inconclusive("No value set for HttpHelperFunctionAppUrl property in the config file");
+
             HttpHelper.MakePutRequest(
                 $"{HttpHelperTests.TestAPIUrl}&requestType=MakePutRequest");
         }
@@ -91,6 +106,8 @@ namespace OfficeDevPnP.Core.Tests.Utilities
         [TestMethod]
         public void MakePutRequestForStringTest()
         {
+            if (string.IsNullOrEmpty(HttpHelperTests.TestAPIUrl)) Assert.Inconclusive("No value set for HttpHelperFunctionAppUrl property in the config file");
+
             var result = HttpHelper.MakePutRequestForString(
                 $"{HttpHelperTests.TestAPIUrl}&requestType=MakePutRequestForString");
             Assert.AreEqual(result, "Here is the string response!");
@@ -99,6 +116,8 @@ namespace OfficeDevPnP.Core.Tests.Utilities
         [TestMethod]
         public void MakePatchRequestForStringTest()
         {
+            if (string.IsNullOrEmpty(HttpHelperTests.TestAPIUrl)) Assert.Inconclusive("No value set for HttpHelperFunctionAppUrl property in the config file");
+
             var result = HttpHelper.MakePatchRequestForString(
                 $"{HttpHelperTests.TestAPIUrl}&requestType=MakePatchRequestForString");
             Assert.AreEqual(result, "I've got your request!");
@@ -107,6 +126,8 @@ namespace OfficeDevPnP.Core.Tests.Utilities
         [TestMethod]
         public void MakeDeleteRequestTest()
         {
+            if (string.IsNullOrEmpty(HttpHelperTests.TestAPIUrl)) Assert.Inconclusive("No value set for HttpHelperFunctionAppUrl property in the config file");
+
             HttpHelper.MakeDeleteRequest(
                 $"{HttpHelperTests.TestAPIUrl}&requestType=MakeDeleteRequest");
         }
@@ -114,6 +135,8 @@ namespace OfficeDevPnP.Core.Tests.Utilities
         [TestMethod]
         public void MakeGetRequestForStringWithSPContextTest()
         {
+            if (string.IsNullOrEmpty(HttpHelperTests.TestAPIUrl)) Assert.Inconclusive("No value set for HttpHelperFunctionAppUrl property in the config file");
+
             using (var clientContext = TestCommon.CreatePnPClientContext(5, 1000))
             {
                 var web = clientContext.Web;
@@ -136,6 +159,8 @@ namespace OfficeDevPnP.Core.Tests.Utilities
         [TestMethod]
         public void MakePostRequestForStringWithSPContextTest()
         {
+            if (string.IsNullOrEmpty(HttpHelperTests.TestAPIUrl)) Assert.Inconclusive("No value set for HttpHelperFunctionAppUrl property in the config file");
+
             using (var clientContext = TestCommon.CreatePnPClientContext(5, 1000))
             {
                 var web = clientContext.Web;

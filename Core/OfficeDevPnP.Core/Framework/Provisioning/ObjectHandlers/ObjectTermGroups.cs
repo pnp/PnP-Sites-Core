@@ -361,10 +361,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     // Find the site collection termgroup, if any
                     TaxonomySession session = TaxonomySession.GetTaxonomySession(web.Context);
+                    
                     TermStore termStore = null;
 
                     try
                     {
+                        // Refresh / Update the taxonomy Cache to prevent errors using the same session for creating and getting terms
+                        session.UpdateCache();
+                        web.Context.ExecuteQueryRetry();
+
                         termStore = session.GetDefaultSiteCollectionTermStore();
                         web.Context.Load(termStore, t => t.Id, t => t.DefaultLanguage, t => t.OrphanedTermsTermSet);
                         web.Context.ExecuteQueryRetry();
@@ -447,7 +452,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             SiteCollectionTermGroup = isSiteCollectionTermGroup
                         };
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
 
                         // If we need to include TermGroups security
                         if (creationInfo.IncludeTermGroupsSecurity)

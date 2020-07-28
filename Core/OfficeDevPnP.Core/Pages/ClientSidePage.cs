@@ -49,6 +49,7 @@ namespace OfficeDevPnP.Core.Pages
         public const string _OriginalSourceListId = "_OriginalSourceListId";
         public const string _OriginalSourceItemId = "_OriginalSourceItemId";
         public const string IdField = "ID";
+        public const string _SPSitePageFlags = "_SPSitePageFlags";
 
         // feature
         public const string SitePagesFeatureId = "b6917cb1-93a0-4b97-a84d-7cf49975d4ec";
@@ -63,6 +64,12 @@ namespace OfficeDevPnP.Core.Pages
         public const string SpacesLayoutType = "d39ad2cb-84bd-48a0-9daa-4aea9f644cd4";
         public const string SpaceContentField = "SpaceContent";
 
+        // Topic pages
+        public const string TopicLayoutType = "Topic";
+        public const string TopicEntityId = "_EntityId";
+        public const string TopicEntityRelations = "_EntityRelations";
+        public const string TopicEntityType = "_EntityType";
+
         private ClientContext context;
         private string pageName;
         private string pagesLibrary;
@@ -71,8 +78,9 @@ namespace OfficeDevPnP.Core.Pages
         private string sitePagesServerRelativeUrl;
         private bool securityInitialized = false;
         private string accessToken;
-        private System.Collections.Generic.List<CanvasSection> sections = new System.Collections.Generic.List<CanvasSection>(1);
-        private System.Collections.Generic.List<CanvasControl> controls = new System.Collections.Generic.List<CanvasControl>(5);
+        private readonly List<CanvasSection> sections = new List<CanvasSection>(1);
+        private readonly List<CanvasControl> controls = new List<CanvasControl>(5);
+        private readonly List<CanvasControl> headerControls = new List<CanvasControl>();
         private ClientSidePageLayoutType layoutType;
         private bool keepDefaultWebParts;
         private string pageTitle;
@@ -148,7 +156,7 @@ namespace OfficeDevPnP.Core.Pages
         /// <summary>
         /// Collection of sections that exist on this client side page
         /// </summary>
-        public System.Collections.Generic.List<CanvasSection> Sections
+        public List<CanvasSection> Sections
         {
             get
             {
@@ -159,11 +167,22 @@ namespace OfficeDevPnP.Core.Pages
         /// <summary>
         /// Collection of all control that exist on this client side page
         /// </summary>
-        public System.Collections.Generic.List<CanvasControl> Controls
+        public List<CanvasControl> Controls
         {
             get
             {
                 return this.controls;
+            }
+        }
+
+        /// <summary>
+        /// Collection of all header control that exist on this client side page
+        /// </summary>
+        public List<CanvasControl> HeaderControls
+        {
+            get
+            {
+                return this.headerControls;
             }
         }
 
@@ -350,6 +369,30 @@ namespace OfficeDevPnP.Core.Pages
         /// Space content field (JSON) for spaces pages
         /// </summary>
         public string SpaceContent
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Entity id field for topic pages
+        /// </summary>
+        public string EntityId
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Entity relations field for topic pages
+        /// </summary>
+        public string EntityRelations
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Entity type field for topic pages
+        /// </summary>
+        public string EntityType
         {
             get; set;
         }
@@ -641,6 +684,26 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
+        /// Adds a new header control to your client side page with a given order
+        /// </summary>
+        /// <param name="control"><see cref="CanvasControl"/> to add</param>
+
+        /// <param name="order">Order of the control in the given section</param>
+        public void AddHeaderControl(CanvasControl control, int order)
+        {
+            if (control == null)
+            {
+                throw new ArgumentNullException("Passed control cannot be null");
+            }
+
+            control.section = this.DefaultSection;
+            control.column = this.DefaultSection.DefaultColumn;
+            control.Order = order;
+
+            this.headerControls.Add(control);
+        }
+
+        /// <summary>
         /// Deletes a control from a page
         /// </summary>
         public void Delete()
@@ -652,6 +715,26 @@ namespace OfficeDevPnP.Core.Pages
 
             pageListItem.DeleteObject();
             this.Context.ExecuteQueryRetry();
+        }
+
+        internal string HeaderControlsToHtml()
+        {
+            if (headerControls.Any())
+            {
+                StringBuilder html = new StringBuilder();
+
+                float order = 1;
+                foreach(var headerControl in headerControls)
+                {
+                    html.Append(headerControl.ToHtml(order));
+                }
+
+                return html.ToString();
+            }
+            else
+            {
+                return "";
+            }
         }
 
         /// <summary>
@@ -785,6 +868,10 @@ namespace OfficeDevPnP.Core.Pages
                     {
                         page.LayoutType = ClientSidePageLayoutType.Spaces;
                     }
+                    else if (item[ClientSidePage.PageLayoutType].ToString().Equals(TopicLayoutType, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        page.LayoutType = ClientSidePageLayoutType.Topic;
+                    }
                     else
                     {
 #endif
@@ -804,6 +891,24 @@ namespace OfficeDevPnP.Core.Pages
                     if (item.FieldValues.ContainsKey(ClientSidePage.SpaceContentField) && item[ClientSidePage.SpaceContentField] != null && !string.IsNullOrEmpty(item[ClientSidePage.SpaceContentField].ToString()))
                     {
                         page.SpaceContent = item[ClientSidePage.SpaceContentField].ToString();
+                    }
+                }
+
+                if (page.LayoutType == ClientSidePageLayoutType.Topic)
+                {
+                    if (item.FieldValues.ContainsKey(ClientSidePage.TopicEntityId) && item[ClientSidePage.TopicEntityId] != null && !string.IsNullOrEmpty(item[ClientSidePage.TopicEntityId].ToString()))
+                    {
+                        page.EntityId = item[ClientSidePage.TopicEntityId].ToString();
+                    }
+
+                    if (item.FieldValues.ContainsKey(ClientSidePage.TopicEntityRelations) && item[ClientSidePage.TopicEntityRelations] != null && !string.IsNullOrEmpty(item[ClientSidePage.TopicEntityRelations].ToString()))
+                    {
+                        page.EntityRelations = item[ClientSidePage.TopicEntityRelations].ToString();
+                    }
+
+                    if (item.FieldValues.ContainsKey(ClientSidePage.TopicEntityType) && item[ClientSidePage.TopicEntityType] != null && !string.IsNullOrEmpty(item[ClientSidePage.TopicEntityType].ToString()))
+                    {
+                        page.EntityType = item[ClientSidePage.TopicEntityType].ToString();
                     }
                 }
 #endif
@@ -882,12 +987,27 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             var pageHeaderHtml = "";
-            if (this.pageHeader != null && this.pageHeader.Type != ClientSidePageHeaderType.None && this.LayoutType != ClientSidePageLayoutType.RepostPage)
-            {
+            if (this.pageHeader != null && this.pageHeader.Type != ClientSidePageHeaderType.None && this.LayoutType != ClientSidePageLayoutType.RepostPage
+#if !SP2019
+                && this.LayoutType != ClientSidePageLayoutType.Topic
+#endif
+                )
+            {               
                 // this triggers resolving of the header image which has to be done early as otherwise there will be version conflicts
                 // (see here: https://github.com/SharePoint/PnP-Sites-Core/issues/2203)
                 pageHeaderHtml = this.pageHeader.ToHtml(this.PageTitle);
             }
+
+#if !SP2019
+            if (this.LayoutType == ClientSidePageLayoutType.Topic)
+            {
+                // If we have extra header controls (e.g. with topic pages) then we need to persist those controls to a html snippet that will need to be embedded in the header
+                if (this.headerControls.Any())
+                {
+                    pageHeaderHtml = $"<div>{HeaderControlsToHtml()}</div>";
+                }
+            }
+#endif
 
             // Try to load the page
             if (pageFile == null && pagesLibrary == null)
@@ -955,6 +1075,17 @@ namespace OfficeDevPnP.Core.Pages
                         item[ClientSidePage.SpaceContentField] = this.SpaceContent;
                     }
                 }
+                else if (this.LayoutType == ClientSidePageLayoutType.Topic)
+                {
+                    item[ClientSidePage.PageLayoutType] = TopicLayoutType;
+                    item[ClientSidePage.TopicEntityId] = this.EntityId;
+                    item[ClientSidePage.TopicEntityRelations] = this.EntityRelations;
+                    item[ClientSidePage.TopicEntityType] = this.EntityType;
+
+                    // Set the _SPSitePageFlags field
+                    item[_SPSitePageFlags] = ";#TopicPage;#";
+
+                }
                 else
                 {
 #endif
@@ -968,9 +1099,10 @@ namespace OfficeDevPnP.Core.Pages
 #endif
                     )
                 {
-                    item[ClientSidePage.PromotedStateField] = (Int32)PromotedState.NotPromoted;
                     item[ClientSidePage.BannerImageUrl] = "/_layouts/15/images/sitepagethumbnail.png";
                 }
+
+                item[ClientSidePage.PromotedStateField] = (Int32)PromotedState.NotPromoted;
                 item.UpdateOverwriteVersion();
                 this.Context.Web.Context.Load(item);
             }
@@ -2116,8 +2248,41 @@ namespace OfficeDevPnP.Core.Pages
             // Reindex the control order. We're starting control order from 1 for each column.
             ReIndex();
 
-            // Load the page header
-            this.pageHeader.FromHtml(pageHeaderHtml);
+#if !SP2019
+            // Load page header controls. Cortex Topic pages do have 5 controls in the header (= controls that cannot be moved)
+            if (LayoutType == ClientSidePageLayoutType.Topic)
+            {
+                using (var document = parser.Parse(pageHeaderHtml))
+                {
+                    // select all control div's
+                    var clientSideHeaderControls = document.All.Where(m => m.HasAttribute(CanvasControl.ControlDataAttribute));
+
+                    int headerControlOrder = 1;
+                    foreach (var clientSideHeaderControl in clientSideHeaderControls)
+                    {
+                        // Process the extra header controls
+                        var controlData = clientSideHeaderControl.GetAttribute(CanvasControl.ControlDataAttribute);
+
+                        var control = new ClientSideWebPart()
+                        {
+                            Order = headerControlOrder,
+                            IsHeaderControl = true,
+                        };
+                        control.FromHtml(clientSideHeaderControl);
+
+                        headerControls.Add(control);
+                        headerControlOrder++;
+                    }
+                }
+            }
+            else
+            {
+#endif
+                // Load the page header
+                this.pageHeader.FromHtml(pageHeaderHtml);
+#if !SP2019
+            }
+#endif
         }
 
         private void ReIndex()
@@ -2226,6 +2391,13 @@ namespace OfficeDevPnP.Core.Pages
                 {
                     handler.SetAuthenticationCookies(context);
                 }
+                else
+                {
+                    if (context.Credentials is System.Net.NetworkCredential networkCredential)
+                    {
+                        handler.Credentials = networkCredential;
+                    }
+                }
 
                 using (var httpClient = new PnPHttpProvider(handler))
                 {
@@ -2233,6 +2405,19 @@ namespace OfficeDevPnP.Core.Pages
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
                     request.Headers.Add("accept", "application/json;odata.metadata=none");
                     request.Headers.Add("odata-version", "4.0");
+
+                    // We've an access token, so we're in app-only or user + app context
+                    if (!String.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+                    else
+                    {
+                        if (context.Credentials is NetworkCredential networkCredential)
+                        {
+                            handler.Credentials = networkCredential;
+                        }
+                    }
 
                     HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
 
@@ -2277,6 +2462,20 @@ namespace OfficeDevPnP.Core.Pages
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
                     request.Headers.Add("accept", "application/json;odata.metadata=none");
                     request.Headers.Add("odata-version", "4.0");
+
+                    // We've an access token, so we're in app-only or user + app context
+                    if (!String.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+                    else
+                    {
+                        if (context.Credentials is NetworkCredential networkCredential)
+                        {
+                            handler.Credentials = networkCredential;
+                        }
+                    }
+
                     request.Headers.Add("X-RequestDigest", await context.GetRequestDigest());
 
                     if (translationStatusCreationRequest != null && translationStatusCreationRequest.LanguageCodes.Count > 0)
@@ -2391,7 +2590,7 @@ namespace OfficeDevPnP.Core.Pages
                 this.accessToken = e.WebRequestExecutor.RequestHeaders.Get("Authorization").Replace("Bearer ", "");
             }
         }
-                #endregion
+#endregion
     }
 #endif
         }

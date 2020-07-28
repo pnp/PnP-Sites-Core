@@ -41,15 +41,15 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         //[TestMethod]
         //public void ExportPagesTest()
         //{
-        //    using (var clientContext = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/multilingual"))
+        //    using (var clientContext = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/KnowledgeCenter"))
         //    {
         //        ProvisioningTemplateCreationInformation ptci = new ProvisioningTemplateCreationInformation(clientContext.Web)
         //        {
         //            // Limit the amount of handlers in this demo
         //            HandlersToProcess = Handlers.PageContents,
         //            // Create FileSystemConnector, so that we can store composed files temporarely somewhere 
-        //            FileConnector = new FileSystemConnector(@"C:\temp", ""),
-        //            PersistBrandingFiles = false,
+        //            FileConnector = new FileSystemConnector(@"d:\temp\topicpages", ""),
+        //            PersistBrandingFiles = true,
         //            IncludeAllClientSidePages = true,
         //            ProgressDelegate = delegate (String message, Int32 progress, Int32 total)
         //            {
@@ -62,16 +62,16 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         //        ProvisioningTemplate template = clientContext.Web.GetProvisioningTemplate(ptci);
 
         //        // Serialize to XML using the beta 201705 schema
-        //        XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(@"C:\temp", "");
-        //        var formatter = XMLPnPSchemaFormatter.GetSpecificFormatter(XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2019_09);
-        //        provider.SaveAs(template, "PnPProvisioningDemo201909.xml", formatter);
+        //        XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(@"d:\temp\topicpages", "");
+        //        var formatter = XMLPnPSchemaFormatter.GetSpecificFormatter(XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2020_02);
+        //        provider.SaveAs(template, "PnPProvisioningDemo202002.xml", formatter);
         //    }
         //}
 
         //[TestMethod]
         //public void ApplyPagesTest()
         //{
-        //    using (var clientContext = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/multilingualtarget"))
+        //    using (var clientContext = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/KnowledgeCenter"))
         //    {
         //        ProvisioningTemplateApplyingInformation ptai = new ProvisioningTemplateApplyingInformation()
         //        {
@@ -83,8 +83,9 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         //            }
         //        };
 
-        //        XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(@"C:\temp", "");
-        //        ProvisioningTemplate sourceTemplate = provider.GetTemplate("PnPProvisioningDemo201909.xml");
+        //        XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(@"d:\temp\topicpages", "");
+        //        ProvisioningTemplate sourceTemplate = provider.GetTemplate("PnPProvisioningDemo202002.xml");
+        //        sourceTemplate.Connector = new FileSystemConnector(@"d:\temp\topicpages", "");
 
         //        // Execute actual extraction of the tepmplate
         //        clientContext.Web.ApplyProvisioningTemplate(sourceTemplate);
@@ -95,58 +96,14 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         //public void MUITest()
         //{
         //    //using (var cc = new AuthenticationManager().GetWebLoginClientContext("https://contoso.sharepoint.com/teams/TEST_Provisioning"))
-        //    using (var cc = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/multilingual"))
+        //    using (var cc = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/KnowledgeCenter"))
         //    {
-        //        cc.Web.EnsureProperty(w => w.SupportedUILanguageIds);
-
-        //        var newPage = new Pages.ClientSidePage(cc);
-        //        newPage.AddSection(CanvasSectionTemplate.TwoColumnVerticalSection, 1);
-
-        //        newPage.Sections[0].Columns[0].VerticalSectionEmphasis = 2;
-        //        newPage.Sections[0].VerticalSectionColumn.VerticalSectionEmphasis = 2;
-        //        newPage.Sections[0].ZoneEmphasis = 3;
-
-        //        var t1 = new ClientSideText()
-        //        {
-        //            Text = "English!"
-        //        };
-        //        var t2 = new ClientSideText()
-        //        {
-        //            Text = "BB"
-        //        };
-        //        var t3 = new ClientSideText()
-        //        {
-        //            Text = "CC"
-        //        };
-        //        var t4 = new ClientSideText()
-        //        {
-        //            Text = "DD"
-        //        };
-        //        var t5 = new ClientSideText()
-        //        {
-        //            Text = "EE"
-        //        };
-        //        var t6 = new ClientSideText()
-        //        {
-        //            Text = "FF"
-        //        };
-
-        //        newPage.AddControl(t1, newPage.Sections[0].Columns[0]);
-        //        newPage.AddControl(t2, newPage.Sections[0].Columns[0]);
-        //        newPage.AddControl(t3, newPage.Sections[0].Columns[1]);
-        //        newPage.AddControl(t4, newPage.Sections[0].Columns[2]);
-        //        newPage.AddControl(t5, newPage.Sections[0].Columns[2]);
-        //        newPage.AddControl(t6, newPage.Sections[0].Columns[2]);
-
-        //        newPage.Save("mui2.aspx");
+        //        var page = cc.Web.LoadClientSidePage("pnp2.aspx");
 
 
-        //        TranslationStatusCreationRequest tscr = new TranslationStatusCreationRequest();
-        //        tscr.AddLanguage(1036);
+        //        page.Save("pnpclone.aspx");
 
 
-        //        //var translationStatus = newPage.GenerateTranslations(tscr);
-        //        var translationStatus = newPage.Translations();
         //    }
         //}
 

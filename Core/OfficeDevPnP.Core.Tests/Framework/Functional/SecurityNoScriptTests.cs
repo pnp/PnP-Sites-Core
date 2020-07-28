@@ -15,12 +15,12 @@ using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     /// <summary>
     /// Test cases for the provisioning engine security functionality
     /// </summary>
     [TestClass]
-   public class SecurityNoScriptTests : FunctionalTestBase
+    public class SecurityNoScriptTests : FunctionalTestBase
     {
         #region Construction
         public SecurityNoScriptTests()

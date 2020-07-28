@@ -16,6 +16,7 @@ using System.Linq;
 using System.Resources;
 using System.Text.RegularExpressions;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Framework.Graph;
 #if NETSTANDARD2_0
 using System.Xml.Linq;
 #endif
@@ -134,6 +135,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new AuthenticationRealmToken(web));
 #endif
             _tokens.Add(new HostUrlToken(web));
+            _tokens.Add(new FqdnToken(web));
             AddResourceTokens(web, hierarchy.Localizations, hierarchy.Connector);
             _initializedFromHierarchy = true;
         }
@@ -190,6 +192,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 _tokens.Add(new SiteOwnerToken(web));
             if (tokenIds.Contains("sitetitle") || tokenIds.Contains("sitename"))
                 _tokens.Add(new SiteTitleToken(web));
+            if (tokenIds.Contains("groupsitetitle") || tokenIds.Contains("groupsitename"))
+                _tokens.Add(new GroupSiteTitleToken(web));
             if (tokenIds.Contains("associatedownergroupid"))
                 _tokens.Add(new AssociatedGroupIdToken(web, AssociatedGroupIdToken.AssociatedGroupType.owners));
             if (tokenIds.Contains("associatedmembergroupid"))
@@ -218,6 +222,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
             if (tokenIds.Contains("hosturl"))
                 _tokens.Add(new HostUrlToken(web));
+            if (tokenIds.Contains("fqdn"))
+                _tokens.Add(new FqdnToken(web));
 #if !ONPREMISES
             if (tokenIds.Contains("sitecollectionconnectedoffice365groupid"))
                 _tokens.Add(new SiteCollectionConnectedOffice365GroupId(web));
@@ -273,7 +279,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES
             if (tokenIds.Contains("apppackageid"))
                 AddAppPackagesTokens(web);
+            if (tokenIds.Contains("pageuniqueid"))
+                AddPageUniqueIdTokens(web, applyingInformation);
 #endif
+            if (tokenIds.Contains("propertybagvalue"))
+                AddPropertyBagTokens(web);
 
             // TermStore related tokens
             AddTermStoreTokens(web, tokenIds);
@@ -382,6 +392,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
+        private void AddPropertyBagTokens(Web web)
+        {
+            web.EnsureProperty(w => w.AllProperties);
+
+            foreach (var keyValue in web.AllProperties.FieldValues)
+            {
+                _tokens.Add(new PropertyBagValueToken(web, keyValue.Key, keyValue.Value.ToString()));
+            }
+        }
+
         private void AddGroupTokens(Web web, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             web.EnsureProperty(w => w.SiteGroups.Include(g => g.Title, g => g.Id));
@@ -412,16 +432,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (accessToken != null)
                 {
                     // Get Office 365 Groups
-
-                    var officeGroups = HttpHelper.MakeGetRequestForString("https://graph.microsoft.com/v1.0/groups?$filter=groupTypes/any(c:c+eq+'Unified')&$select=id,displayName,mailNickname", accessToken);
-                    var returnObject = JObject.Parse(officeGroups);
-                    var groupsArray = returnObject["value"].Value<JArray>();
-                    foreach (var group in groupsArray)
+                    var officeGroups = UnifiedGroupsUtility.GetUnifiedGroups(accessToken, includeSite: false); 
+                    foreach (var group in officeGroups)
                     {
-                        _tokens.Add(new O365GroupIdToken(web, group["displayName"].Value<string>(), group["id"].Value<string>()));
-                        if (!group["displayName"].Value<string>().Equals(group["mailNickname"].Value<string>()))
+                        _tokens.Add(new O365GroupIdToken(web, group.DisplayName, group.GroupId));
+                        if (!group.DisplayName.Equals(group.MailNickname))
                         {
-                            _tokens.Add(new O365GroupIdToken(web, group["mailNickname"].Value<string>(), group["id"].Value<string>()));
+                            _tokens.Add(new O365GroupIdToken(web, group.MailNickname, group.GroupId));
                         }
                     }
                 }
@@ -607,6 +624,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
+        private void AddPageUniqueIdTokens(Web web, ProvisioningTemplateApplyingInformation applyingInformation)
+        {
+
+            var pagesList = web.GetListByUrl("SitePages", p => p.RootFolder);
+
+            var query = new CamlQuery()
+            {
+                ViewXml = $"<View><ViewFields><FieldRef Name='UniqueId'/><FieldRef Name='FileLeafRef' /></ViewFields></View><RowLimit Paging='TRUE'>100</RowLimit>"
+            };
+            do
+            {
+                var items = pagesList.GetItems(query);
+                web.Context.Load(items);
+                web.Context.ExecuteQueryRetry();
+                foreach (var item in items)
+                {
+                    _tokens.Add(new PageUniqueIdToken(web, $"SitePages/{item["FileLeafRef"]}", Guid.Parse(item["UniqueId"].ToString())));
+                    _tokens.Add(new PageUniqueIdEncodedToken(web, $"SitePages/{item["FileLeafRef"]}", Guid.Parse(item["UniqueId"].ToString())));
+                }
+                query.ListItemCollectionPosition = items.ListItemCollectionPosition;
+            } while (query.ListItemCollectionPosition != null);
+        }
+
         private void AddSiteScriptTokens(Web web, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             try
@@ -646,11 +686,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Language);
 
-            _tokens.RemoveAll(t => t.GetType() == typeof(ListIdToken));
-            _tokens.RemoveAll(t => t.GetType() == typeof(ListUrlToken));
-            _tokens.RemoveAll(t => t.GetType() == typeof(ListViewIdToken));
-            _tokens.RemoveAll(t => t.GetType() == typeof(ListContentTypeIdToken));
-            
+            //Remove tokens from TokenDictionary and ListTokenDictionary
+            Predicate<TokenDefinition> listTokenTypes = t => (t.GetType() == typeof(ListIdToken) || t.GetType() == typeof(ListUrlToken) || t.GetType() == typeof(ListViewIdToken) || t.GetType() == typeof(ListContentTypeIdToken));
+            foreach (var listToken in _tokens.FindAll(listTokenTypes))
+            {
+                foreach (string token in listToken.GetTokens())
+                {
+                    var tokenKey = Regex.Unescape(token);
+                    TokenDictionary.Remove(tokenKey);
+                    if (listToken is ListIdToken)
+                    {
+                        ListTokenDictionary.Remove(tokenKey);
+                    }
+                }
+            }
+            _tokens.RemoveAll(listTokenTypes);
+
             web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl, l => l.Views, l => l.ContentTypes
 #if !SP2013
             , l => l.TitleResource
@@ -674,7 +725,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     _tokens.Add(new ListViewIdToken(web, list.Title, view.Title, view.Id));
                 }
-                
+
                 foreach (var contentType in list.ContentTypes)
                 {
                     _tokens.Add(new ListContentTypeIdToken(web, list.Title, contentType.Name, contentType.Id));

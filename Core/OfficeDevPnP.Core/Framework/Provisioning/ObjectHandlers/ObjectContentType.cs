@@ -99,7 +99,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 if ((!existingCT.Sealed || !ct.Sealed) && (!existingCT.ReadOnly || !ct.ReadOnly))
                                 {
                                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type___0_____1_, ct.Id, ct.Name);
-                                    UpdateContentType(web, template, existingCT, ct, parser, scope);
+                                    UpdateContentType(web, template, existingCT, ct, parser, template.Connector, scope, existingCTs, existingFields, isNoScriptSite);
                                 }
                                 else
                                 {
@@ -130,12 +130,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             Microsoft.SharePoint.Client.ContentType existingContentType,
             ContentType templateContentType,
             TokenParser parser,
+            FileConnectorBase connector,
             PnPMonitoredScope scope,
+            List<Microsoft.SharePoint.Client.ContentType> existingCTs = null,
+            List<Microsoft.SharePoint.Client.Field> existingFields = null,
             bool isNoScriptSite = false
             )
         {
             var isDirty = false;
             var reOrderFields = false;
+            var name = parser.ParseString(templateContentType.Name);
 
             if (existingContentType.Hidden != templateContentType.Hidden)
             {
@@ -289,7 +293,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
 
                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Adding_field__0__to_content_type, fieldId);
-                    web.AddFieldToContentType(existingContentType, field, fieldRef.Required, fieldRef.Hidden, fieldRef.UpdateChildren);
+                    web.AddFieldToContentType(existingContentType, field, 
+                        fieldRef.Required, 
+                        fieldRef.Hidden, 
+                        fieldRef.UpdateChildren
+#if !SP2013 && !SP2016
+                        ,
+                        fieldRef.ShowInDisplayForm,
+                        fieldRef.ReadOnly
+#endif
+                        );
                 }
             }
 
@@ -334,11 +347,101 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 else
                 {
-                    Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate templateToUpdate =
+                    // Retrieve a reference to the DocumentSet Content Type
+                    Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate documentSetTemplate =
                         Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate.GetDocumentSetTemplate(web.Context, existingContentType);
 
-                    // TODO: Implement Delta Handling
-                    scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ContentTypes_DocumentSet_DeltaHandling_OnHold, existingContentType.Id, existingContentType.Name);
+                    // Keep a flag if changes have been made to the document set of the content type
+                    var documentSetIsDirty = false;
+
+                    // Load the collections to allow for deletion scenarions
+                    web.Context.Load(documentSetTemplate, d => d.AllowedContentTypes, d => d.DefaultDocuments, d => d.SharedFields, d => d.WelcomePageFields);
+                    web.Context.ExecuteQueryRetry();
+
+                    if (!String.IsNullOrEmpty(templateContentType.DocumentSetTemplate.WelcomePage))
+                    {
+                        // TODO: Customize the WelcomePage of the DocumentSet
+                    }
+
+                    // AllowedContentTypes
+                    // Add additional content types to the set of allowed content types
+                    foreach (string ctId in templateContentType.DocumentSetTemplate.AllowedContentTypes)
+                    {
+                        // Validate if the content type is not part of the document set content types yet
+                        if (documentSetTemplate.AllowedContentTypes.All(d => d.StringValue != ctId))
+                        {
+                            Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == ctId);
+                            if (ct != null)
+                            {
+                                documentSetTemplate.AllowedContentTypes.Add(ct.Id);
+                                documentSetIsDirty = true;
+                            }
+                        }
+                    }
+
+                    // DefaultDocuments
+                    if (!isNoScriptSite)
+                    {
+                        foreach (var doc in templateContentType.DocumentSetTemplate.DefaultDocuments)
+                        {                                
+                            // Ensure the default document is not part of the document set yet
+                            if (documentSetTemplate.DefaultDocuments.All(d => d.Name != doc.Name))
+                            {
+                                Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == doc.ContentTypeId);
+                                if (ct != null)
+                                {
+                                    using (Stream fileStream = connector.GetFileStream(doc.FileSourcePath))
+                                    {
+                                        documentSetTemplate.DefaultDocuments.Add(doc.Name, ct.Id, ReadFullStream(fileStream));
+                                        documentSetIsDirty = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (templateContentType.DocumentSetTemplate.DefaultDocuments.Any())
+                        {
+                            scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ContentTypes_SkipDocumentSetDefaultDocuments, name);
+                        }
+                    }
+
+                    // SharedFields
+                    foreach (var sharedField in templateContentType.DocumentSetTemplate.SharedFields)
+                    {                            
+                        // Ensure the shared field is not part of the document set yet
+                        if (documentSetTemplate.SharedFields.All(f => f.Id != sharedField))
+                        {
+                            Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == sharedField);
+                            if (field != null)
+                            {
+                                documentSetTemplate.SharedFields.Add(field);
+                                documentSetIsDirty = true;
+                            }
+                        }
+                    }
+
+                    // WelcomePageFields
+                    foreach (var welcomePageField in templateContentType.DocumentSetTemplate.WelcomePageFields)
+                    {
+                        // Ensure the welcomepage field is not part of the document set yet
+                        if (documentSetTemplate.WelcomePageFields.All(w => w.Id != welcomePageField))
+                        {
+                            Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == welcomePageField);
+                            if (field != null)
+                            {
+                                documentSetTemplate.WelcomePageFields.Add(field);
+                                documentSetIsDirty = true;
+                            }
+                        }
+                    }
+
+                    if (documentSetIsDirty)
+                    {
+                        documentSetTemplate.Update(true);
+                        isDirty = true;
+                    }
                 }
             }
 
@@ -395,13 +498,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 // Add it to the target content type
                 // Notice that this code will fail if the field does not exist
-                web.AddFieldToContentType(createdCT, field, fieldRef.Required, fieldRef.Hidden, fieldRef.UpdateChildren);
+                web.AddFieldToContentType(createdCT, field,
+                    fieldRef.Required, 
+                    fieldRef.Hidden,
+                    fieldRef.UpdateChildren
+#if !SP2013 && !SP2016
+                    ,
+                    fieldRef.ShowInDisplayForm,
+                    fieldRef.ReadOnly
+#endif
+                    );
             }
 
             // Add new CTs
             parser.AddToken(new ContentTypeIdToken(web, name, id));
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
             // Set resources
             if (templateContentType.Name.ContainsResourceToken())
             {
@@ -451,7 +563,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 {
                                     Microsoft.SharePoint.Client.Folder ctFolder = web.GetFolderByServerRelativeUrl($"{web.ServerRelativeUrl}/_cts/{name}");
                                     web.Context.Load(ctFolder, fl => fl.Files.Include(f => f.Name, f => f.ServerRelativeUrl));
-                                    web.Context.ExecuteQuery();
+                                    web.Context.ExecuteQueryRetry();
 
                                     FileCreationInformation newFile = new FileCreationInformation();
                                     newFile.ContentStream = fsstream;
@@ -459,7 +571,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                     Microsoft.SharePoint.Client.File uploadedFile = ctFolder.Files.Add(newFile);
                                     web.Context.Load(uploadedFile);
-                                    web.Context.ExecuteQuery();
+                                    web.Context.ExecuteQueryRetry();
                                 }
                             }
                             createdCT.DocumentTemplate = documentTemplate;
@@ -644,7 +756,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private IEnumerable<ContentType> GetEntities(Web web, PnPMonitoredScope scope, ProvisioningTemplateCreationInformation creationInfo, ProvisioningTemplate template)
         {
             var cts = web.ContentTypes;
-            web.Context.Load(cts, ctCollection => ctCollection.IncludeWithDefaultProperties(ct => ct.FieldLinks, ct => ct.SchemaXmlWithResourceTokens));
+            web.Context.Load(cts, 
+                ctCollection => ctCollection.IncludeWithDefaultProperties(
+                    ct => ct.FieldLinks,
+                    ct => ct.SchemaXmlWithResourceTokens
+#if !SP2013 && !SP2016
+                    ,
+                    ct => ct.FieldLinks.IncludeWithDefaultProperties(
+                        fl => fl.DisplayName,
+                        fl => fl.ReadOnly, 
+                        fl => fl.ShowInDisplayForm)
+                    
+#endif
+                    )
+                );
+
             web.Context.ExecuteQueryRetry();
 
             if (cts.Count > 0 && web.IsSubSite())
@@ -724,6 +850,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                  Id = fieldLink.Id,
                                  Hidden = fieldLink.Hidden,
                                  Required = fieldLink.Required,
+#if !SP2013 && !SP2016
+                                 DisplayName = fieldLink.DisplayName,
+                                 ShowInDisplayForm = fieldLink.ShowInDisplayForm,
+                                 ReadOnly = fieldLink.ReadOnly,
+#endif
                              })
                         )
                     {

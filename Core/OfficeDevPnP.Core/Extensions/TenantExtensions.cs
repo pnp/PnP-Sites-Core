@@ -281,175 +281,7 @@ namespace Microsoft.SharePoint.Client
         }
         #endregion
 
-        #region Site status checks
-        /// <summary>
-        /// Returns if a site collection is in a particular status. If the URL contains a sub site then returns true is the sub site exists, false if not. 
-        /// Status is irrelevant for sub sites
-        /// </summary>
-        /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
-        /// <param name="siteFullUrl">Url to the site collection</param>
-        /// <param name="status">Status to check (Active, Creating, Recycled)</param>
-        /// <returns>True if in status, false if not in status</returns>
-        public static bool CheckIfSiteExists(this Tenant tenant, string siteFullUrl, string status)
-        {
-            bool ret = false;
-            //Get the site name
-            var url = new Uri(siteFullUrl);
-            var siteDomainUrl = url.GetLeftPart(UriPartial.Authority);
-            int siteNameIndex = url.AbsolutePath.IndexOf('/', 1) + 1;
-            var managedPath = url.AbsolutePath.Substring(0, siteNameIndex);
-            var siteRelativePath = url.AbsolutePath.Substring(siteNameIndex);
-            var isSiteCollection = siteRelativePath.IndexOf('/') == -1;
-
-            //Judge whether this site collection is existing or not
-            if (isSiteCollection)
-            {
-                try
-                {
-                    var properties = tenant.GetSitePropertiesByUrl(siteFullUrl, false);
-                    tenant.Context.Load(properties);
-                    tenant.Context.ExecuteQueryRetry();
-                    ret = properties.Status.Equals(status, StringComparison.OrdinalIgnoreCase);
-                }
-                catch (ServerException ex)
-                {
-                    if (IsUnableToAccessSiteException(ex))
-                    {
-                        try
-                        {
-                            //Let's retry to see if this site collection was recycled
-                            var deletedProperties = tenant.GetDeletedSitePropertiesByUrl(siteFullUrl);
-                            tenant.Context.Load(deletedProperties);
-                            tenant.Context.ExecuteQueryRetry();
-                            ret = deletedProperties.Status.Equals(status, StringComparison.OrdinalIgnoreCase);
-                        }
-                        catch
-                        {
-                            // eat exception
-                        }
-                    }
-                }
-            }
-            //Judge whether this sub web site is existing or not
-            else
-            {
-                var subsiteUrl = string.Format(CultureInfo.CurrentCulture,
-                            "{0}{1}{2}", siteDomainUrl, managedPath, siteRelativePath.Split('/')[0]);
-                var subsiteRelativeUrl = siteRelativePath.Substring(siteRelativePath.IndexOf('/') + 1);
-                var site = tenant.GetSiteByUrl(subsiteUrl);
-                var subweb = site.OpenWeb(subsiteRelativeUrl);
-                tenant.Context.Load(subweb, w => w.Title);
-                tenant.Context.ExecuteQueryRetry();
-                ret = true;
-            }
-            return ret;
-        }
-
-        /// <summary>
-        /// Checks if a site collection is Active
-        /// </summary>
-        /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
-        /// <param name="siteFullUrl">URL to the site collection</param>
-        /// <returns>True if active, false if not</returns>
-        public static bool IsSiteActive(this Tenant tenant, string siteFullUrl)
-        {
-            try
-            {
-                return tenant.CheckIfSiteExists(siteFullUrl, "Active");
-            }
-            catch (Exception ex)
-            {
-                if (IsCannotGetSiteException(ex))
-                {
-                    return false;
-                }
-
-                Log.Error(CoreResources.TenantExtensions_UnknownExceptionAccessingSite, ex.Message);
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Checks if a site collection exists, relies on tenant admin API. Sites that are recycled also return as existing sites, but with a different flag
-        /// </summary>
-        /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
-        /// <param name="siteFullUrl">URL to the site collection</param>
-        /// <returns>An enumerated type that can be: No, Yes, Recycled</returns>
-        public static SiteExistence SiteExistsAnywhere(this Tenant tenant, string siteFullUrl)
-        {
-            try
-            {
-                //Get the site name
-                var properties = tenant.GetSitePropertiesByUrl(siteFullUrl, false);
-                tenant.Context.Load(properties);
-                tenant.Context.ExecuteQueryRetry();
-
-                // Will cause an exception if site URL is not there. Not optimal, but the way it works.
-                return SiteExistence.Yes;
-            }
-            catch (Exception ex)
-            {
-                if (IsCannotGetSiteException(ex) || IsUnableToAccessSiteException(ex))
-                {
-                    if (IsUnableToAccessSiteException(ex))
-                    {
-                        //Let's retry to see if this site collection was recycled
-                        try
-                        {
-                            var deletedProperties = tenant.GetDeletedSitePropertiesByUrl(siteFullUrl);
-                            tenant.Context.Load(deletedProperties);
-                            tenant.Context.ExecuteQueryRetry();
-                            if (deletedProperties.Status.Equals("Recycled", StringComparison.OrdinalIgnoreCase))
-                            {
-                                return SiteExistence.Recycled;
-                            }
-                            else
-                            {
-                                return SiteExistence.No;
-                            }
-                        }
-                        catch
-                        {
-                            return SiteExistence.No;
-                        }
-                    }
-                    else
-                    {
-                        return SiteExistence.No;
-                    }
-                }
-                else
-                {
-                    return SiteExistence.Yes;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Checks if a sub site exists
-        /// </summary>
-        /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
-        /// <param name="siteFullUrl">URL to the sub site</param>
-        /// <returns>True if existing, false if not</returns>
-        public static bool SubSiteExists(this Tenant tenant, string siteFullUrl)
-        {
-            try
-            {
-                return tenant.CheckIfSiteExists(siteFullUrl, "Active");
-            }
-            catch (Exception ex)
-            {
-                if (IsCannotGetSiteException(ex) || IsUnableToAccessSiteException(ex))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-        #endregion
+       
 
         #region Site collection deletion
         /// <summary>
@@ -935,101 +767,7 @@ namespace Microsoft.SharePoint.Client
         #endregion
 
 #if !ONPREMISES
-        #region Private helper methods
-        private static bool WaitForIsComplete(Tenant tenant, SpoOperation op, Func<TenantOperationMessage, bool> timeoutFunction = null, TenantOperationMessage operationMessage = TenantOperationMessage.None)
-        {
-            bool succeeded = true;
-            while (!op.IsComplete)
-            {
-                if (timeoutFunction != null && timeoutFunction(operationMessage))
-                {
-                    succeeded = false;
-                    break;
-                }
-                Thread.Sleep(op.PollingInterval);
-
-                op.RefreshLoad();
-                if (!op.IsComplete)
-                {
-                    try
-                    {
-                        tenant.Context.ExecuteQueryRetry();
-                    }
-                    catch (WebException webEx)
-                    {
-                        // Context connection gets closed after action completed.
-                        // Calling ExecuteQuery again returns an error which can be ignored
-                        Log.Warning(CoreResources.TenantExtensions_ClosedContextWarning, webEx.Message);
-                    }
-                }
-            }
-            return succeeded;
-        }
-
-        private static bool IsCannotGetSiteException(Exception ex)
-        {
-            if (ex is ServerException)
-            {
-                if (((ServerException)ex).ServerErrorCode == -1 && ((ServerException)ex).ServerErrorTypeName.Equals("Microsoft.Online.SharePoint.Common.SpoNoSiteException", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        private static bool IsUnableToAccessSiteException(Exception ex)
-        {
-            if (ex is ServerException)
-            {
-                if (
-                     (((ServerException)ex).ServerErrorCode == -2147024809 && ((ServerException)ex).ServerErrorTypeName.Equals("System.ArgumentException", StringComparison.InvariantCultureIgnoreCase)) ||
-                     (((ServerException)ex).ServerErrorCode == -1 && ((ServerException)ex).ServerErrorTypeName.Equals("Microsoft.Online.SharePoint.Common.SpoNoSiteException", StringComparison.InvariantCultureIgnoreCase))
-                    )
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        private static bool IsCannotRemoveSiteException(Exception ex)
-        {
-            if (ex is ServerException)
-            {
-                if (((ServerException)ex).ServerErrorCode == -1
-                    && (
-                        ((ServerException)ex).ServerErrorTypeName.Equals("Microsoft.Online.SharePoint.Common.SpoException", StringComparison.InvariantCultureIgnoreCase) ||
-                        ((ServerException)ex).ServerErrorTypeName.Equals("Microsoft.Online.SharePoint.Common.SpoNoSiteException", StringComparison.InvariantCultureIgnoreCase))
-                    )
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
-        #endregion
+        
 
         #region Site Classification configuration
 
@@ -1161,50 +899,6 @@ namespace Microsoft.SharePoint.Client
         }
         #endregion
 
-        #region User rights
-
-        public static Boolean IsCurrentUserTenantAdmin(ClientContext clientContext)
-        {
-            // Get the URL of the current site collection
-            var site = clientContext.Site;
-            site.EnsureProperty(s => s.Url);
-
-            // If we are already with a context for the Admin Site, all good, the user is an admin
-            if (site.Url.Contains("-admin.sharepoint.com"))
-            {
-                return (true);
-            }
-            else
-            {
-                // Otherwise, we need to target the Admin Site
-                var siteUrl = site.Url.EndsWith("/") ? site.Url : $"{site.Url}/";
-                var rootSiteUrl = siteUrl.Substring(0, siteUrl.IndexOf("/", siteUrl.IndexOf("sharepoint.com/")));
-                var adminSiteUrl = rootSiteUrl.Replace(".sharepoint.com", "-admin.sharepoint.com");
-
-                try
-                {
-                    // Connect to the Admin Site
-                    using (var adminContext = clientContext.Clone(adminSiteUrl))
-                    {
-                        // Do something with the Tenant Admin Context
-                        Tenant tenant = new Tenant(adminContext);
-                        tenant.EnsureProperty(t => t.RootSiteUrl);
-
-                        // If we've got access to the tenant admin context, 
-                        // it means that the currently connecte user is an admin
-                        return (true);
-                    }
-                }
-                catch
-                {
-                    // In case of any connection exception, the user is not an admin
-                    return (false);
-                }
-            }
-        }
-
-        #endregion
-
         #region Enable Comm Site
 
         private static readonly Guid COMMSITEDESIGNPACKAGEID = new Guid("d604dac3-50d3-405e-9ab9-d4713cda74ef");
@@ -1277,7 +971,450 @@ namespace Microsoft.SharePoint.Client
         #endregion
 #endif
 
-        #region ClientSide Package Deployment
+        #region User rights
+#if !ONPREMISES
+        public static Boolean IsCurrentUserTenantAdmin(ClientContext clientContext)
+        {
+            // Get the URL of the current site collection
+            var site = clientContext.Site;
+            site.EnsureProperty(s => s.Url);
+
+            // If we are already with a context for the Admin Site, all good, the user is an admin
+            if (site.Url.Contains("-admin.sharepoint.com"))
+            {
+                return (true);
+            }
+            else
+            {
+                // Otherwise, we need to target the Admin Site
+                var siteUrl = site.Url.EndsWith("/") ? site.Url : $"{site.Url}/";
+                var rootSiteUrl = siteUrl.Substring(0, siteUrl.IndexOf("/", siteUrl.IndexOf("sharepoint.com/")));
+                var adminSiteUrl = rootSiteUrl.Replace(".sharepoint.com", "-admin.sharepoint.com");
+
+                try
+                {
+                    // Connect to the Admin Site
+                    using (var adminContext = clientContext.Clone(adminSiteUrl))
+                    {
+                        // Do something with the Tenant Admin Context
+                        Tenant tenant = new Tenant(adminContext);
+                        tenant.EnsureProperty(t => t.RootSiteUrl);
+
+                        // If we've got access to the tenant admin context, 
+                        // it means that the currently connecte user is an admin
+                        return (true);
+                    }
+                }
+                catch
+                {
+                    // In case of any connection exception, the user is not an admin
+                    return (false);
+                }
+            }
+        }
+
+#elif !SP2013 && !SP2016     
+        public static bool IsCurrentUserTenantAdmin(ClientContext clientContext, string tenantAdminSiteUrl)
+        {
+            bool result = false;
+            // Get the URL of the current site collection
+            var web = clientContext.Web;
+            var site = clientContext.Site;
+            site.EnsureProperty(s => s.Url);
+            var baseTempalteId = web.GetBaseTemplateId();
+
+            if (string.Equals(baseTempalteId, "TENANTADMIN#0", StringComparison.InvariantCultureIgnoreCase))
+            {
+                result = true;
+            }
+            else
+            {
+                // Otherwise, we need to target the Admin Site
+                // No easy way to detect tenant admin site in on-premises, so users have to specify it
+                string adminSiteUrl = tenantAdminSiteUrl;
+                if (!string.IsNullOrEmpty(adminSiteUrl))
+                {
+                    result = CanConnectTenantAdminSite(clientContext, adminSiteUrl);
+                }
+                else
+                {
+                    //TODO: try to find a way to get the real tenant admin site url
+                    var foundAdminSiteUrl = GetTenantAdminSite(clientContext);
+                    if (!string.IsNullOrEmpty(foundAdminSiteUrl.AbsoluteUri))
+                    {
+                        result = CanConnectTenantAdminSite(clientContext, foundAdminSiteUrl.AbsoluteUri);
+                    }
+                    else
+                    {
+                        Uri uri = new Uri(clientContext.Url.TrimEnd(new[] { '/' }));
+                        var rootSiteUrl = $"{uri.Scheme}://{uri.DnsSafeHost}";
+
+                        var urlsToTry = new System.Collections.Generic.List<string>()
+                        {
+                            rootSiteUrl + "/sites/admin",
+                            rootSiteUrl + "/sites/tenantadmin"
+                        };
+
+                        foreach (var url in urlsToTry)
+                        {
+                            result = CanConnectTenantAdminSite(clientContext, url);
+                            if (result)
+                            {
+                                break;
+                            }
+                        }
+                    }                    
+                }
+            }
+
+            return result;
+        }
+
+
+        /// <summary>
+        /// Gets the Uri for the tenant's admin site (if that one has already been created)
+        /// </summary>
+        /// <param name="clientContext">Context to operate against</param>
+        /// <returns>The Uri holding the admin site URL</returns>
+        private static Uri GetTenantAdminSite(ClientContext clientContext)
+        {
+            Uri uri = new Uri(clientContext.Url.TrimEnd(new[] { '/' }));
+            var rootSiteUrl = $"{uri.Scheme}://{uri.DnsSafeHost}";
+
+            // Assume there's only one admin site
+            var results = clientContext.Web.SiteSearch($"contentclass:STS_Site AND SiteTemplate:TENANTADMIN AND Path:{rootSiteUrl}");
+            foreach (var site in results)
+            {
+                return new Uri(site.Url);
+            }
+
+            return null;
+        }
+
+        private static bool CanConnectTenantAdminSite(ClientContext clientContext, string adminSiteUrl)
+        {
+            bool result = false;
+            try
+            {
+                // Connect to the Admin Site
+                using (var adminContext = clientContext.Clone(adminSiteUrl))
+                {
+                    // Do something with the Tenant Admin Context
+                    Tenant tenant = new Tenant(adminContext);
+                    tenant.EnsureProperty(t => t.RootSiteUrl);
+
+                    // If we've got access to the tenant admin context, 
+                    // it means that the currently connecte user is an admin
+                    result = true;
+                }
+            }
+            catch
+            {
+                // In case of any connection exception, the user is not an admin
+                result = false;
+            }
+
+            return result;
+        }
+#endif
+        #endregion
+
+
+        #region Site status checks
+        /// <summary>
+        /// Returns if a site collection is in a particular status. If the URL contains a sub site then returns true is the sub site exists, false if not. 
+        /// Status is irrelevant for sub sites
+        /// </summary>
+        /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
+        /// <param name="siteFullUrl">Url to the site collection</param>
+        /// <param name="status">Status to check (Active, Creating, Recycled)</param>
+        /// <returns>True if in status, false if not in status</returns>
+        public static bool CheckIfSiteExists(this Tenant tenant, string siteFullUrl, string status)
+        {
+            bool ret = false;
+            //Get the site name
+            var url = new Uri(siteFullUrl);
+            var siteDomainUrl = url.GetLeftPart(UriPartial.Authority);
+            int siteNameIndex = url.AbsolutePath.IndexOf('/', 1) + 1;
+            var managedPath = url.AbsolutePath.Substring(0, siteNameIndex);
+            var siteRelativePath = url.AbsolutePath.Substring(siteNameIndex);
+            var isSiteCollection = siteRelativePath.IndexOf('/') == -1;
+
+            //Judge whether this site collection is existing or not
+            if (isSiteCollection)
+            {
+                try
+                {
+                    var properties = tenant.GetSitePropertiesByUrl(siteFullUrl, false);
+                    tenant.Context.Load(properties);
+                    tenant.Context.ExecuteQueryRetry();
+                    ret = properties.Status.Equals(status, StringComparison.OrdinalIgnoreCase);
+                }
+                catch (ServerException ex)
+                {
+                    if (IsUnableToAccessSiteException(ex))
+                    {
+                        try
+                        {
+                            //Let's retry to see if this site collection was recycled
+                            var deletedProperties = tenant.GetDeletedSitePropertiesByUrl(siteFullUrl);
+                            tenant.Context.Load(deletedProperties);
+                            tenant.Context.ExecuteQueryRetry();
+                            ret = deletedProperties.Status.Equals(status, StringComparison.OrdinalIgnoreCase);
+                        }
+                        catch
+                        {
+                            // eat exception
+                        }
+                    }
+                }
+            }
+            //Judge whether this sub web site is existing or not
+            else
+            {
+                var subsiteUrl = string.Format(CultureInfo.CurrentCulture,
+                            "{0}{1}{2}", siteDomainUrl, managedPath, siteRelativePath.Split('/')[0]);
+                var subsiteRelativeUrl = siteRelativePath.Substring(siteRelativePath.IndexOf('/') + 1);
+                var site = tenant.GetSiteByUrl(subsiteUrl);
+                var subweb = site.OpenWeb(subsiteRelativeUrl);
+                tenant.Context.Load(subweb, w => w.Title);
+                tenant.Context.ExecuteQueryRetry();
+                ret = true;
+            }
+            return ret;
+        }
+
+        /// <summary>
+        /// Checks if a site collection is Active
+        /// </summary>
+        /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
+        /// <param name="siteFullUrl">URL to the site collection</param>
+        /// <returns>True if active, false if not</returns>
+        public static bool IsSiteActive(this Tenant tenant, string siteFullUrl)
+        {
+            try
+            {
+                return tenant.CheckIfSiteExists(siteFullUrl, "Active");
+            }
+            catch (Exception ex)
+            {
+                if (IsCannotGetSiteException(ex))
+                {
+                    return false;
+                }
+
+                Log.Error(CoreResources.TenantExtensions_UnknownExceptionAccessingSite, ex.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Checks if a site collection exists, relies on tenant admin API. Sites that are recycled also return as existing sites, but with a different flag
+        /// </summary>
+        /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
+        /// <param name="siteFullUrl">URL to the site collection</param>
+        /// <returns>An enumerated type that can be: No, Yes, Recycled</returns>
+        public static SiteExistence SiteExistsAnywhere(this Tenant tenant, string siteFullUrl)
+        {
+            try
+            {
+                //Get the site name
+                var properties = tenant.GetSitePropertiesByUrl(siteFullUrl, false);
+                tenant.Context.Load(properties);
+                tenant.Context.ExecuteQueryRetry();
+
+                // Will cause an exception if site URL is not there. Not optimal, but the way it works.
+                return SiteExistence.Yes;
+            }
+            catch (Exception ex)
+            {
+                if (IsCannotGetSiteException(ex) || IsUnableToAccessSiteException(ex))
+                {
+                    if (IsUnableToAccessSiteException(ex))
+                    {
+                        //Let's retry to see if this site collection was recycled
+                        try
+                        {
+                            var deletedProperties = tenant.GetDeletedSitePropertiesByUrl(siteFullUrl);
+                            tenant.Context.Load(deletedProperties);
+                            tenant.Context.ExecuteQueryRetry();
+                            if (deletedProperties.Status.Equals("Recycled", StringComparison.OrdinalIgnoreCase))
+                            {
+                                return SiteExistence.Recycled;
+                            }
+                            else
+                            {
+                                return SiteExistence.No;
+                            }
+                        }
+                        catch
+                        {
+                            return SiteExistence.No;
+                        }
+                    }
+                    else
+                    {
+                        return SiteExistence.No;
+                    }
+                }
+#if ONPREMISES
+                else if (IsFileNotFoundException(ex))
+                {
+                    return SiteExistence.No;
+                }
+#endif
+                else
+                {
+                    return SiteExistence.Yes;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Checks if a sub site exists
+        /// </summary>
+        /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
+        /// <param name="siteFullUrl">URL to the sub site</param>
+        /// <returns>True if existing, false if not</returns>
+        public static bool SubSiteExists(this Tenant tenant, string siteFullUrl)
+        {
+            try
+            {
+                return tenant.CheckIfSiteExists(siteFullUrl, "Active");
+            }
+            catch (Exception ex)
+            {
+                if (IsCannotGetSiteException(ex) || IsUnableToAccessSiteException(ex))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+#endregion
+
+#region Private helper methods
+#if !ONPREMISES
+        private static bool WaitForIsComplete(Tenant tenant, SpoOperation op, Func<TenantOperationMessage, bool> timeoutFunction = null, TenantOperationMessage operationMessage = TenantOperationMessage.None)
+        {
+            bool succeeded = true;
+            while (!op.IsComplete)
+            {
+                if (timeoutFunction != null && timeoutFunction(operationMessage))
+                {
+                    succeeded = false;
+                    break;
+                }
+                Thread.Sleep(op.PollingInterval);
+
+                op.RefreshLoad();
+                if (!op.IsComplete)
+                {
+                    try
+                    {
+                        tenant.Context.ExecuteQueryRetry();
+                    }
+                    catch (WebException webEx)
+                    {
+                        // Context connection gets closed after action completed.
+                        // Calling ExecuteQuery again returns an error which can be ignored
+                        Log.Warning(CoreResources.TenantExtensions_ClosedContextWarning, webEx.Message);
+                    }
+                }
+            }
+            return succeeded;
+        }
+#endif
+
+        private static bool IsCannotGetSiteException(Exception ex)
+        {
+            if (ex is ServerException)
+            {
+                if (((ServerException)ex).ServerErrorCode == -1 && ((ServerException)ex).ServerErrorTypeName.Equals("Microsoft.Online.SharePoint.Common.SpoNoSiteException", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private static bool IsFileNotFoundException(Exception ex)
+        {
+            if (ex is ServerException)
+            {
+                if (((ServerException)ex).ServerErrorCode == -2147024894
+                    && ((ServerException)ex).ServerErrorTypeName.Equals("System.IO.FileNotFoundException", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private static bool IsUnableToAccessSiteException(Exception ex)
+        {
+            if (ex is ServerException)
+            {
+                if (
+                     (((ServerException)ex).ServerErrorCode == -2147024809 && ((ServerException)ex).ServerErrorTypeName.Equals("System.ArgumentException", StringComparison.InvariantCultureIgnoreCase)) ||
+                     (((ServerException)ex).ServerErrorCode == -1 && ((ServerException)ex).ServerErrorTypeName.Equals("Microsoft.Online.SharePoint.Common.SpoNoSiteException", StringComparison.InvariantCultureIgnoreCase))
+                    )
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private static bool IsCannotRemoveSiteException(Exception ex)
+        {
+            if (ex is ServerException)
+            {
+                if (((ServerException)ex).ServerErrorCode == -1
+                    && (
+                        ((ServerException)ex).ServerErrorTypeName.Equals("Microsoft.Online.SharePoint.Common.SpoException", StringComparison.InvariantCultureIgnoreCase) ||
+                        ((ServerException)ex).ServerErrorTypeName.Equals("Microsoft.Online.SharePoint.Common.SpoNoSiteException", StringComparison.InvariantCultureIgnoreCase))
+                    )
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+#endregion
+
+#region ClientSide Package Deployment
 
         /// <summary>
         /// Gets the Uri for the tenant's app catalog site (if that one has already been created)
@@ -1295,9 +1432,9 @@ namespace Microsoft.SharePoint.Client
 
             return null;
         }
-        #endregion
+#endregion
 
-        #region Utilities
+#region Utilities
 
 #if !ONPREMISES
         public static string GetTenantIdByUrl(string tenantUrl)
@@ -1337,7 +1474,46 @@ namespace Microsoft.SharePoint.Client
             return index != -1 ? originalString.Substring(prefix.Length, index - prefix.Length) : null;
         }
 
-        #endregion
+#if !ONPREMISES
+        public static string GetTenantRootSiteUrl(this Tenant tenant)
+        {
+            string result = null;
+            tenant.EnsureProperty(t => t.RootSiteUrl);
+            result = tenant.RootSiteUrl;
+
+            /*
+            var rootUrl = tenant.GetRootSiteUrl();
+            tenant.Context.ExecuteQueryRetry();
+            result = rootUrl.Value;
+            */
+
+            return result;
+        }
+#else
+        public static string GetTenantRootSiteUrl(this Tenant tenant)
+        {
+            tenant.EnsureProperty(t => t.RootSiteUrl);
+
+            string result = tenant.RootSiteUrl;
+
+            if(string.IsNullOrEmpty(result))
+            {
+                // Onpremises (SP2019) will always return string.Emtpy for tenant.RootSiteUrl
+
+                //tenant.EnsureProperty(t => t.RootSiteUrl);
+                //var tenantUri = new Uri(tenant.Context.Url);
+                //var rootSiteUri = new Uri(tenantUri.Scheme + "://" + tenantUri.Host + "/");
+                //result = rootSiteUri.ToString();
+
+                Uri uri = new Uri(tenant.Context.Url.TrimEnd(new[] { '/' }));
+                result = $"{uri.Scheme}://{uri.DnsSafeHost}";
+            }
+
+            return result;
+        }
+#endif
+
+#endregion
 
     }
 

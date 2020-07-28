@@ -96,6 +96,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                 return true;
             }
 
+#if SP2019
+            if (web.Context.IsAppOnlyWithDelegation())
+            {
+                return true;
+            }
+#endif
+
             var currentUser = web.EnsureProperty(w => w.CurrentUser);
             PeopleManager peopleManager = new PeopleManager(web.Context);
             var languageSettings = peopleManager.GetUserProfilePropertyFor(web.CurrentUser.LoginName, "SPS-MUILanguages");

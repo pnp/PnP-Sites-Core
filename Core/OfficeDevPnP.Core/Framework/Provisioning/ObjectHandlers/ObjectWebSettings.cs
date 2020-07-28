@@ -134,7 +134,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         if (PersistFile(web, creationInfo, scope, siteLogoServerRelativeUrl))
                         {
-                            template.Files.Add(GetTemplateFile(web, siteLogoServerRelativeUrl));
+                            template.Files.Add(GetTemplateFile(web, HttpUtility.UrlDecode(siteLogoServerRelativeUrl)));
                         }
                     }
                     if (!string.IsNullOrEmpty(web.AlternateCssUrl))
@@ -394,7 +394,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         web.SearchBoxInNavBar = (SearchBoxInNavBarType)Enum.Parse(typeof(SearchBoxInNavBarType), webSettings.SearchBoxInNavBar.ToString(), true);
                     }
 
-                    if (!string.IsNullOrEmpty(webSettings.SearchCenterUrl) &&
+                    string searchCenterUrl = parser.ParseString(webSettings.SearchCenterUrl);
+                    if (!string.IsNullOrEmpty(searchCenterUrl) &&
                         web.GetWebSearchCenterUrl(true) != webSettings.SearchCenterUrl)
                     {
                         web.SetWebSearchCenterUrl(webSettings.SearchCenterUrl);

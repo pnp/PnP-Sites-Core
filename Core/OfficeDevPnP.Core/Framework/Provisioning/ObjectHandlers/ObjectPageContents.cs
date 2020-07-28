@@ -313,7 +313,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willExtract.HasValue)
             {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                 _willExtract = true;
 #else
                 _willExtract = web.Context.Credentials != null ? true : false;
