@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## Added
 
 - Added ability to delete modern sites to SiteCollection helper class #2298 [gautamdsheth - Gautam Sheth]
+- Added web/site extension methods to set SPO nav bar search box placeholder text [wobba - Mikael Svenson]
 
 ## Changed
 - Improved modern site extraction with the provisioning engine #2629 [gautamdsheth - Gautam Sheth]
