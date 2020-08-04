@@ -1293,19 +1293,33 @@ namespace Microsoft.SharePoint.Client
         /// <returns>An enumerated type that can be: No, Yes, Recycled</returns>
         public static SiteExistence SiteExistsAnywhere(this Tenant tenant, string siteFullUrl)
         {
+            var userIsTenantAdmin = TenantExtensions.IsCurrentUserTenantAdmin((ClientContext)tenant.Context);
+
             try
             {
-                //Get the site name
-                var properties = tenant.GetSitePropertiesByUrl(siteFullUrl, false);
-                tenant.Context.Load(properties);
-                tenant.Context.ExecuteQueryRetry();
+                // CHANGED: Modified in order to support non privilege users
+                if (userIsTenantAdmin)
+                {
+                    // Get the site name
+                    var properties = tenant.GetSitePropertiesByUrl(siteFullUrl, false);
+                    tenant.Context.Load(properties);
+                    tenant.Context.ExecuteQueryRetry();
+                }
+                else
+                {
+                    // Get the site context for the current user
+                    var siteContext = tenant.Context.Clone(siteFullUrl);
+                    var site = siteContext.Site;
+                    siteContext.Load(site);
+                    siteContext.ExecuteQueryRetry();
+                }
 
                 // Will cause an exception if site URL is not there. Not optimal, but the way it works.
                 return SiteExistence.Yes;
             }
             catch (Exception ex)
             {
-                if (IsCannotGetSiteException(ex) || IsUnableToAccessSiteException(ex))
+                if (userIsTenantAdmin && (IsCannotGetSiteException(ex) || IsUnableToAccessSiteException(ex)))
                 {
                     if (IsUnableToAccessSiteException(ex))
                     {
@@ -1334,18 +1348,17 @@ namespace Microsoft.SharePoint.Client
                         return SiteExistence.No;
                     }
                 }
-#if ONPREMISES
-                else if (IsFileNotFoundException(ex))
+                else if (IsNotFoundException(ex))
                 {
                     return SiteExistence.No;
                 }
-#endif
                 else
                 {
                     return SiteExistence.Yes;
                 }
             }
         }
+
 
         /// <summary>
         /// Checks if a sub site exists
