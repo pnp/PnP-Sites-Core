@@ -588,6 +588,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         roleDefinitionBindingCollection.Add(roleDefinition);
                                         web.RoleAssignments.Add(principal, roleDefinitionBindingCollection);
                                         web.Context.ExecuteQueryRetry();
+                                    } else
+                                    {
+                                        WriteMessage($"Principal '${roleAssignment.Principal}' not found, cannot grant permissions", ProvisioningMessageType.Warning);
                                     }
                                 }
                                 else
@@ -612,6 +615,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             break;
                                         }
                                     }
+                                }
+                                else
+                                {
+                                    WriteMessage($"Principal '${roleAssignment.Principal}' not found, cannot revoke permissions", ProvisioningMessageType.Warning);
                                 }
                             }
                         }
@@ -705,6 +712,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 catch (Exception ex)
                 {
                     scope.LogWarning(ex, "Failed to EnsureUser {0}", parsedRoleDefinition);
+                    principal = null;
                 }
             }
 
