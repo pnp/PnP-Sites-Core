@@ -590,7 +590,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         web.Context.ExecuteQueryRetry();
                                     } else
                                     {
-                                        WriteMessage($"Principal '${roleAssignment.Principal}' not found, cannot grant permissions", ProvisioningMessageType.Warning);
+                                        WriteMessage($"Principal '{roleAssignment.Principal}' not found, cannot grant permissions", ProvisioningMessageType.Warning);
                                     }
                                 }
                                 else
@@ -618,7 +618,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                                 else
                                 {
-                                    WriteMessage($"Principal '${roleAssignment.Principal}' not found, cannot revoke permissions", ProvisioningMessageType.Warning);
+                                    WriteMessage($"Principal '{roleAssignment.Principal}' not found, cannot revoke permissions", ProvisioningMessageType.Warning);
                                 }
                             }
                         }
