@@ -169,7 +169,6 @@ namespace OfficeDevPnP.Core.Sites
             }
 #if !SP2019
             payload.Add("HubSiteId", siteCollectionCreationInformation.HubSiteId);
-#endif
 
             bool sensitivityLabelExists = !string.IsNullOrEmpty(siteCollectionCreationInformation.SensitivityLabel);
             if (sensitivityLabelExists)
@@ -178,11 +177,12 @@ namespace OfficeDevPnP.Core.Sites
                 payload.Add("SensitivityLabel", sensitivityLabelId);
                 payload["Classification"] = siteCollectionCreationInformation.SensitivityLabel;
             }
+#endif
 
-            return await CreateAsync(clientContext, siteCollectionCreationInformation.Owner, payload, delayAfterCreation
-#if !SP2019                
+                return await CreateAsync(clientContext, siteCollectionCreationInformation.Owner, payload, delayAfterCreation
+#if !SP2019
                 , noWait: noWait
-#endif                
+#endif
                 );
         }
 
@@ -320,6 +320,7 @@ namespace OfficeDevPnP.Core.Sites
                     handler.SetAuthenticationCookies(clientContext);
                 }
 
+#if !SP2019
                 bool sensitivityLabelExists = !string.IsNullOrEmpty(siteCollectionCreationInformation.SensitivityLabel);
 
                 var sensitivityLabelId = Guid.Empty;
@@ -327,6 +328,7 @@ namespace OfficeDevPnP.Core.Sites
                 {
                     sensitivityLabelId = await GetSensitivityLabelId(clientContext, siteCollectionCreationInformation.SensitivityLabel);
                 }
+#endif
 
                 using (var httpClient = new PnPHttpProvider(handler))
                 {
@@ -339,6 +341,7 @@ namespace OfficeDevPnP.Core.Sites
 
                     var optionalParams = new Dictionary<string, object>();
                     optionalParams.Add("Description", siteCollectionCreationInformation.Description ?? "");
+#if !SP2019
                     if (sensitivityLabelExists && sensitivityLabelId != Guid.Empty)
                     {
                         optionalParams.Add("Classification", siteCollectionCreationInformation.SensitivityLabel ?? "");
@@ -347,6 +350,7 @@ namespace OfficeDevPnP.Core.Sites
                     {
                         optionalParams.Add("Classification", siteCollectionCreationInformation.Classification ?? "");
                     }
+#endif
                     var creationOptionsValues = new List<string>();
                     if (siteCollectionCreationInformation.SiteDesignId.HasValue)
                     {

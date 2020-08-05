@@ -1293,10 +1293,13 @@ namespace Microsoft.SharePoint.Client
         /// <returns>An enumerated type that can be: No, Yes, Recycled</returns>
         public static SiteExistence SiteExistsAnywhere(this Tenant tenant, string siteFullUrl)
         {
+#if !ONPREMISES
             var userIsTenantAdmin = TenantExtensions.IsCurrentUserTenantAdmin((ClientContext)tenant.Context);
+#endif
 
             try
             {
+#if !ONPREMISES
                 // CHANGED: Modified in order to support non privilege users
                 if (userIsTenantAdmin)
                 {
@@ -1307,19 +1310,26 @@ namespace Microsoft.SharePoint.Client
                 }
                 else
                 {
+#endif
                     // Get the site context for the current user
                     var siteContext = tenant.Context.Clone(siteFullUrl);
                     var site = siteContext.Site;
                     siteContext.Load(site);
                     siteContext.ExecuteQueryRetry();
+#if !ONPREMISES
                 }
+#endif
 
                 // Will cause an exception if site URL is not there. Not optimal, but the way it works.
                 return SiteExistence.Yes;
             }
             catch (Exception ex)
             {
+#if !ONPREMISES
                 if (userIsTenantAdmin && (IsCannotGetSiteException(ex) || IsUnableToAccessSiteException(ex)))
+#else
+                if (IsCannotGetSiteException(ex) || IsUnableToAccessSiteException(ex))
+#endif
                 {
                     if (IsUnableToAccessSiteException(ex))
                     {
@@ -1348,10 +1358,12 @@ namespace Microsoft.SharePoint.Client
                         return SiteExistence.No;
                     }
                 }
+#if !ONPREMISES
                 else if (IsNotFoundException(ex))
                 {
                     return SiteExistence.No;
                 }
+#endif
                 else
                 {
                     return SiteExistence.Yes;
