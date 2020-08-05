@@ -324,6 +324,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         w => w.RootFolder,
                         w => w.Title,
                         w => w.Description,
+                        w => w.AlternateCssUrl,
                         w => w.WebTemplate,
                         w => w.HasUniqueRoleAssignments);
 
