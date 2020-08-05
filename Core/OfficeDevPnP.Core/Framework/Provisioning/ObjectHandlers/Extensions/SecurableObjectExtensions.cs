@@ -49,7 +49,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                         // catch user not found
                         if (ex.ServerErrorCode == -2146232832 && ex.ServerErrorTypeName.Equals("Microsoft.SharePoint.SPException", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            MessageDelegate($"Cannot find principal '${roleAssignmentPrincipal}', cannot grant permissions", ProvisioningMessageType.Warning);
+                            MessageDelegate($"Cannot find principal '{roleAssignmentPrincipal}', cannot grant permissions", ProvisioningMessageType.Warning);
                             continue;
                         }
                     }
