@@ -379,8 +379,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         Title = tokenParser.ParseString(c.Title),
                                         Url = siteUrl
                                     };
-                                    if (Guid.TryParse(c.SiteDesign, out Guid siteDesignId))
+
+                                    Guid siteDesignId;
+                                    if (Guid.TryParse(c.SiteDesign, out siteDesignId))
                                     {
+                                        siteInfo.SiteDesignId = siteDesignId;
+                                    }
+                                    else if (Guid.TryParse(tokenParser.ParseString(c.SiteDesign), out siteDesignId))
+									{
                                         siteInfo.SiteDesignId = siteDesignId;
                                     }
                                     else
