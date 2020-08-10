@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Added web/site extension methods to set SPO nav bar search box placeholder text [wobba - Mikael Svenson]
 
 ## Changed
+- In case of a localization ({res:} / {loc:} / {localization:}) token in a provisioning template, and a target web is using a different language from what is provided by resources in the template, the token will fallback now to the first token provided, e.g. the first resource value provided.
 - Improved modern site extraction with the provisioning engine #2629 [gautamdsheth - Gautam Sheth]
 - Fixed ability to set field values on modern pages #2344 [heinrich-ulbricht Heinrich Ulbricht]
 - Added functionality to the provisioning engine to refer to list fields that have been added in the same list. By means of {fieldtitle:[fieldname]}. The enables for instance the ability to refer to fields in the list when creating a validation formula #2299 [koenzomers - Koen Zomers]
