@@ -1,9 +1,9 @@
-﻿using Microsoft.SharePoint.Client;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Microsoft.IdentityModel;
+using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Enums;
 using OfficeDevPnP.Core.Utilities;
 using OfficeDevPnP.Core.Utilities.Async;
+using OfficeDevPnP.Core.Utilities.REST;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,6 +11,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -668,7 +669,7 @@ namespace OfficeDevPnP.Core.ALM
                         requestUrl = $"{_context.Web.Url}/_api/web/{(scope == AppCatalogScope.Tenant ? "tenant" : "sitecollection")}appcatalog/AvailableApps/GetById('{id}')";
                     }
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
-                    request.Headers.Add("accept", "application/json;odata=verbose");
+                    request.Headers.Add("accept", "application/json;odata=nometadata");
                     if (!string.IsNullOrEmpty(accessToken))
                     {
                         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
@@ -680,7 +681,7 @@ namespace OfficeDevPnP.Core.ALM
                             handler.Credentials = networkCredential;
                         }
                     }
-                    request.Headers.Add("X-RequestDigest", await _context.GetRequestDigest());
+                    request.Headers.Add("X-RequestDigest", await _context.GetRequestDigestAsync());
 
                     // Perform actual post operation
                     HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
@@ -693,28 +694,27 @@ namespace OfficeDevPnP.Core.ALM
                         {
                             try
                             {
+
                                 if (Guid.Empty == id && string.IsNullOrEmpty(title))
                                 {
-                                    var responseJson = JObject.Parse(responseString);
-                                    var returnedAddins = responseJson["d"]["results"] as JArray;
-
-                                    addins = JsonConvert.DeserializeObject<List<AppMetadata>>(returnedAddins.ToString());
+                                    var resultCollection = JsonSerializer.Deserialize<ResultCollection<AppMetadata>>(responseString, new JsonSerializerOptions() { IgnoreNullValues = true });
+                                    if (resultCollection.Items != null && resultCollection.Items.Any())
+                                    {
+                                        addins = resultCollection.Items;
+                                    }
                                 }
                                 else if (!String.IsNullOrEmpty(title))
                                 {
-                                    var responseJson = JObject.Parse(responseString);
-                                    var returnedAddins = responseJson["d"]["results"] as JArray;
-
-                                    var listAddins = JsonConvert.DeserializeObject<List<AppMetadata>>(returnedAddins.ToString());
-                                    addins = listAddins.Where(a => a.Title == title).FirstOrDefault();
+                                    var resultCollection = JsonSerializer.Deserialize<ResultCollection<AppMetadata>>(responseString, new JsonSerializerOptions() { IgnoreNullValues = true });
+                                    if (resultCollection.Items != null && resultCollection.Items.Any())
+                                    {
+                                        addins = resultCollection.Items.FirstOrDefault(a => a.Title.Equals(title));
+                                    }
                                 }
                                 else
                                 {
-                                    var responseJson = JObject.Parse(responseString);
-                                    var returnedAddins = responseJson["d"];
-                                    addins = JsonConvert.DeserializeObject<AppMetadata>(returnedAddins.ToString());
+                                    addins = JsonSerializer.Deserialize<AppMetadata>(responseString);
                                 }
-
                             }
                             catch { }
                         }
@@ -773,11 +773,11 @@ namespace OfficeDevPnP.Core.ALM
                             handler.Credentials = networkCredential;
                         }
                     }
-                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigest());
+                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigestAsync());
 
                     if (postObject != null)
                     {
-                        var jsonBody = JsonConvert.SerializeObject(postObject);
+                        var jsonBody = JsonSerializer.Serialize(postObject);
                         var requestBody = new StringContent(jsonBody);
                         MediaTypeHeaderValue sharePointJsonMediaType;
                         MediaTypeHeaderValue.TryParse("application/json;odata=nometadata;charset=utf-8", out sharePointJsonMediaType);
@@ -796,7 +796,6 @@ namespace OfficeDevPnP.Core.ALM
                         {
                             try
                             {
-                                var responseJson = JObject.Parse(responseString);
                                 returnValue = true;
                             }
                             catch { }
@@ -860,7 +859,7 @@ namespace OfficeDevPnP.Core.ALM
                                 handler.Credentials = networkCredential;
                             }
                         }
-                        request.Headers.Add("X-RequestDigest", await context.GetRequestDigest());
+                        request.Headers.Add("X-RequestDigest", await context.GetRequestDigestAsync());
 
                         // Perform actual post operation
                         HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
@@ -873,7 +872,6 @@ namespace OfficeDevPnP.Core.ALM
                             {
                                 try
                                 {
-                                    var responseJson = JObject.Parse(responseString);
                                     returnValue = true;
                                 }
                                 catch { }
@@ -919,9 +917,9 @@ namespace OfficeDevPnP.Core.ALM
 
                     string requestUrl = $"{context.Web.Url}/_api/web/{(scope == AppCatalogScope.Tenant ? "tenant" : "sitecollection")}appcatalog/Add(overwrite={(overwrite.ToString().ToLower())}, url='{filename}')";
 
-                    var requestDigest = await context.GetRequestDigest();
+                    var requestDigest = await context.GetRequestDigestAsync();
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
-                    request.Headers.Add("accept", "application/json;odata=verbose");
+                    request.Headers.Add("accept", "application/json;odata=nometadata");
                     if (!string.IsNullOrEmpty(accessToken))
                     {
                         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
@@ -946,9 +944,14 @@ namespace OfficeDevPnP.Core.ALM
                         var responseString = await response.Content.ReadAsStringAsync();
                         if (responseString != null)
                         {
-                            var responseJson = JObject.Parse(responseString);
-                            var id = responseJson["d"]["UniqueId"].ToString();
-                            returnValue = await GetAppMetaData(scope, context, accessToken, httpClient, requestDigest, id);
+                            using (var jsonDocument = JsonDocument.Parse(responseString))
+                            {
+                                if (jsonDocument.RootElement.TryGetProperty("UniqueId", out JsonElement uniqueIdElement))
+                                {
+                                    var id = uniqueIdElement.GetString();
+                                    returnValue = await GetAppMetaData(scope, context, accessToken, httpClient, requestDigest, id);
+                                }
+                            }
                         }
                     }
                     else
@@ -970,7 +973,7 @@ namespace OfficeDevPnP.Core.ALM
             var metadataRequestUrl = $"{context.Web.Url}/_api/web/{(scope == AppCatalogScope.Tenant ? "tenant" : "sitecollection")}appcatalog/AvailableApps/GetById('{id}')";
 
             HttpRequestMessage metadataRequest = new HttpRequestMessage(HttpMethod.Get, metadataRequestUrl);
-            metadataRequest.Headers.Add("accept", "application/json;odata=verbose");
+            metadataRequest.Headers.Add("accept", "application/json;odata=nometadata");
             if (!string.IsNullOrEmpty(accessToken))
             {
                 metadataRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
@@ -988,9 +991,7 @@ namespace OfficeDevPnP.Core.ALM
                     var metadataResponseString = await metadataResponse.Content.ReadAsStringAsync();
                     if (metadataResponseString != null)
                     {
-                        var metadataResponseJson = JObject.Parse(metadataResponseString);
-                        var returnedAddins = metadataResponseJson["d"];
-                        returnValue = JsonConvert.DeserializeObject<AppMetadata>(returnedAddins.ToString());
+                        returnValue = JsonSerializer.Deserialize<AppMetadata>(metadataResponseString);
                     }
                 }
                 else if (metadataResponse.StatusCode != HttpStatusCode.NotFound)

@@ -1,5 +1,4 @@
-﻿
-#if !SP2013 && !SP2016
+﻿#if !SP2013 && !SP2016
 #if !ONPREMISES
 using Microsoft.Graph;
 #endif
@@ -7,6 +6,7 @@ using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Entities;
 using OfficeDevPnP.Core.Utilities;
 using OfficeDevPnP.Core.Utilities.Async;
 using System;
@@ -20,7 +20,6 @@ using System.Text.Encodings.Web;
 #endif
 using System.Threading.Tasks;
 using System.Web;
-using System.Linq;
 
 namespace OfficeDevPnP.Core.Sites
 {
@@ -170,7 +169,6 @@ namespace OfficeDevPnP.Core.Sites
             }
 #if !SP2019
             payload.Add("HubSiteId", siteCollectionCreationInformation.HubSiteId);
-#endif
 
             bool sensitivityLabelExists = !string.IsNullOrEmpty(siteCollectionCreationInformation.SensitivityLabel);
             if (sensitivityLabelExists)
@@ -179,11 +177,12 @@ namespace OfficeDevPnP.Core.Sites
                 payload.Add("SensitivityLabel", sensitivityLabelId);
                 payload["Classification"] = siteCollectionCreationInformation.SensitivityLabel;
             }
+#endif
 
-            return await CreateAsync(clientContext, siteCollectionCreationInformation.Owner, payload, delayAfterCreation
-#if !SP2019                
+                return await CreateAsync(clientContext, siteCollectionCreationInformation.Owner, payload, delayAfterCreation
+#if !SP2019
                 , noWait: noWait
-#endif                
+#endif
                 );
         }
 
@@ -303,7 +302,7 @@ namespace OfficeDevPnP.Core.Sites
             int maxRetryCount = 12, // Maximum number of retries (12 x 10 sec = 120 sec = 2 mins)
             int retryDelay = 1000 * 10 // Wait time default to 10sec,
 #if !SP2019
-            , 
+            ,
             bool noWait = false
 #endif
             )
@@ -321,6 +320,7 @@ namespace OfficeDevPnP.Core.Sites
                     handler.SetAuthenticationCookies(clientContext);
                 }
 
+#if !SP2019
                 bool sensitivityLabelExists = !string.IsNullOrEmpty(siteCollectionCreationInformation.SensitivityLabel);
 
                 var sensitivityLabelId = Guid.Empty;
@@ -328,6 +328,7 @@ namespace OfficeDevPnP.Core.Sites
                 {
                     sensitivityLabelId = await GetSensitivityLabelId(clientContext, siteCollectionCreationInformation.SensitivityLabel);
                 }
+#endif
 
                 using (var httpClient = new PnPHttpProvider(handler))
                 {
@@ -340,6 +341,7 @@ namespace OfficeDevPnP.Core.Sites
 
                     var optionalParams = new Dictionary<string, object>();
                     optionalParams.Add("Description", siteCollectionCreationInformation.Description ?? "");
+#if !SP2019
                     if (sensitivityLabelExists && sensitivityLabelId != Guid.Empty)
                     {
                         optionalParams.Add("Classification", siteCollectionCreationInformation.SensitivityLabel ?? "");
@@ -348,6 +350,7 @@ namespace OfficeDevPnP.Core.Sites
                     {
                         optionalParams.Add("Classification", siteCollectionCreationInformation.Classification ?? "");
                     }
+#endif
                     var creationOptionsValues = new List<string>();
                     if (siteCollectionCreationInformation.SiteDesignId.HasValue)
                     {
@@ -394,7 +397,7 @@ namespace OfficeDevPnP.Core.Sites
                         }
                     }
 
-                    requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
+                    requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigestAsync());
 
                     // Perform actual post operation
                     HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
@@ -452,7 +455,7 @@ namespace OfficeDevPnP.Core.Sites
                                             }
                                         }
 
-                                        siteStatusRequest.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
+                                        siteStatusRequest.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigestAsync());
 
                                         var siteStatusResponse = await httpClient.SendAsync(siteStatusRequest, new System.Threading.CancellationToken());
                                         var siteStatusResponseString = await siteStatusResponse.Content.ReadAsStringAsync();
@@ -558,12 +561,58 @@ namespace OfficeDevPnP.Core.Sites
 
             if (group != null && !string.IsNullOrEmpty(group.SiteUrl))
             {
+                // Try to configure the site/group classification, if any
+                if (!string.IsNullOrEmpty(siteCollectionCreationInformation.Classification))
+                {
+                    await SetTeamSiteClassification(
+                        siteCollectionCreationInformation.Classification,
+                        group.GroupId,
+                        graphAccessToken
+                        );
+                }
+
                 responseContext = clientContext.Clone(group.SiteUrl);
             }
 
             return responseContext;
         }
 #endif
+
+        private static async Task SetTeamSiteClassification(string classification, string groupId, string graphAccessToken)
+        {
+            // Patch the created group
+            using (var handler = new HttpClientHandler())
+            {
+                using (var httpClient = new PnPHttpProvider(handler))
+                {
+                    string requestUrl = $"https://graph.microsoft.com/v1.0/groups/{groupId}";
+
+                    // Serialize request object to JSON
+                    var jsonBody = JsonConvert.SerializeObject(new { classification });
+                    var requestBody = new StringContent(jsonBody);
+
+                    // Build Http request
+                    HttpRequestMessage request = new HttpRequestMessage(new HttpMethod("PATCH"), requestUrl);
+                    request.Content = requestBody;
+                    if (MediaTypeHeaderValue.TryParse("application/json", out MediaTypeHeaderValue jsonMediaType))
+                    {
+                        requestBody.Headers.ContentType = jsonMediaType;
+                    }
+                    if (!string.IsNullOrEmpty(graphAccessToken))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", graphAccessToken);
+                    }
+
+                    // Perform actual post operation
+                    HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new Exception("Failed to set Classification for created group");
+                    }
+                }
+            }
+        }
 
 #if !ONPREMISES
         /// <summary>
@@ -672,7 +721,7 @@ namespace OfficeDevPnP.Core.Sites
                         }
                     }
 
-                    requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
+                    requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigestAsync());
 
                     // Perform actual post operation
                     HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
@@ -728,7 +777,7 @@ namespace OfficeDevPnP.Core.Sites
                                                     siteStatusRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                                                 }
 
-                                                siteStatusRequest.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
+                                                siteStatusRequest.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigestAsync());
 
                                                 var siteStatusResponse = await httpClient.SendAsync(siteStatusRequest, new System.Threading.CancellationToken());
                                                 var siteStatusResponseString = await siteStatusResponse.Content.ReadAsStringAsync();
@@ -1041,7 +1090,7 @@ namespace OfficeDevPnP.Core.Sites
                         }
                     }
 
-                    requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
+                    requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigestAsync());
 
                     // Perform actual post operation
                     HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
@@ -1273,7 +1322,7 @@ namespace OfficeDevPnP.Core.Sites
 
                     string requestUrl = $"{context.Web.Url}/_api/groupservice/setgroupimage";
 
-                    var requestDigest = await context.GetRequestDigest();
+                    var requestDigest = await context.GetRequestDigestAsync();
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
                     request.Headers.Add("accept", "application/json;odata=verbose");
                     if (!string.IsNullOrEmpty(accessToken))
@@ -1364,13 +1413,13 @@ namespace OfficeDevPnP.Core.Sites
         /// Enable Microsoft Teams team in an O365 group connected team site
         /// Will also enable it on a newly Groupified classic site
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="context">Context to operate against</param>
         /// <returns></returns>
         public static async Task<string> TeamifySiteAsync(ClientContext context)
         {
             string responseString = null;
 
-            context.Site.EnsureProperties(s => s.GroupId);
+            context.Site.EnsureProperty(s => s.GroupId);
 
             if (context.Web.IsSubSite())
             {
@@ -1432,7 +1481,7 @@ namespace OfficeDevPnP.Core.Sites
 
             if (context.Site.GroupId == Guid.Empty)
             {
-                throw new Exception("Teamify prompts can only be hidden in O365 group connected sites.");
+                throw new Exception("Teamify prompts can only be hidden in Microsoft 365 group connected sites.");
             }
             else
             {
@@ -1486,7 +1535,7 @@ namespace OfficeDevPnP.Core.Sites
 
             await context.Web.ExecutePost("/_api/sitepages/communicationsite/enable", $@" {{ ""designPackageId"": ""{designPackageId.ToString()}"" }}");
         }
-#endif
+
 
         /// <summary>
         /// Get sensitivity label id for a given Label
@@ -1514,6 +1563,104 @@ namespace OfficeDevPnP.Core.Sites
             return await Task.Run(() => sensitivityLabelId);
         }
 
+
+        /// <summary>
+        /// Gets group alias information by group Id
+        /// </summary>
+        /// <param name="context">Context to operate against</param>
+        /// <param name="groupId">Id of the group</param>
+        /// <returns>True if in use, false otherwise</returns>
+        public static async Task<Dictionary<string, object>> GetGroupInfoByGroupIdAsync(ClientContext context, string groupId)
+        {
+            await new SynchronizationContextRemover();
+
+            Dictionary<string, object> siteInfo = new Dictionary<string, object>();
+
+            var accessToken = context.GetAccessToken();
+
+            using (var handler = new HttpClientHandler())
+            {
+                context.Web.EnsureProperty(w => w.Url);
+
+                if (string.IsNullOrEmpty(accessToken))
+                {
+                    handler.SetAuthenticationCookies(context);
+                }
+
+                using (var httpClient = new HttpClient(handler))
+                {
+                    string requestUrl = string.Format("{0}/_api/SP.Directory.DirectorySession/Group('{1}')?$select=PrincipalName,Id,DisplayName,Alias,Description,InboxUrl,CalendarUrl,DocumentsUrl,SiteUrl,EditGroupUrl,PictureUrl,PeopleUrl,NotebookUrl,Mail,IsPublic,CreationTime,Classification,teamsResources,yammerResources,allowToAddGuests,isDynamic,assignedLabels", context.Web.Url, groupId);
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+                    request.Headers.Add("accept", "application/json;odata.metadata=none");
+                    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    request.Headers.Add("odata-version", "4.0");
+
+                    if (!string.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+
+                    // Perform actual GET request
+                    HttpResponseMessage response = await httpClient.SendAsync(request);
+
+                    if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        siteInfo = null;
+                    }
+                    else if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        var responseString = await response.Content.ReadAsStringAsync();
+                        siteInfo = JsonConvert.DeserializeObject<Dictionary<string, object>>(responseString);
+                    }
+                    else
+                    {
+                        // Something went wrong...
+                        throw new Exception(await response.Content.ReadAsStringAsync());
+                    }
+                }
+                return await Task.Run(() => siteInfo);
+            }
+        }
+
+        /// <summary>
+        /// Deletes a Communication site or a Group-less Modern team site.
+        /// </summary>
+        /// <param name="context">Context to operate against</param>
+        /// <returns></returns>
+        public static async Task<bool> DeleteSiteAsync(ClientContext context)
+        {
+            bool siteDeleted = false;
+
+            var webTemplateId = context.Web.GetBaseTemplateId();
+
+            context.Site.EnsureProperties(s => s.Id, s => s.GroupId, s => s.Url);
+
+            if (webTemplateId == "SITEPAGEPUBLISHING#0" || webTemplateId == "STS#3")
+            {
+                var result = await context.Web.ExecutePost("/_api/SPSiteManager/delete", $@" {{ ""siteId"": ""{context.Site.Id.ToString()}"" }}");
+
+                var parsedResult = JObject.Parse(result);
+
+                siteDeleted = Convert.ToBoolean(parsedResult["odata.null"]);
+
+                return await Task.Run(() => siteDeleted);
+            }
+            else if (webTemplateId == "GROUP#0" || context.Site.GroupId != Guid.Empty)
+            {
+                var result = await context.Web.ExecutePost($"/_api/GroupSiteManager/Delete?siteUrl='{context.Site.Url}'", string.Empty);
+
+                var parsedResult = JObject.Parse(result);
+
+                siteDeleted = Convert.ToBoolean(parsedResult["odata.null"]);
+
+                return await Task.Run(() => siteDeleted);
+            }
+            else
+            {
+                throw new Exception("Only deletion of Communication site or Modern team site is supported by this method.");
+            }
+        }
+#endif
     }
 }
 #endif
