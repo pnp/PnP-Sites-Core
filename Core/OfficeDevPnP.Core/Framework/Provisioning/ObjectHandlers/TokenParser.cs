@@ -17,6 +17,10 @@ using System.Resources;
 using System.Text.RegularExpressions;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Graph;
+using System.Text.Json;
+using System.Web.UI.WebControls.WebParts;
+using System.IO;
+using System.Web.UI.WebControls;
 #if NETSTANDARD2_0
 using System.Xml.Linq;
 #endif
@@ -141,9 +145,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             else
             {
 #endif
-                var rootSiteUrl = tenant.Context.Url.Replace("-admin", "");
-                var context = ((ClientContext)tenant.Context).Clone(rootSiteUrl);
-                web = context.Web;
+            var rootSiteUrl = tenant.Context.Url.Replace("-admin", "");
+            var context = ((ClientContext)tenant.Context).Clone(rootSiteUrl);
+            web = context.Web;
 #if !ONPREMISES
             }
 #endif
@@ -340,20 +344,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var localizationEntry in localizations)
                 {
                     var filePath = localizationEntry.ResourceFile;
-                    using (var stream = connector.GetFileStream(filePath))
+                    if (filePath.ToLower().EndsWith(".resx"))
                     {
-                        if (stream != null)
+                        using (var stream = connector.GetFileStream(filePath))
                         {
-#if !NETSTANDARD2_0
-                            using (ResXResourceReader resxReader = new ResXResourceReader(stream))
+                            if (stream != null)
                             {
-                                foreach (DictionaryEntry entry in resxReader)
+#if !NETSTANDARD2_0
+                                // are we talking a resx file or a json file?
+                                if (filePath.ToLower().EndsWith(".resx"))
                                 {
-                                    // One can have multiple resource files in a single file, by adding tokens with resource file name and without we allow both scenarios to resolve
-                                    resourceEntries.Add(new Tuple<string, uint, string>($"{localizationEntry.Name}:{entry.Key}", (uint)localizationEntry.LCID, entry.Value.ToString().Replace("\"", "&quot;")));
-                                    resourceEntries.Add(new Tuple<string, uint, string>(entry.Key.ToString(), (uint)localizationEntry.LCID, entry.Value.ToString().Replace("\"", "&quot;")));
-                                }
-                            }
+                                    using (ResXResourceReader resxReader = new ResXResourceReader(stream))
+                                    {
+                                        foreach (DictionaryEntry entry in resxReader)
+                                        {
+                                            // One can have multiple resource files in a single file, by adding tokens with resource file name and without we allow both scenarios to resolve
+                                            resourceEntries.Add(new Tuple<string, uint, string>($"{localizationEntry.Name}:{entry.Key}", (uint)localizationEntry.LCID, entry.Value.ToString().Replace("\"", "&quot;")));
+                                            resourceEntries.Add(new Tuple<string, uint, string>(entry.Key.ToString(), (uint)localizationEntry.LCID, entry.Value.ToString().Replace("\"", "&quot;")));
+                                        }
+                                    }
 #else
                             var xElement = XElement.Load(stream);
                             foreach (var dataElement in xElement.Descendants("data"))
@@ -364,6 +373,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 resourceEntries.Add(new Tuple<string, uint, string>(key.ToString(), (uint)localizationEntry.LCID, value.ToString().Replace("\"", "&quot;")));
                             }
 #endif
+                                }
+                            }
+                        }
+                    }
+                    else if (filePath.ToLower().EndsWith(".json"))
+                    {
+                        var jsonString = connector.GetFile(filePath);
+                        if (!string.IsNullOrEmpty(jsonString))
+                        {
+                            var dict = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(jsonString);
+                            foreach (var entry in dict)
+                            {
+                                resourceEntries.Add(new Tuple<string, uint, string>($"{localizationEntry.Name}:{entry.Key}", (uint)localizationEntry.LCID, entry.Value.ToString().Replace("\"", "&quot;")));
+                                resourceEntries.Add(new Tuple<string, uint, string>(entry.Key.ToString(), (uint)localizationEntry.LCID, entry.Value.ToString().Replace("\"", "&quot;")));
+                            }
                         }
                     }
                 }
@@ -394,7 +418,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 _tokens.Add(new FieldIdToken(web, field.InternalName, field.Id));
             }
 
-           // Add all the list columns
+            // Add all the list columns
             //var lists = web.Lists;
             //web.Context.Load(lists, list => list.Include(listField => listField.Fields.Include(field => field.Title, field => field.InternalName, field => field.Id)));
             //web.Context.ExecuteQueryRetry();
@@ -474,7 +498,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (accessToken != null)
                 {
                     // Get Office 365 Groups
-                    var officeGroups = UnifiedGroupsUtility.GetUnifiedGroups(accessToken, includeSite: false); 
+                    var officeGroups = UnifiedGroupsUtility.GetUnifiedGroups(accessToken, includeSite: false);
                     foreach (var group in officeGroups)
                     {
                         _tokens.Add(new O365GroupIdToken(web, group.DisplayName, group.GroupId));
