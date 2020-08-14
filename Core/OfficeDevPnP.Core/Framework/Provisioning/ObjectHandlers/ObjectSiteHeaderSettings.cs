@@ -76,38 +76,48 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.HeaderEmphasis = (SPVariantThemeType)Enum.Parse(typeof(SPVariantThemeType), template.Header.BackgroundEmphasis.ToString());
                     web.MegaMenuEnabled = template.Header.MenuStyle == SiteHeaderMenuStyle.MegaMenu;
 
-                    if (PnPProvisioningContext.Current != null)
+                    var jsonRequest = new
                     {
-                        // Get an Access Token for the SetChromeOptions request
-                        var spoResourceUri = new Uri(web.Url).Authority;
-                        var accessToken = PnPProvisioningContext.Current.AcquireToken(spoResourceUri, null);
+                        headerLayout = web.HeaderLayout,
+                        headerEmphasis = web.HeaderEmphasis,
+                        megaMenuEnabled = web.MegaMenuEnabled,
+                    };
 
-                        if (accessToken != null)
-                        {
-                            // Prepare the JSON request for SetChromeOptions
-                            var jsonRequest = new
-                            {
-                                headerLayout = web.HeaderLayout,
-                                headerEmphasis = web.HeaderEmphasis,
-                                megaMenuEnabled = web.MegaMenuEnabled,
-                            };
+                    web.ExecutePostAsync("/_api/web/SetChromeOptions", System.Text.Json.JsonSerializer.Serialize(jsonRequest)).GetAwaiter().GetResult();
 
-                            // Build the URL of the SetChromeOptions API
-                            var setChromeOptionsApiUrl = $"{web.Url}/_api/web/SetChromeOptions";
 
-                            // Make the POST request to the SetChromeOptions API
-                            // and fail in case of any exception
-                            HttpHelper.MakePostRequest(setChromeOptionsApiUrl,
-                                jsonRequest,
-                                "application/json",
-                                accessToken);
-                        }
-                    }
-                    else
-                    {
-                        web.Update();
-                        web.Context.ExecuteQueryRetry();
-                    }
+                    //if (PnPProvisioningContext.Current != null)
+                    //{
+                    //    // Get an Access Token for the SetChromeOptions request
+                    //    var spoResourceUri = new Uri(web.Url).Authority;
+                    //    var accessToken = PnPProvisioningContext.Current.AcquireToken(spoResourceUri, null);
+
+                    //    if (accessToken != null)
+                    //    {
+                    //        // Prepare the JSON request for SetChromeOptions
+                    //        var jsonRequest = new
+                    //        {
+                    //            headerLayout = web.HeaderLayout,
+                    //            headerEmphasis = web.HeaderEmphasis,
+                    //            megaMenuEnabled = web.MegaMenuEnabled,
+                    //        };
+
+                    //        // Build the URL of the SetChromeOptions API
+                    //        var setChromeOptionsApiUrl = $"{web.Url}/_api/web/SetChromeOptions";
+
+                    //        // Make the POST request to the SetChromeOptions API
+                    //        // and fail in case of any exception
+                    //        HttpHelper.MakePostRequest(setChromeOptionsApiUrl,
+                    //            jsonRequest,
+                    //            "application/json",
+                    //            accessToken);
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    web.Update();
+                    //    web.Context.ExecuteQueryRetry();
+                    //}
                 }
             }
             return parser;

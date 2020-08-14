@@ -38,7 +38,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var footer = new SiteFooter();
 
                 footer.Enabled = web.FooterEnabled;
-                var structureString = web.ExecuteGet($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
+                var structureString = web.ExecuteGetAsync($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
                 var menuState = JsonConvert.DeserializeObject<MenuState>(structureString);
 
                 if (menuState.Nodes.Count > 0)
@@ -262,49 +262,58 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         w => w.FooterEmphasis);
                     web.FooterEnabled = template.Footer.Enabled;
 
-                    if (PnPProvisioningContext.Current != null)
+                    var jsonRequest = new
                     {
-                        // Get an Access Token for the SetChromeOptions request
-                        var spoResourceUri = new Uri(web.Url).Authority;
-                        var accessToken = PnPProvisioningContext.Current.AcquireToken(spoResourceUri, null);
+                        footerEnabled = web.FooterEnabled,
+                        footerLayout = web.FooterLayout,
+                        footerEmphasis = web.FooterEmphasis
+                    };
 
-                        if (accessToken != null)
-                        {
-                            // Prepare the JSON request for SetChromeOptions
-                            var jsonRequest = new
-                            {
-                                footerEnabled = web.FooterEnabled,
-                                footerLayout = web.FooterLayout,
-                                footerEmphasis = web.FooterEmphasis
-                            };
+                    web.ExecutePostAsync("/_api/web/SetChromeOptions", System.Text.Json.JsonSerializer.Serialize(jsonRequest)).GetAwaiter().GetResult();
 
-                            // Build the URL of the SetChromeOptions API
-                            var setChromeOptionsApiUrl = $"{web.Url}/_api/web/SetChromeOptions";
+                    //if (PnPProvisioningContext.Current != null)
+                    //{
+                    //    // Get an Access Token for the SetChromeOptions request
+                    //    var spoResourceUri = new Uri(web.Url).Authority;
+                    //    var accessToken = PnPProvisioningContext.Current.AcquireToken(spoResourceUri, null);
 
-                            // Make the POST request to the SetChromeOptions API
-                            // and fail in case of any exception
-                            HttpHelper.MakePostRequest(setChromeOptionsApiUrl,
-                                jsonRequest,
-                                "application/json",
-                                accessToken);
-                        }
-                    }
-                    else
-                    {
-                        web.Update();
-                        web.Context.ExecuteQueryRetry();
-                    }
+                    //    if (accessToken != null)
+                    //    {
+                    //        // Prepare the JSON request for SetChromeOptions
+                    //        var jsonRequest = new
+                    //        {
+                    //            footerEnabled = web.FooterEnabled,
+                    //            footerLayout = web.FooterLayout,
+                    //            footerEmphasis = web.FooterEmphasis
+                    //        };
+
+                    //        // Build the URL of the SetChromeOptions API
+                    //        var setChromeOptionsApiUrl = $"{web.Url}/_api/web/SetChromeOptions";
+
+                    //        // Make the POST request to the SetChromeOptions API
+                    //        // and fail in case of any exception
+                    //        HttpHelper.MakePostRequest(setChromeOptionsApiUrl,
+                    //            jsonRequest,
+                    //            "application/json",
+                    //            accessToken);
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    web.Update();
+                    //    web.Context.ExecuteQueryRetry();
+                    //}
 
                     if (web.FooterEnabled)
                     {
-                        var structureString = web.ExecuteGet($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
+                        var structureString = web.ExecuteGetAsync($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
                         var menuState = JsonConvert.DeserializeObject<MenuState>(structureString);
                         if (menuState.StartingNodeKey == null)
                         {
 
                             var now = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss:Z");
-                            web.ExecutePost($"/_api/navigation/SaveMenuState", $@"{{ ""menuState"":{{ ""Version"":""{now}"",""StartingNodeTitle"":""3a94b35f-030b-468e-80e3-b75ee84ae0ad"",""SPSitePrefix"":""/"",""SPWebPrefix"":""{web.ServerRelativeUrl}"",""FriendlyUrlPrefix"":"""",""SimpleUrl"":"""",""Nodes"":[]}}}}").GetAwaiter().GetResult();
-                            structureString = web.ExecuteGet($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
+                            web.ExecutePostAsync($"/_api/navigation/SaveMenuState", $@"{{ ""menuState"":{{ ""Version"":""{now}"",""StartingNodeTitle"":""3a94b35f-030b-468e-80e3-b75ee84ae0ad"",""SPSitePrefix"":""/"",""SPWebPrefix"":""{web.ServerRelativeUrl}"",""FriendlyUrlPrefix"":"""",""SimpleUrl"":"""",""Nodes"":[]}}}}").GetAwaiter().GetResult();
+                            structureString = web.ExecuteGetAsync($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
                             menuState = JsonConvert.DeserializeObject<MenuState>(structureString);
                         }
                         var n1 = web.Navigation.GetNodeById(Convert.ToInt32(menuState.StartingNodeKey));
