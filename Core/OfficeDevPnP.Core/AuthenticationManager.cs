@@ -815,7 +815,7 @@ namespace OfficeDevPnP.Core
             if (jobject == null || jobject["error"] != null)
             {
                 var error = jobject["error"];
-                
+
             }
 
             var token = jobject["access_token"].Value<string>();
@@ -1200,6 +1200,28 @@ namespace OfficeDevPnP.Core
                         return "https://login.microsoftonline.com";
                     }
             }
+        }
+
+        internal static string GetSharePointDomainSuffix(AzureEnvironment environment)
+        {
+            if (environment == AzureEnvironment.Production)
+            {
+                return "com";
+            }
+            else if (environment == AzureEnvironment.USGovernment)
+            {
+                return "us";
+            }
+            else if (environment == AzureEnvironment.Germany)
+            {
+                return "de";
+            }
+            else if (environment == AzureEnvironment.China)
+            {
+                return "cn";
+            }
+
+            return "com";
         }
         #endregion
 

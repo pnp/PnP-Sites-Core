@@ -18,9 +18,9 @@ using System.Text.RegularExpressions;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Graph;
 using System.Text.Json;
-using System.Web.UI.WebControls.WebParts;
+//using System.Web.UI.WebControls.WebParts;
 using System.IO;
-using System.Web.UI.WebControls;
+//using System.Web.UI.WebControls;
 #if NETSTANDARD2_0
 using System.Xml.Linq;
 #endif
@@ -363,17 +363,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             resourceEntries.Add(new Tuple<string, uint, string>(entry.Key.ToString(), (uint)localizationEntry.LCID, entry.Value.ToString().Replace("\"", "&quot;")));
                                         }
                                     }
-#else
-                            var xElement = XElement.Load(stream);
-                            foreach (var dataElement in xElement.Descendants("data"))
-                            {
-                                var key = dataElement.Attribute("name").Value;
-                                var value = dataElement.Value;
-                                resourceEntries.Add(new Tuple<string, uint, string>($"{localizationEntry.Name}:{key}", (uint)localizationEntry.LCID, value.ToString().Replace("\"", "&quot;")));
-                                resourceEntries.Add(new Tuple<string, uint, string>(key.ToString(), (uint)localizationEntry.LCID, value.ToString().Replace("\"", "&quot;")));
-                            }
-#endif
                                 }
+#else
+                                var xElement = XElement.Load(stream);
+                                    foreach (var dataElement in xElement.Descendants("data"))
+                                    {
+                                        var key = dataElement.Attribute("name").Value;
+                                        var value = dataElement.Value;
+                                        resourceEntries.Add(new Tuple<string, uint, string>($"{localizationEntry.Name}:{key}", (uint)localizationEntry.LCID, value.ToString().Replace("\"", "&quot;")));
+                                        resourceEntries.Add(new Tuple<string, uint, string>(key.ToString(), (uint)localizationEntry.LCID, value.ToString().Replace("\"", "&quot;")));
+                                    }
+#endif
                             }
                         }
                     }
