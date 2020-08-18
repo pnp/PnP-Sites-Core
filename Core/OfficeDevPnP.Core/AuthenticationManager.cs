@@ -1202,7 +1202,7 @@ namespace OfficeDevPnP.Core
             }
         }
 
-        internal static string GetSharePointDomainSuffix(AzureEnvironment environment)
+        public static string GetSharePointDomainSuffix(AzureEnvironment environment)
         {
             if (environment == AzureEnvironment.Production)
             {
