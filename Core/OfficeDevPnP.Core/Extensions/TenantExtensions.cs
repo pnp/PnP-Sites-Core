@@ -1088,14 +1088,7 @@ namespace Microsoft.SharePoint.Client
             else
             {
                 // Otherwise, we need to target the Admin Site
-                var siteUrl = site.Url.EndsWith("/") ? site.Url : $"{site.Url}/";
-
-                Match m = Regex.Match(siteUrl, @"(?<host>sharepoint(.*?)\.com)\/");
-                if (!m.Success) return false;
-
-                var rootSiteUrl = siteUrl.Substring(0, siteUrl.IndexOf("/", m.Index)).Replace("-my", "");
-                var adminSiteUrl = rootSiteUrl.Replace("." + m.Groups["host"].Value, "-admin.sharepoint.com");
-
+                var adminSiteUrl = clientContext.Web.GetTenantAdministrationUrl();
                 try
                 {
                     // Connect to the Admin Site
