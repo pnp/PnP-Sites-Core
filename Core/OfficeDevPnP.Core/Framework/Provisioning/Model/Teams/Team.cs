@@ -54,7 +54,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// </summary>
         public TeamAppInstanceCollection Apps { get; private set; }
 
-        public TeamSpecialization Specialization { get; set; }
+        public TeamSpecialization? Specialization { get; set; }
 
         /// <summary>
         /// Declares the ID of the targt Group/Team to update, optional attribute. Cannot be used together with CloneFrom.
