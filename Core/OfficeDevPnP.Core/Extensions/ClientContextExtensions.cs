@@ -382,6 +382,25 @@ namespace Microsoft.SharePoint.Client
                         {
                             newClientContext = authManager.GetAzureADAppOnlyAuthenticatedContext(newSiteUrl, contextSettings.ClientId, contextSettings.Tenant, contextSettings.Certificate, contextSettings.Environment);
                         }
+                        else if(contextSettings.Type == ClientContextType.Cookie)
+                        {
+                            newClientContext = new ClientContext(newSiteUrl);
+                            newClientContext.ExecutingWebRequest += (sender, webRequestEventArgs) =>
+                            {
+                                // Call the ExecutingWebRequest delegate method from the original ClientContext object, but pass along the webRequestEventArgs of 
+                                // the new delegate method
+                                MethodInfo methodInfo = clientContext.GetType().GetMethod("OnExecutingWebRequest", BindingFlags.Instance | BindingFlags.NonPublic);
+                                object[] parametersArray = new object[] { webRequestEventArgs };
+                                methodInfo.Invoke(clientContext, parametersArray);
+                            };
+                            ClientContextSettings clientContextSettings = new ClientContextSettings()
+                            {
+                                Type = ClientContextType.Cookie,
+                                SiteUrl = newSiteUrl,
+                            };
+
+                            newClientContext.AddContextSettings(clientContextSettings);
+                        }
 #endif
 
                         if (newClientContext != null)
@@ -874,7 +893,7 @@ namespace Microsoft.SharePoint.Client
             return pnpMethod;
         }
 
-      
+
         /// <summary>
         /// Returns the request digest from the current session/site
         /// </summary>
@@ -1046,7 +1065,7 @@ namespace Microsoft.SharePoint.Client
 
             return await SiteCollection.IsTeamifyPromptHiddenAsync(clientContext);
         }
-        
+
         [Obsolete("Use IsTeamifyPromptHiddenAsync")]
         public static async Task<bool> IsTeamifyPromptHidden(this ClientContext clientContext)
         {

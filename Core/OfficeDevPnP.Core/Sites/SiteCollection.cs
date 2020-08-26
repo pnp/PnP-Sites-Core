@@ -169,7 +169,6 @@ namespace OfficeDevPnP.Core.Sites
             }
 #if !SP2019
             payload.Add("HubSiteId", siteCollectionCreationInformation.HubSiteId);
-#endif
 
             bool sensitivityLabelExists = !string.IsNullOrEmpty(siteCollectionCreationInformation.SensitivityLabel);
             if (sensitivityLabelExists)
@@ -178,11 +177,12 @@ namespace OfficeDevPnP.Core.Sites
                 payload.Add("SensitivityLabel", sensitivityLabelId);
                 payload["Classification"] = siteCollectionCreationInformation.SensitivityLabel;
             }
+#endif
 
-            return await CreateAsync(clientContext, siteCollectionCreationInformation.Owner, payload, delayAfterCreation
-#if !SP2019                
+                return await CreateAsync(clientContext, siteCollectionCreationInformation.Owner, payload, delayAfterCreation
+#if !SP2019
                 , noWait: noWait
-#endif                
+#endif
                 );
         }
 
@@ -320,6 +320,7 @@ namespace OfficeDevPnP.Core.Sites
                     handler.SetAuthenticationCookies(clientContext);
                 }
 
+#if !SP2019
                 bool sensitivityLabelExists = !string.IsNullOrEmpty(siteCollectionCreationInformation.SensitivityLabel);
 
                 var sensitivityLabelId = Guid.Empty;
@@ -327,6 +328,7 @@ namespace OfficeDevPnP.Core.Sites
                 {
                     sensitivityLabelId = await GetSensitivityLabelId(clientContext, siteCollectionCreationInformation.SensitivityLabel);
                 }
+#endif
 
                 using (var httpClient = new PnPHttpProvider(handler))
                 {
@@ -339,6 +341,7 @@ namespace OfficeDevPnP.Core.Sites
 
                     var optionalParams = new Dictionary<string, object>();
                     optionalParams.Add("Description", siteCollectionCreationInformation.Description ?? "");
+#if !SP2019
                     if (sensitivityLabelExists && sensitivityLabelId != Guid.Empty)
                     {
                         optionalParams.Add("Classification", siteCollectionCreationInformation.SensitivityLabel ?? "");
@@ -347,6 +350,7 @@ namespace OfficeDevPnP.Core.Sites
                     {
                         optionalParams.Add("Classification", siteCollectionCreationInformation.Classification ?? "");
                     }
+#endif
                     var creationOptionsValues = new List<string>();
                     if (siteCollectionCreationInformation.SiteDesignId.HasValue)
                     {
@@ -1427,7 +1431,7 @@ namespace OfficeDevPnP.Core.Sites
             }
             else
             {
-                var result = await context.Web.ExecutePost("/_api/groupsitemanager/EnsureTeamForGroup", string.Empty);
+                var result = await context.Web.ExecutePostAsync("/_api/groupsitemanager/EnsureTeamForGroup", string.Empty);
 
                 var teamId = JObject.Parse(result);
 
@@ -1454,7 +1458,7 @@ namespace OfficeDevPnP.Core.Sites
             }
             else
             {
-                var result = await context.Web.ExecuteGet($"/_api/groupsitemanager/IsTeamifyPromptHidden?siteUrl='{context.Site.Url}'");
+                var result = await context.Web.ExecuteGetAsync($"/_api/groupsitemanager/IsTeamifyPromptHidden?siteUrl='{context.Site.Url}'");
 
                 var teamifyPromptHidden = JObject.Parse(result);
 
@@ -1481,7 +1485,7 @@ namespace OfficeDevPnP.Core.Sites
             }
             else
             {
-                var result = await context.Web.ExecutePost("/_api/groupsitemanager/HideTeamifyPrompt", $@" {{ ""siteUrl"": ""{context.Site.Url}"" }}");
+                var result = await context.Web.ExecutePostAsync("/_api/groupsitemanager/HideTeamifyPrompt", $@" {{ ""siteUrl"": ""{context.Site.Url}"" }}");
 
                 var teamifyPromptHidden = JObject.Parse(result);
 
@@ -1529,7 +1533,7 @@ namespace OfficeDevPnP.Core.Sites
                 throw new Exception("Invalid designPackageId specified. Use 96c933ac-3698-44c7-9f4a-5fd17d71af9e (Topic = default), 6142d2a0-63a5-4ba0-aede-d9fefca2c767 (Showcase) or f6cc5403-0d63-442e-96c0-285923709ffc (Blank)");
             }
 
-            await context.Web.ExecutePost("/_api/sitepages/communicationsite/enable", $@" {{ ""designPackageId"": ""{designPackageId.ToString()}"" }}");
+            await context.Web.ExecutePostAsync("/_api/sitepages/communicationsite/enable", $@" {{ ""designPackageId"": ""{designPackageId.ToString()}"" }}");
         }
 
 
@@ -1541,7 +1545,7 @@ namespace OfficeDevPnP.Core.Sites
         /// <returns></returns>
         private static async Task<Guid> GetSensitivityLabelId(ClientContext context, string sensitiveLabelString)
         {
-            var result = await context.Web.ExecuteGet("/_api/groupsitemanager/GetGroupCreationContext");
+            var result = await context.Web.ExecuteGetAsync("/_api/groupsitemanager/GetGroupCreationContext");
 
             var results = JObject.Parse(result);
 
@@ -1633,7 +1637,7 @@ namespace OfficeDevPnP.Core.Sites
 
             if (webTemplateId == "SITEPAGEPUBLISHING#0" || webTemplateId == "STS#3")
             {
-                var result = await context.Web.ExecutePost("/_api/SPSiteManager/delete", $@" {{ ""siteId"": ""{context.Site.Id.ToString()}"" }}");
+                var result = await context.Web.ExecutePostAsync("/_api/SPSiteManager/delete", $@" {{ ""siteId"": ""{context.Site.Id.ToString()}"" }}");
 
                 var parsedResult = JObject.Parse(result);
 
@@ -1643,7 +1647,7 @@ namespace OfficeDevPnP.Core.Sites
             }
             else if (webTemplateId == "GROUP#0" || context.Site.GroupId != Guid.Empty)
             {
-                var result = await context.Web.ExecutePost($"/_api/GroupSiteManager/Delete?siteUrl='{context.Site.Url}'", string.Empty);
+                var result = await context.Web.ExecutePostAsync($"/_api/GroupSiteManager/Delete?siteUrl='{context.Site.Url}'", string.Empty);
 
                 var parsedResult = JObject.Parse(result);
 

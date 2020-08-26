@@ -619,7 +619,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                 if (sitecollection.IsHubSite)
                                 {
-                                    RESTUtilities.ExecuteGet(web, "/_api/web/hubsitedata(true)").GetAwaiter().GetResult();
+                                    RESTUtilities.ExecuteGetAsync(web, "/_api/web/hubsitedata(true)").GetAwaiter().GetResult();
                                 }
 
                             }
