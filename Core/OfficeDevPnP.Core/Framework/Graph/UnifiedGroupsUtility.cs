@@ -1166,8 +1166,9 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// </summary>
         /// <param name="groupId">The ID of the Office 365 Group</param>
         /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
+        /// <param name="timeoutSeconds">Time to wait till Team is created. Default is 300 seconds (5 mins)</param>
         /// <returns></returns>
-        public static async Task CreateTeam(string groupId, string accessToken)
+        public static async Task CreateTeam(string groupId, string accessToken, int timeoutSeconds = 300)
         {
             if (string.IsNullOrEmpty(groupId))
             {
@@ -1197,17 +1198,17 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 }
                 catch (Exception ex)
                 {
-                    // Don't wait more than 30 seconds
-                    if (iterations > 3)
+                    // Don't wait more than 300 seconds
+                    if (iterations * 30 >= timeoutSeconds)
                     {
                         wait = false;
                         throw;
                     }
                     else
                     {
-                        // In case of exception wait for 10 secs
+                        // In case of exception wait for 30 secs
                         Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, ex.Message);
-                        System.Threading.Thread.Sleep(TimeSpan.FromSeconds(10));
+                        System.Threading.Thread.Sleep(TimeSpan.FromSeconds(30));
                     }
                 }
             }
