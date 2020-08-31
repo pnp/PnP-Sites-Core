@@ -778,14 +778,14 @@ namespace Microsoft.SharePoint.Client
         /// <returns>NavigationNodeCollection containing the navigation elements shown in the footer or NULL if no navigation has been set on the footer</returns>
         public static NavigationNodeCollection LoadFooterNavigation(this Web web)
         {
-            var structureString = web.ExecuteGet($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
+            var structureString = web.ExecuteGetAsync($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
             var menuState = JObject.Parse(structureString);
 
             if (menuState["StartingNodeKey"] == null)
             {
                 var now = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss:Z");
-                web.ExecutePost($"/_api/navigation/SaveMenuState", $@"{{ ""menuState"":{{ ""Version"":""{now}"",""StartingNodeTitle"":""3a94b35f-030b-468e-80e3-b75ee84ae0ad"",""SPSitePrefix"":""/"",""SPWebPrefix"":""{web.ServerRelativeUrl}"",""FriendlyUrlPrefix"":"""",""SimpleUrl"":"""",""Nodes"":[]}}}}").GetAwaiter().GetResult();
-                structureString = web.ExecuteGet($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
+                web.ExecutePostAsync($"/_api/navigation/SaveMenuState", $@"{{ ""menuState"":{{ ""Version"":""{now}"",""StartingNodeTitle"":""3a94b35f-030b-468e-80e3-b75ee84ae0ad"",""SPSitePrefix"":""/"",""SPWebPrefix"":""{web.ServerRelativeUrl}"",""FriendlyUrlPrefix"":"""",""SimpleUrl"":"""",""Nodes"":[]}}}}").GetAwaiter().GetResult();
+                structureString = web.ExecuteGetAsync($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
                 menuState = JObject.Parse(structureString);
             }
 
@@ -819,7 +819,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Title shown in the footer or NULL if no title has been set</returns>
         public static string GetFooterTitle(this Web web)
         {
-            var structureString = web.ExecuteGet($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
+            var structureString = web.ExecuteGetAsync($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
             var menuState = JObject.Parse(structureString);
 
             if (menuState["Nodes"] == null)
@@ -852,7 +852,7 @@ namespace Microsoft.SharePoint.Client
         public static bool SetFooterTitle(this Web web, string title)
         {
             web.EnsureProperty(w => w.ServerRelativeUrl);
-            var responseString = web.ExecutePost("/_api/navigation/SaveMenuState", 
+            var responseString = web.ExecutePostAsync("/_api/navigation/SaveMenuState", 
                                                 @"{""menuState"":{""StartingNodeTitle"":""" + Constants.SITEFOOTER_NODEKEY + @""",""SPSitePrefix"":""/"",""SPWebPrefix"":""" + web.ServerRelativeUrl + @""",""FriendlyUrlPrefix"":"""",""SimpleUrl"":"""",""Nodes"":[{""NodeType"":0,""Title"":""" + Constants.SITEFOOTER_TITLENODEKEY + @""",""Key"":""2004"",""FriendlyUrlSegment"":"""",""Nodes"":[{""NodeType"":0,""Title"":""" + title + @""",""FriendlyUrlSegment"":""""}]}]}}").GetAwaiter().GetResult();
             var responseJson = JObject.Parse(responseString);
             var requestSucceeded = responseJson != null && responseJson["value"] != null && responseJson["value"].Value<string>() == "200";
@@ -866,7 +866,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Server relative URL of the logo shown in the footer or NULL if no footer has been set</returns>
         public static string GetFooterLogoUrl(this Web web)
         {
-            var structureString = web.ExecuteGet($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
+            var structureString = web.ExecuteGetAsync($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
             var menuState = JObject.Parse(structureString);
 
             if (menuState["Nodes"] == null)
@@ -899,7 +899,7 @@ namespace Microsoft.SharePoint.Client
         public static bool SetFooterLogoUrl(this Web web, string logoUrl)
         {
             web.EnsureProperty(w => w.ServerRelativeUrl);
-            var responseString = web.ExecutePost("/_api/navigation/SaveMenuState",
+            var responseString = web.ExecutePostAsync("/_api/navigation/SaveMenuState",
                                                 @"{""menuState"":{""StartingNodeTitle"":""" + Constants.SITEFOOTER_NODEKEY + @""",""SPSitePrefix"":""/"",""SPWebPrefix"":""" + web.ServerRelativeUrl + @""",""FriendlyUrlPrefix"":"""",""SimpleUrl"":"""",""Nodes"":[{""NodeType"":0,""Title"":""" + Constants.SITEFOOTER_LOGONODEKEY + @""",""Key"":""2006"",""SimpleUrl"":""" + logoUrl + @""",""FriendlyUrlSegment"":""""}]}}").GetAwaiter().GetResult();
             var responseJson = JObject.Parse(responseString);
             var requestSucceeded = responseJson != null && responseJson["value"] != null && responseJson["value"].Value<string>() == "200";
@@ -914,7 +914,7 @@ namespace Microsoft.SharePoint.Client
         public static bool RemoveFooterLogoUrl(this Web web)
         {
             web.EnsureProperty(w => w.ServerRelativeUrl);
-            var responseString = web.ExecutePost("/_api/navigation/SaveMenuState",
+            var responseString = web.ExecutePostAsync("/_api/navigation/SaveMenuState",
                                                 @"{""menuState"":{""StartingNodeTitle"":""" + Constants.SITEFOOTER_NODEKEY + @""",""SPSitePrefix"":""/"",""SPWebPrefix"":""" + web.ServerRelativeUrl + @""",""FriendlyUrlPrefix"":"""",""SimpleUrl"":"""",""Nodes"":[{""NodeType"":0,""Title"":""" + Constants.SITEFOOTER_LOGONODEKEY + @""",""IsDeleted"":""True"",""FriendlyUrlSegment"":""""}]}}").GetAwaiter().GetResult();
             var responseJson = JObject.Parse(responseString);
             var requestSucceeded = responseJson != null && responseJson["value"] != null && responseJson["value"].Value<string>() == "200";

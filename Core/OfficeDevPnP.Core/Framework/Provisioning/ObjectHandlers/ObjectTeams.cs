@@ -818,12 +818,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 channel.IsFavoriteByDefault,
                 membershipType = channel.Private ? "private" : "standard",
                 members = (channel.Private && channelMembers != null) ? (from m in channelMembers
-                                             select new
-                                             {
-                                                 private_channel_member_odata_type = "#microsoft.graph.aadUserConversationMember",
-                                                 private_channel_user_odata_bind = $"https://graph.microsoft.com/beta/users('{m}')",
-                                                 roles = new String[] { "owner" }
-                                             }).ToArray() : null
+                                                                         select new
+                                                                         {
+                                                                             private_channel_member_odata_type = "#microsoft.graph.aadUserConversationMember",
+                                                                             private_channel_user_odata_bind = $"https://graph.microsoft.com/beta/users('{m}')",
+                                                                             roles = new String[] { "owner" }
+                                                                         }).ToArray() : null
             };
 
             var channelId = GraphHelper.CreateOrUpdateGraphObject(scope,
@@ -1183,7 +1183,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #else
                     string contentType;
                     new FileExtensionContentTypeProvider().TryGetContentType(photoPath, out contentType);
-                    contentType ??= "application/octet-stream";
+                    if (contentType == null)
+                    {
+                        contentType = "application/octet-stream";
+                    }
 #endif
                     int maxRetries = 10;
                     int retry = 0;
@@ -1446,7 +1449,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // untested change
                 if (ex.Message.StartsWith("404"))
                 {
-                        // no team, swallow
+                    // no team, swallow
                 }
                 else
                 {

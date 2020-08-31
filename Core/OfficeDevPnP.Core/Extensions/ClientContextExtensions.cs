@@ -39,7 +39,7 @@ namespace Microsoft.SharePoint.Client
         static ClientContextExtensions()
         {
             ClientContextExtensions.userAgentFromConfig = ConfigurationManager.AppSettings["SharePointPnPUserAgent"];
-            if(string.IsNullOrWhiteSpace(ClientContextExtensions.userAgentFromConfig))
+            if (string.IsNullOrWhiteSpace(ClientContextExtensions.userAgentFromConfig))
             {
                 ClientContextExtensions.userAgentFromConfig = System.Environment.GetEnvironmentVariable("SharePointPnPUserAgent", EnvironmentVariableTarget.Process);
             }
@@ -230,9 +230,9 @@ namespace Microsoft.SharePoint.Client
                     var response = wex.Response as HttpWebResponse;
                     // Check if request was throttled - http status code 429
                     // Check is request failed due to server unavailable - http status code 503
-                    if (response != null && 
-                        (response.StatusCode == (HttpStatusCode)429 
-                        || response.StatusCode == (HttpStatusCode)503 
+                    if (response != null &&
+                        (response.StatusCode == (HttpStatusCode)429
+                        || response.StatusCode == (HttpStatusCode)503
                         // || response.StatusCode == (HttpStatusCode)500
                         ))
                     {
@@ -304,7 +304,7 @@ namespace Microsoft.SharePoint.Client
                     throw;
                 }
             }
-            
+
             throw new MaximumRetryAttemptedException($"Maximum retry attempts {retryCount}, has be attempted.");
         }
 
@@ -424,7 +424,7 @@ namespace Microsoft.SharePoint.Client
                         {
                             newClientContext = authManager.GetAppOnlyAuthenticatedContext(newSiteUrl, TokenHelper.GetRealmFromTargetUrl(new Uri(newSiteUrl)), contextSettings.ClientId, contextSettings.ClientSecret, contextSettings.AcsHostUrl, contextSettings.GlobalEndPointPrefix);
                         }
-#if !ONPREMISES && !NETSTANDARD2_0
+#if !ONPREMISES 
                         else if (contextSettings.Type == ClientContextType.AzureADCredentials)
                         {
                             newClientContext = authManager.GetAzureADCredentialsContext(newSiteUrl, contextSettings.UserName, contextSettings.Password);
@@ -432,6 +432,25 @@ namespace Microsoft.SharePoint.Client
                         else if (contextSettings.Type == ClientContextType.AzureADCertificate)
                         {
                             newClientContext = authManager.GetAzureADAppOnlyAuthenticatedContext(newSiteUrl, contextSettings.ClientId, contextSettings.Tenant, contextSettings.Certificate, contextSettings.Environment);
+                        }
+                        else if(contextSettings.Type == ClientContextType.Cookie)
+                        {
+                            newClientContext = new ClientContext(newSiteUrl);
+                            newClientContext.ExecutingWebRequest += (sender, webRequestEventArgs) =>
+                            {
+                                // Call the ExecutingWebRequest delegate method from the original ClientContext object, but pass along the webRequestEventArgs of 
+                                // the new delegate method
+                                MethodInfo methodInfo = clientContext.GetType().GetMethod("OnExecutingWebRequest", BindingFlags.Instance | BindingFlags.NonPublic);
+                                object[] parametersArray = new object[] { webRequestEventArgs };
+                                methodInfo.Invoke(clientContext, parametersArray);
+                            };
+                            ClientContextSettings clientContextSettings = new ClientContextSettings()
+                            {
+                                Type = ClientContextType.Cookie,
+                                SiteUrl = newSiteUrl,
+                            };
+
+                            newClientContext.AddContextSettings(clientContextSettings);
                         }
 #endif
 
@@ -605,7 +624,7 @@ namespace Microsoft.SharePoint.Client
                 result = true;
             }
             // As a final check, do we have the auth cookies?
-            if (clientContext.HasAuthCookies())
+            else if (clientContext.HasAuthCookies())
             {
                 result = false;
             }
@@ -674,18 +693,26 @@ namespace Microsoft.SharePoint.Client
         public static string GetAccessToken(this ClientRuntimeContext clientContext)
         {
             string accessToken = null;
-            EventHandler<WebRequestEventArgs> handler = (s, e) =>
+
+            if (PnPProvisioningContext.Current != null)
             {
-                string authorization = e.WebRequestExecutor.RequestHeaders["Authorization"];
-                if (!string.IsNullOrEmpty(authorization))
+                accessToken = PnPProvisioningContext.Current.AcquireToken(new Uri(clientContext.Url).Authority, null);
+            }
+            else
+            {
+                EventHandler<WebRequestEventArgs> handler = (s, e) =>
                 {
-                    accessToken = authorization.Replace("Bearer ", string.Empty);
-                }
-            };
-            // Issue a dummy request to get it from the Authorization header
-            clientContext.ExecutingWebRequest += handler;
-            clientContext.ExecuteQueryRetry();
-            clientContext.ExecutingWebRequest -= handler;
+                    string authorization = e.WebRequestExecutor.RequestHeaders["Authorization"];
+                    if (!string.IsNullOrEmpty(authorization))
+                    {
+                        accessToken = authorization.Replace("Bearer ", string.Empty);
+                    }
+                };
+                // Issue a dummy request to get it from the Authorization header
+                clientContext.ExecutingWebRequest += handler;
+                clientContext.ExecuteQueryRetry();
+                clientContext.ExecutingWebRequest -= handler;
+            }
 
             return accessToken;
         }
@@ -729,7 +756,7 @@ namespace Microsoft.SharePoint.Client
 
             hasAuthCookies = fedAuth && rtFa;
         }
-        
+
         /// <summary>
         /// Gets the CookieCollection by cookie name = FedAuth or rtFa
         /// </summary>
@@ -753,7 +780,7 @@ namespace Microsoft.SharePoint.Client
         {
             CookieCollection cookieCollection = null;
 
-            void Handler(object sender, WebRequestEventArgs e) 
+            void Handler(object sender, WebRequestEventArgs e)
                 => cookieCollection = HandleWebRequest(e, cookieNames);
 
             clientContext.ExecutingWebRequest += Handler;
@@ -796,7 +823,7 @@ namespace Microsoft.SharePoint.Client
                     cookieCollection.Add(cookie);
                 }
             }
-            
+
             return cookieCollection;
         }
 
@@ -917,12 +944,13 @@ namespace Microsoft.SharePoint.Client
             return pnpMethod;
         }
 
+
         /// <summary>
         /// Returns the request digest from the current session/site
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static async Task<string> GetRequestDigest(this ClientContext context)
+        public static async Task<string> GetRequestDigestAsync(this ClientContext context)
         {
             await new SynchronizationContextRemover();
 
@@ -1076,16 +1104,23 @@ namespace Microsoft.SharePoint.Client
             return await SiteCollection.TeamifySiteAsync(clientContext);
         }
 
+
         /// <summary>
         /// Checks whether the teamify prompt is hidden in O365 Group connected sites
         /// </summary>
         /// <param name="clientContext">ClientContext of the site to operate against</param>
         /// <returns></returns>
-        public static async Task<bool> IsTeamifyPromptHidden(this ClientContext clientContext)
+        public static async Task<bool> IsTeamifyPromptHiddenAsync(this ClientContext clientContext)
         {
             await new SynchronizationContextRemover();
 
             return await SiteCollection.IsTeamifyPromptHiddenAsync(clientContext);
+        }
+
+        [Obsolete("Use IsTeamifyPromptHiddenAsync")]
+        public static async Task<bool> IsTeamifyPromptHidden(this ClientContext clientContext)
+        {
+            return await IsTeamifyPromptHiddenAsync(clientContext);
         }
 
         /// <summary>
@@ -1093,11 +1128,22 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="clientContext">ClientContext of the site to operate against</param>
         /// <returns></returns>
-        public static async Task<bool> HideTeamifyPrompt(this ClientContext clientContext)
+        public static async Task<bool> HideTeamifyPromptAsync(this ClientContext clientContext)
+        {
+            await new SynchronizationContextRemover();
+            return await SiteCollection.HideTeamifyPromptAsync(clientContext);
+        }
+
+        /// <summary>
+        /// Deletes a Communication site or a group-less Modern team site
+        /// </summary>
+        /// <param name="clientContext"></param>
+        /// <returns></returns>
+        public static async Task<bool> DeleteSiteAsync(this ClientContext clientContext)
         {
             await new SynchronizationContextRemover();
 
-            return await SiteCollection.HideTeamifyPromptAsync(clientContext);
+            return await SiteCollection.DeleteSiteAsync(clientContext);
         }
 #endif
     }
