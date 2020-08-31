@@ -1,6 +1,7 @@
 ﻿#if !SP2013 && !SP2016
-using Newtonsoft.Json;
+using OfficeDevPnP.Core.Utilities.JsonConverters;
 using System;
+using System.Text.Json.Serialization;
 
 namespace OfficeDevPnP.Core.ALM
 {
@@ -12,41 +13,37 @@ namespace OfficeDevPnP.Core.ALM
         /// <summary>
         /// Unique ID of the library list item of the app/solution.
         /// </summary>
-        [JsonProperty()]
-        public Guid Id { get; internal set; }
+        [JsonPropertyName("ID")]
+        public Guid Id { get; set; }
         /// <summary>
         /// Returns version of the app / solution int the app catalog.
         /// </summary>
-        [JsonProperty()]
-        public Version AppCatalogVersion { get; internal set; }
+        [JsonConverter(typeof(VersionConverter))]
+        public Version AppCatalogVersion { get; set; }
         /// <summary>
         /// Returns whether an existing instance of an app/solution can be upgraded. 
         /// True if there's newer version available in app catalog compared to instance in site.
         /// </summary>
-        [JsonProperty()]
-        public bool CanUpgrade { get; internal set; }
+        public bool CanUpgrade { get; set; }
         /// <summary>
         /// Returns whether app/solution has been deployed to the context site. 
         /// True if particular app/solution has been installed to the site.
         /// </summary>
-        [JsonProperty()]
-        public bool Deployed { get; internal set; }
+        public bool Deployed { get; set; }
         /// <summary>
         /// Returns version of the installed app/solution in the site context. 
         /// </summary>
-        [JsonProperty()]
-        public Version InstalledVersion { get; internal set; }
+        [JsonConverter(typeof(VersionConverter))]
+        public Version InstalledVersion { get; set; }
         /// <summary>
         /// Returns wheter app/solution is SharePoint Framework client-side solution. 
         /// True for SPFx, False for app/add-in.
         /// </summary>
-        [JsonProperty()]
-        public bool IsClientSideSolution { get; internal set; }
+        public bool IsClientSideSolution { get; set; }
         /// <summary>
         /// Title of the solution
         /// </summary>
-        [JsonProperty()]
-        public string Title { get; internal set; }
+        public string Title { get; set; }
     }
 }
 #endif

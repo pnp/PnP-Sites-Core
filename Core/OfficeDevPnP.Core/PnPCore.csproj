@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>OfficeDevPnP.Core</RootNamespace>
     <AssemblyName>OfficeDevPnP.Core</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -219,6 +219,7 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.2.1" />
     <PackageReference Include="System.IO.Packaging" Version="4.4.1" />
     <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
+    <PackageReference Include="System.Text.Json" Version="4.7.2" />
     <PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" />
     <PackageReference Include="WindowsAzure.Storage" Version="9.1.0" />
   </ItemGroup>
