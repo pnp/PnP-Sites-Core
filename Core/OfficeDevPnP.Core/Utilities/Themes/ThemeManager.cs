@@ -126,7 +126,7 @@ namespace OfficeDevPnP.Core.Utilities.Themes
                     {
                         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
                     }
-                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigest());
+                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigestAsync());
                     request.Headers.Add("ODATA-VERSION", "4.0");
 
                     if (postObject != null)
@@ -207,7 +207,7 @@ namespace OfficeDevPnP.Core.Utilities.Themes
                     {
                         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
                     }
-                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigest());
+                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigestAsync());
                     request.Headers.Add("ODATA-VERSION", "4.0");
 
                     if (!string.IsNullOrEmpty(postObject))

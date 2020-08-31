@@ -82,7 +82,7 @@ namespace OfficeDevPnP.Core.Utilities
                     string requestUrl = identifierUrl + "/" + SubscriptionsUrlPart;
 
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
-                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigest());
+                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigestAsync());
                     request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     if (!string.IsNullOrEmpty(accessToken))
                     {
@@ -181,7 +181,7 @@ namespace OfficeDevPnP.Core.Utilities
                     
                     string requestUrl = string.Format("{0}/{1}('{2}')", identifierUrl, SubscriptionsUrlPart, subscriptionId);
                     HttpRequestMessage request = new HttpRequestMessage(new HttpMethod("PATCH"), requestUrl);
-                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigest());
+                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigestAsync());
                     request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     if (!string.IsNullOrEmpty(accessToken))
                     {
@@ -257,7 +257,7 @@ namespace OfficeDevPnP.Core.Utilities
                     string requestUrl = string.Format("{0}/{1}('{2}')", identifierUrl, SubscriptionsUrlPart, subscriptionId);
 
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, requestUrl);
-                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigest());
+                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigestAsync());
                     request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
 

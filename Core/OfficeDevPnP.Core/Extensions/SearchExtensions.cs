@@ -2,7 +2,6 @@
 using Microsoft.SharePoint.Client.Search.Administration;
 using Microsoft.SharePoint.Client.Search.Portability;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
@@ -222,6 +221,71 @@ namespace Microsoft.SharePoint.Client
             context.ExecuteQueryRetry();
         }
 
+#if !ONPREMISES
+        public static void SetSearchBoxPlaceholderText(this Site site, string placeholderText)
+        {
+            SetSearchBoxPlaceholderTextImpl(site.RootWeb, placeholderText, true);
+        }
+
+        public static void SetSearchBoxPlaceholderText(this Web web, string placeholderText)
+        {
+            SetSearchBoxPlaceholderTextImpl(web, placeholderText, false);
+        }
+
+        private static void SetSearchBoxPlaceholderTextImpl(Web web, string placeholderText, bool siteScope)
+        {
+            if (placeholderText == null)
+            {
+                throw new ArgumentNullException(nameof(placeholderText));
+            }
+
+            ClientContext adminContext = null;
+
+            var ctx = ((ClientContext)web.Context);
+            ctx.Load(ctx.Web, w => w.EffectiveBasePermissions); // reload permissions
+            ctx.ExecuteQueryRetry();
+
+            Site site = ctx.Site;
+
+            #region Enable scripting if needed and context has access
+            Tenant tenant = null;
+            if (ctx.Web.IsNoScriptSite() && TenantExtensions.IsCurrentUserTenantAdmin(ctx))
+            {
+                site.EnsureProperty(s => s.Url);
+                var adminSiteUrl = web.GetTenantAdministrationUrl();
+                adminContext = ctx.Clone(adminSiteUrl);
+                tenant = new Tenant(adminContext);
+                tenant.SetSiteProperties(site.Url, noScriptSite: false);
+            }
+            #endregion
+
+            try
+            {
+                if (siteScope)
+                {
+                    site.SearchBoxPlaceholderText = placeholderText;
+                }
+                else
+                {
+                    web.SearchBoxPlaceholderText = placeholderText;
+                    web.Update();
+                }
+                ctx.ExecuteQueryRetry();
+            }
+            finally
+            {
+                #region Disable scripting if previously enabled
+                if (adminContext != null)
+                {
+                    // Reset disabling setting the property bag if needed
+                    tenant.SetSiteProperties(site.Url, noScriptSite: true);
+                    adminContext.Dispose();
+                }
+                #endregion
+            }
+        }
+#endif
+
         /// <summary>
         /// Sets the search center URL on site collection (Site Settings -> Site collection administration --> Search Settings)
         /// </summary>
@@ -242,7 +306,11 @@ namespace Microsoft.SharePoint.Client
             Tenant tenant = null;
             Site site = null;
             ClientContext adminContext = null;
-            if (web.IsNoScriptSite() && TenantExtensions.IsCurrentUserTenantAdmin(web.Context as ClientContext))
+            var ctx = ((ClientContext)web.Context);
+            ctx.Load(ctx.Web, w => w.EffectiveBasePermissions); // reload permissions in case changed after connect
+            ctx.ExecuteQueryRetry();
+
+            if (ctx.Web.IsNoScriptSite() && TenantExtensions.IsCurrentUserTenantAdmin(web.Context as ClientContext))
             {
                 site = ((ClientContext)web.Context).Site;
                 site.EnsureProperty(s => s.Url);

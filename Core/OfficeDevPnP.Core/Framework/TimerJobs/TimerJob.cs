@@ -1666,17 +1666,18 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 {
                     if (this.certificate != null)
                     {
-                        ccEnumerate = GetAuthenticationManager(site).GetAzureADAppOnlyAuthenticatedContext(GetTenantAdminSite(site), this.clientId, this.azureTenant, this.certificate);
+                        ccEnumerate = GetAuthenticationManager(site).GetAzureADAppOnlyAuthenticatedContext(GetTenantAdminSite(site), this.clientId, this.azureTenant, this.certificate, this.azureEnvironment);
                     }
                     else
                     {
-                        ccEnumerate = GetAuthenticationManager(site).GetAzureADAppOnlyAuthenticatedContext(GetTenantAdminSite(site), this.clientId, this.azureTenant, this.certificatePath, this.certificatePassword);
+                        ccEnumerate = GetAuthenticationManager(site).GetAzureADAppOnlyAuthenticatedContext(GetTenantAdminSite(site), this.clientId, this.azureTenant, this.certificatePath, this.certificatePassword, this.azureEnvironment);
                     }
                 }
 #if !NETSTANDARD2_0
                 else
                 {
-                    ccEnumerate = GetAuthenticationManager(site).GetSharePointOnlineAuthenticatedContextTenant(GetTenantAdminSite(site), EnumerationUser, EnumerationPassword);
+                    //ccEnumerate = GetAuthenticationManager(site).GetSharePointOnlineAuthenticatedContextTenant(GetTenantAdminSite(site), EnumerationUser, EnumerationPassword);
+                    ccEnumerate = GetAuthenticationManager(site).GetAzureADCredentialsContext(GetTenantAdminSite(site), EnumerationUser, EnumerationPassword, this.azureEnvironment);
                 }
 #endif
                 Tenant tenant = new Tenant(ccEnumerate);
@@ -1763,7 +1764,9 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             {
                 Uri u = new Uri(GetTopLevelSite(site.Replace("*", "")));
                 string tenantName = u.DnsSafeHost.Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries)[0];
-                return $"https://{tenantName}-admin.sharepoint.com";
+                var parts = u.DnsSafeHost.Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries);
+                string domainExtension = parts[parts.Length - 1];
+                return $"https://{tenantName}-admin.sharepoint.{domainExtension}";
             }
         }
 
