@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -11,6 +12,18 @@ namespace Microsoft.SharePoint.Client
     /// </summary>
     public static partial class ClientContextExtensions
     {
+        [Obsolete("Use GetRequestDigestAsync(ClientContext). This method will be removed in the November 2020 release.")]
+        public static async Task<string> GetRequestDigest(this ClientContext context)
+        {
+            return await GetRequestDigestAsync(context);
+        }
 
+#if !ONPREMISES
+        [Obsolete("Use HideTeamifyPromptAsync. The method will be removed in the November 2020 release.")]
+        public static async Task<bool> HideTeamifyPrompt(this ClientContext clientContext)
+        {
+            return await HideTeamifyPromptAsync(clientContext);
+        }
+#endif
     }
 }

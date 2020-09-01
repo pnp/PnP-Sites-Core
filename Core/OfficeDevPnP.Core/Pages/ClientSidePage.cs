@@ -2391,6 +2391,13 @@ namespace OfficeDevPnP.Core.Pages
                 {
                     handler.SetAuthenticationCookies(context);
                 }
+                else
+                {
+                    if (context.Credentials is System.Net.NetworkCredential networkCredential)
+                    {
+                        handler.Credentials = networkCredential;
+                    }
+                }
 
                 using (var httpClient = new PnPHttpProvider(handler))
                 {
@@ -2469,7 +2476,7 @@ namespace OfficeDevPnP.Core.Pages
                         }
                     }
 
-                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigest());
+                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigestAsync());
 
                     if (translationStatusCreationRequest != null && translationStatusCreationRequest.LanguageCodes.Count > 0)
                     {

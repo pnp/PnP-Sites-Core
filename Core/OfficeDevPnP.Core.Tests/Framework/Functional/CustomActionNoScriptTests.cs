@@ -6,7 +6,7 @@ using OfficeDevPnP.Core.Tests.Framework.Functional.Validators;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     [TestClass]
     public class CustomActionNoScriptTests: FunctionalTestBase
     {

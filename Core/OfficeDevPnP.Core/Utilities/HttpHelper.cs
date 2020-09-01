@@ -532,7 +532,7 @@ namespace OfficeDevPnP.Core.Utilities
 
                     if (!requestHeaders.ContainsKey("X-RequestDigest"))
                     {
-                        requestHeaders.Add("X-RequestDigest", spContext.GetRequestDigest().GetAwaiter().GetResult());
+                        requestHeaders.Add("X-RequestDigest", spContext.GetRequestDigestAsync().GetAwaiter().GetResult());
                     }
                 }
 

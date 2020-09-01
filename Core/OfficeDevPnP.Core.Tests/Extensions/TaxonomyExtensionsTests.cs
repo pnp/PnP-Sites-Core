@@ -130,22 +130,25 @@ namespace Microsoft.SharePoint.Client.Tests
             if (!TestCommon.AppOnlyTesting())
             {
                 Console.WriteLine("TaxonomyExtensionsTests.Cleanup");
+
+
+                // Clean up Taxonomy
+                try
+                {                    
+                    this.CleanupTaxonomy();
+                }
+                catch (ServerException serverEx)
+                {
+                    if (!string.IsNullOrEmpty(serverEx.ServerErrorTypeName)
+                        && serverEx.ServerErrorTypeName.Contains("TermStoreErrorCodeEx"))
+                    {
+                        System.Threading.Thread.Sleep(TimeSpan.FromSeconds(2));
+                        this.CleanupTaxonomy();
+                    }
+                }
+
                 using (var clientContext = TestCommon.CreateClientContext())
                 {
-                    // Clean up Taxonomy
-                    var taxSession = TaxonomySession.GetTaxonomySession(clientContext);
-                    var termStore = taxSession.GetDefaultSiteCollectionTermStore();
-                    var termGroup = termStore.GetGroup(_termGroupId);
-                    var termSets = termGroup.TermSets;
-                    clientContext.Load(termSets);
-                    clientContext.ExecuteQueryRetry();
-                    foreach (var termSet in termSets)
-                    {
-                        termSet.DeleteObject();
-                    }
-                    termGroup.DeleteObject(); // Will delete underlying termset
-                    clientContext.ExecuteQueryRetry();
-
                     // Clean up fields
                     var fields = clientContext.LoadQuery(clientContext.Web.Fields);
                     clientContext.ExecuteQueryRetry();
@@ -161,6 +164,50 @@ namespace Microsoft.SharePoint.Client.Tests
                     list.DeleteObject();
                     clientContext.ExecuteQueryRetry();
                 }
+            }
+        }
+
+        private void CleanupTaxonomy()
+        {
+            if (!TestCommon.AppOnlyTesting())
+            {
+                // Ensure that the group is empty before deleting it. 
+                // exceptions like the following happen:
+                // Microsoft.SharePoint.Client.ServerException: Microsoft.SharePoint.Client.ServerException: A Group cannot be deleted unless it is empty..
+
+                OfficeDevPnP.Core.Tests.Utilities.RetryHelper.Do(
+                    () => this.InnerCleanupTaxonomy(),
+                    TimeSpan.FromSeconds(30),
+                    3);
+            }
+        }
+
+        private void InnerCleanupTaxonomy()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                // Clean up Taxonomy
+                var taxSession = TaxonomySession.GetTaxonomySession(clientContext);
+                var termStore = taxSession.GetDefaultSiteCollectionTermStore();
+                var termGroup = termStore.GetGroup(_termGroupId);
+                var termSets = termGroup.TermSets;
+                clientContext.Load(termSets);
+                clientContext.ExecuteQueryRetry();
+
+                foreach (var termSet in termSets)
+                {
+                    termSet.DeleteObject();
+                    clientContext.ExecuteQueryRetry();
+                }
+
+                termStore.CommitAll();
+                clientContext.ExecuteQueryRetry();
+
+                // termStore.UpdateCache();
+                taxSession.UpdateCache();
+
+                termGroup.DeleteObject(); // Will delete underlying termset
+                clientContext.ExecuteQueryRetry();
             }
         }
         #endregion

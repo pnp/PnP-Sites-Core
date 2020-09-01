@@ -1,9 +1,12 @@
-﻿#if !ONPREMISES
+﻿#if !SP2013 && !SP2016
+#if !ONPREMISES
 using Microsoft.Graph;
+#endif
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Entities;
 using OfficeDevPnP.Core.Utilities;
 using OfficeDevPnP.Core.Utilities.Async;
 using System;
@@ -26,7 +29,7 @@ namespace OfficeDevPnP.Core.Sites
     /// </summary>
     public static class SiteCollection
     {
-
+#if !ONPREMISES
         /// <summary>
         /// Creates a new Communication Site Collection and waits for it to be created
         /// </summary>
@@ -35,12 +38,38 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
         /// <param name="noWait">If specified the site will be created and the process will be finished asynchronously</param>
         /// <returns>ClientContext object for the created site collection</returns>
-        public static ClientContext Create(ClientContext clientContext, CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation, int delayAfterCreation = 0, bool noWait = false)
+#else
+        /// <summary>
+        /// Creates a new Communication Site Collection and waits for it to be created
+        /// </summary>
+        /// <param name="clientContext">ClientContext object of a regular site</param>
+        /// <param name="siteCollectionCreationInformation">information about the site to create</param>
+        /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
+        /// <returns>ClientContext object for the created site collection</returns>
+#endif
+        public static ClientContext Create(
+            ClientContext clientContext,
+            CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation,
+            int delayAfterCreation = 0
+#if !SP2019
+            ,
+            bool noWait = false
+#endif      
+            )
         {
-            var context = CreateAsync(clientContext, siteCollectionCreationInformation, delayAfterCreation, noWait: noWait).GetAwaiter().GetResult();
+            var context = CreateAsync(
+                clientContext,
+                siteCollectionCreationInformation,
+                delayAfterCreation
+#if !SP2019
+                ,
+                noWait: noWait
+#endif
+                ).GetAwaiter().GetResult();
             return context;
         }
 
+#if !ONPREMISES
         /// <summary>
         /// Creates a new Team Site Collection with no group and waits for it to be created
         /// </summary>
@@ -49,12 +78,39 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
         /// <param name="noWait">If specified the site will be created and the process will be finished asynchronously</param>
         /// <returns>ClientContext object for the created site collection</returns>
-        public static ClientContext Create(ClientContext clientContext, TeamNoGroupSiteCollectionCreationInformation siteCollectionCreationInformation, int delayAfterCreation = 0, bool noWait = false)
+#else
+        /// <summary>
+        /// Creates a new Team Site Collection with no group and waits for it to be created
+        /// </summary>
+        /// <param name="clientContext">ClientContext object of a regular site</param>
+        /// <param name="siteCollectionCreationInformation">information about the site to create</param>
+        /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
+        /// <returns>ClientContext object for the created site collection</returns>
+#endif
+        public static ClientContext Create(
+            ClientContext clientContext,
+            TeamNoGroupSiteCollectionCreationInformation siteCollectionCreationInformation,
+            int delayAfterCreation = 0
+#if !SP2019
+            ,
+            bool noWait = false
+#endif
+
+            )
         {
-            var context = CreateAsync(clientContext, siteCollectionCreationInformation, delayAfterCreation, noWait: noWait).GetAwaiter().GetResult();
+            var context = CreateAsync(
+                clientContext,
+                siteCollectionCreationInformation,
+                delayAfterCreation
+#if !SP2019
+                ,
+                noWait: noWait
+#endif
+                ).GetAwaiter().GetResult();
             return context;
         }
 
+#if !ONPREMISES
         /// <summary>
         /// Creates a new Team Site Collection and waits for it to be created
         /// </summary>
@@ -64,12 +120,19 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="noWait">If specified the site will be created and the process will be finished asynchronously</param>
         /// <param name="graphAccessToken">An optional Access Token for Microsoft Graph to use for creeating the site within an App-Only context</param>
         /// <returns>ClientContext object for the created site collection</returns>
-        public static ClientContext Create(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation, int delayAfterCreation = 0, bool noWait = false, string graphAccessToken = null)
+        public static ClientContext Create(
+            ClientContext clientContext,
+            TeamSiteCollectionCreationInformation siteCollectionCreationInformation,
+            int delayAfterCreation = 0,
+            bool noWait = false,
+            string graphAccessToken = null)
         {
             var context = CreateAsync(clientContext, siteCollectionCreationInformation, delayAfterCreation, noWait: noWait, graphAccessToken: graphAccessToken).GetAwaiter().GetResult();
             return context;
         }
+#endif
 
+#if !ONPREMISES
         /// <summary>
         /// Creates a new Communication Site Collection
         /// </summary>
@@ -78,7 +141,24 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
         /// <param name="noWait">If specified the site will be created and the process will be finished asynchronously</param>        
         /// <returns>ClientContext object for the created site collection</returns>
-        public static async Task<ClientContext> CreateAsync(ClientContext clientContext, CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation, int delayAfterCreation = 0, bool noWait = false)
+#else
+        /// <summary>
+        /// Creates a new Communication Site Collection
+        /// </summary>
+        /// <param name="clientContext">ClientContext object of a regular site</param>
+        /// <param name="siteCollectionCreationInformation">information about the site to create</param>
+        /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
+        /// <returns>ClientContext object for the created site collection</returns>
+#endif
+        public static async Task<ClientContext> CreateAsync(
+            ClientContext clientContext,
+            CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation,
+            int delayAfterCreation = 0
+#if !SP2019
+            ,
+            bool noWait = false
+#endif
+            )
         {
             Dictionary<string, object> payload = GetRequestPayload(siteCollectionCreationInformation);
 
@@ -87,6 +167,7 @@ namespace OfficeDevPnP.Core.Sites
             {
                 payload.Add("SiteDesignId", siteDesignId);
             }
+#if !SP2019
             payload.Add("HubSiteId", siteCollectionCreationInformation.HubSiteId);
 
             bool sensitivityLabelExists = !string.IsNullOrEmpty(siteCollectionCreationInformation.SensitivityLabel);
@@ -96,10 +177,16 @@ namespace OfficeDevPnP.Core.Sites
                 payload.Add("SensitivityLabel", sensitivityLabelId);
                 payload["Classification"] = siteCollectionCreationInformation.SensitivityLabel;
             }
+#endif
 
-            return await CreateAsync(clientContext, siteCollectionCreationInformation.Owner, payload, delayAfterCreation, noWait: noWait);
+                return await CreateAsync(clientContext, siteCollectionCreationInformation.Owner, payload, delayAfterCreation
+#if !SP2019
+                , noWait: noWait
+#endif
+                );
         }
 
+#if !ONPREMISES
         /// <summary>
         /// Creates a new Team Site Collection with no group
         /// </summary>
@@ -108,12 +195,37 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
         /// <param name="noWait">If specified the site will be created and the process will be finished asynchronously</param>
         /// <returns>ClientContext object for the created site collection</returns>
-        public static async Task<ClientContext> CreateAsync(ClientContext clientContext, TeamNoGroupSiteCollectionCreationInformation siteCollectionCreationInformation, int delayAfterCreation = 0, bool noWait = false)
+#else
+        /// <summary>
+        /// Creates a new Team Site Collection with no group
+        /// </summary>
+        /// <param name="clientContext">ClientContext object of a regular site</param>
+        /// <param name="siteCollectionCreationInformation">information about the site to create</param>
+        /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
+        /// <returns>ClientContext object for the created site collection</returns>
+#endif
+        public static async Task<ClientContext> CreateAsync(
+            ClientContext clientContext,
+            TeamNoGroupSiteCollectionCreationInformation siteCollectionCreationInformation,
+            int delayAfterCreation = 0
+#if !SP2019
+            , bool noWait = false
+#endif
+            )
         {
             Dictionary<string, object> payload = GetRequestPayload(siteCollectionCreationInformation);
-            return await CreateAsync(clientContext, siteCollectionCreationInformation.Owner, payload, delayAfterCreation, noWait: noWait);
+            return await CreateAsync(
+                clientContext,
+                siteCollectionCreationInformation.Owner,
+                payload,
+                delayAfterCreation
+#if !SP2019
+                , noWait: noWait
+#endif
+                );
         }
 
+#if !ONPREMISES
         /// <summary>
         /// Creates a new Modern Team Site Collection (so with an Office 365 group connected)
         /// </summary>
@@ -161,7 +273,9 @@ namespace OfficeDevPnP.Core.Sites
 
             return responseContext;
         }
+#endif
 
+#if !ONPREMISES
         /// <summary>
         /// Private method to create a new Modern Team Site Collection (so with an Office 365 group connected) using SPO REST
         /// </summary>
@@ -172,11 +286,26 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="retryDelay">Delay between retries for a pending site provisioning. Default 10 seconds.</param>
         /// <param name="noWait">If specified the site will be created and the process will be finished asynchronously</param>
         /// <returns>ClientContext object for the created site collection</returns>
+#else
+        /// <summary>
+        /// Creates a new Modern Team Site Collection (so with an Office 365 group connected)
+        /// </summary>
+        /// <param name="clientContext">ClientContext object of a regular site</param>
+        /// <param name="siteCollectionCreationInformation">information about the site to create</param>
+        /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
+        /// <param name="maxRetryCount">Maximum number of retries for a pending site provisioning. Default 12 retries.</param>
+        /// <param name="retryDelay">Delay between retries for a pending site provisioning. Default 10 seconds.</param>
+        /// <returns>ClientContext object for the created site collection</returns>
+#endif
         private static async Task<ClientContext> CreateTeamSiteViaSPOAsync(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation,
             int delayAfterCreation = 0,
             int maxRetryCount = 12, // Maximum number of retries (12 x 10 sec = 120 sec = 2 mins)
-            int retryDelay = 1000 * 10, // Wait time default to 10sec,
-            bool noWait = false)
+            int retryDelay = 1000 * 10 // Wait time default to 10sec,
+#if !SP2019
+            ,
+            bool noWait = false
+#endif
+            )
         {
             ClientContext responseContext = null;
 
@@ -191,6 +320,7 @@ namespace OfficeDevPnP.Core.Sites
                     handler.SetAuthenticationCookies(clientContext);
                 }
 
+#if !SP2019
                 bool sensitivityLabelExists = !string.IsNullOrEmpty(siteCollectionCreationInformation.SensitivityLabel);
 
                 var sensitivityLabelId = Guid.Empty;
@@ -198,6 +328,7 @@ namespace OfficeDevPnP.Core.Sites
                 {
                     sensitivityLabelId = await GetSensitivityLabelId(clientContext, siteCollectionCreationInformation.SensitivityLabel);
                 }
+#endif
 
                 using (var httpClient = new PnPHttpProvider(handler))
                 {
@@ -210,6 +341,7 @@ namespace OfficeDevPnP.Core.Sites
 
                     var optionalParams = new Dictionary<string, object>();
                     optionalParams.Add("Description", siteCollectionCreationInformation.Description ?? "");
+#if !SP2019
                     if (sensitivityLabelExists && sensitivityLabelId != Guid.Empty)
                     {
                         optionalParams.Add("Classification", siteCollectionCreationInformation.SensitivityLabel ?? "");
@@ -218,6 +350,7 @@ namespace OfficeDevPnP.Core.Sites
                     {
                         optionalParams.Add("Classification", siteCollectionCreationInformation.Classification ?? "");
                     }
+#endif
                     var creationOptionsValues = new List<string>();
                     if (siteCollectionCreationInformation.SiteDesignId.HasValue)
                     {
@@ -227,26 +360,16 @@ namespace OfficeDevPnP.Core.Sites
                     {
                         creationOptionsValues.Add($"SPSiteLanguage:{siteCollectionCreationInformation.Lcid}");
                     }
-                    if (siteCollectionCreationInformation.HubSiteId != Guid.Empty)
-                    {
-                        creationOptionsValues.Add($"HubSiteId:{siteCollectionCreationInformation.HubSiteId}");
-                    }
-                    if (sensitivityLabelExists && sensitivityLabelId != Guid.Empty)
-                    {
-                        creationOptionsValues.Add($"SensitivityLabel:{sensitivityLabelId}");
-                    }
+                    creationOptionsValues.Add($"HubSiteId:{siteCollectionCreationInformation.HubSiteId}");
                     optionalParams.Add("CreationOptions", creationOptionsValues);
 
+#if !SP2019
                     if (siteCollectionCreationInformation.Owners != null && siteCollectionCreationInformation.Owners.Length > 0)
                     {
                         optionalParams.Add("Owners", siteCollectionCreationInformation.Owners);
                     }
-                    if (siteCollectionCreationInformation.PreferredDataLocation.HasValue)
-                    {
-                        optionalParams.Add("PreferredDataLocation", siteCollectionCreationInformation.PreferredDataLocation.Value.ToString());
-                    }
                     payload.Add("optionalParams", optionalParams);
-
+#endif
                     var body = payload;
 
                     // Serialize request object to JSON
@@ -266,8 +389,15 @@ namespace OfficeDevPnP.Core.Sites
                     {
                         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                     }
+                    else
+                    {
+                        if (clientContext.Credentials is System.Net.NetworkCredential networkCredential)
+                        {
+                            handler.Credentials = networkCredential;
+                        }
+                    }
 
-                    requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
+                    requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigestAsync());
 
                     // Perform actual post operation
                     HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
@@ -317,8 +447,15 @@ namespace OfficeDevPnP.Core.Sites
                                         {
                                             siteStatusRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                                         }
+                                        else
+                                        {
+                                            if (clientContext.Credentials is System.Net.NetworkCredential networkCredential)
+                                            {
+                                                handler.Credentials = networkCredential;
+                                            }
+                                        }
 
-                                        siteStatusRequest.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
+                                        siteStatusRequest.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigestAsync());
 
                                         var siteStatusResponse = await httpClient.SendAsync(siteStatusRequest, new System.Threading.CancellationToken());
                                         var siteStatusResponseString = await siteStatusResponse.Content.ReadAsStringAsync();
@@ -367,6 +504,7 @@ namespace OfficeDevPnP.Core.Sites
                         {
                             System.Threading.Thread.Sleep(TimeSpan.FromSeconds(delayAfterCreation));
                         }
+#if !SP2019
                         else
                         {
                             if (!noWait)
@@ -375,6 +513,7 @@ namespace OfficeDevPnP.Core.Sites
                                 WaitForProvisioningIsComplete(responseContext.Web);
                             }
                         }
+#endif
                     }
                     else
                     {
@@ -386,6 +525,7 @@ namespace OfficeDevPnP.Core.Sites
             }
         }
 
+#if !ONPREMISES
         /// <summary>
         /// Creates a new Modern Team Site Collection (so with an Office 365 group connected) using Microsoft Graph
         /// </summary>
@@ -421,12 +561,60 @@ namespace OfficeDevPnP.Core.Sites
 
             if (group != null && !string.IsNullOrEmpty(group.SiteUrl))
             {
+                // Try to configure the site/group classification, if any
+                if (!string.IsNullOrEmpty(siteCollectionCreationInformation.Classification))
+                {
+                    await SetTeamSiteClassification(
+                        siteCollectionCreationInformation.Classification,
+                        group.GroupId,
+                        graphAccessToken
+                        );
+                }
+
                 responseContext = clientContext.Clone(group.SiteUrl);
             }
 
             return responseContext;
         }
+#endif
 
+        private static async Task SetTeamSiteClassification(string classification, string groupId, string graphAccessToken)
+        {
+            // Patch the created group
+            using (var handler = new HttpClientHandler())
+            {
+                using (var httpClient = new PnPHttpProvider(handler))
+                {
+                    string requestUrl = $"https://graph.microsoft.com/v1.0/groups/{groupId}";
+
+                    // Serialize request object to JSON
+                    var jsonBody = JsonConvert.SerializeObject(new { classification });
+                    var requestBody = new StringContent(jsonBody);
+
+                    // Build Http request
+                    HttpRequestMessage request = new HttpRequestMessage(new HttpMethod("PATCH"), requestUrl);
+                    request.Content = requestBody;
+                    if (MediaTypeHeaderValue.TryParse("application/json", out MediaTypeHeaderValue jsonMediaType))
+                    {
+                        requestBody.Headers.ContentType = jsonMediaType;
+                    }
+                    if (!string.IsNullOrEmpty(graphAccessToken))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", graphAccessToken);
+                    }
+
+                    // Perform actual post operation
+                    HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new Exception("Failed to set Classification for created group");
+                    }
+                }
+            }
+        }
+
+#if !ONPREMISES
         /// <summary>
         /// Create a modern site without a group (so communication site and modern team sites without group STS#3)
         /// </summary>
@@ -438,12 +626,30 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="retryDelay">Delay between retries for a pending site provisioning. Default 10 seconds.</param>
         /// <param name="noWait">If specified the site will be created and the process will be finished asynchronously</param>
         /// <returns>ClientContext object for the created site collection</returns>
-        private static async Task<ClientContext> CreateAsync(ClientContext clientContext, string owner, Dictionary<string, object> payload,
-        int delayAfterCreation = 0,
-        int maxRetryCount = 12, // Maximum number of retries (12 x 10 sec = 120 sec = 2 mins)
-        int retryDelay = 1000 * 10, // Wait time default to 10sec
-        bool noWait = false
-        )
+#else
+        /// <summary>
+        /// Create a modern site without a group (so communication site and modern team sites without group STS#3)
+        /// </summary>
+        /// <param name="clientContext">ClientContext object of a regular site</param>
+        /// <param name="owner">Owner for the created site (needed when using app-only)</param>
+        /// <param name="payload">Body of the request</param>
+        /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
+        /// <param name="maxRetryCount">Maximum number of retries for a pending site provisioning. Default 12 retries.</param>
+        /// <param name="retryDelay">Delay between retries for a pending site provisioning. Default 10 seconds.</param>
+        /// <returns>ClientContext object for the created site collection</returns>
+#endif
+        private static async Task<ClientContext> CreateAsync(
+            ClientContext clientContext,
+            string owner,
+            Dictionary<string, object> payload,
+            int delayAfterCreation = 0,
+            int maxRetryCount = 12, // Maximum number of retries (12 x 10 sec = 120 sec = 2 mins)
+            int retryDelay = 1000 * 10 // Wait time default to 10sec
+#if !SP2019
+            ,
+            bool noWait = false
+#endif
+            )
         {
             await new SynchronizationContextRemover();
 
@@ -464,6 +670,25 @@ namespace OfficeDevPnP.Core.Sites
                 {
                     handler.SetAuthenticationCookies(clientContext);
                 }
+                else
+                {
+                    if (clientContext.Credentials is System.Net.NetworkCredential networkCredential)
+                    {
+                        handler.Credentials = networkCredential;
+                    }
+                }
+
+#if SP2019
+                // TODO: Check Owner property support in SP2019
+                /*
+                if (clientContext.IsAppOnly()
+                    && !string.IsNullOrEmpty(owner))
+                {
+                    //"The property 'Owner' does not exist on type 'Microsoft.SharePoint.Portal.SPSiteCreationRequest'. Make sure to only use property names that are defined by the type."
+                    throw new Exception("The Owner cannot be set in an App-Only context. Cause SharePoint 2019 server side does not support the owner property yet.");
+                }
+                */
+#endif
 
                 using (var httpClient = new PnPHttpProvider(handler))
                 {
@@ -488,8 +713,15 @@ namespace OfficeDevPnP.Core.Sites
                     {
                         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                     }
+                    else
+                    {
+                        if (clientContext.Credentials is System.Net.NetworkCredential networkCredential)
+                        {
+                            handler.Credentials = networkCredential;
+                        }
+                    }
 
-                    requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
+                    requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigestAsync());
 
                     // Perform actual post operation
                     HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
@@ -545,7 +777,7 @@ namespace OfficeDevPnP.Core.Sites
                                                     siteStatusRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                                                 }
 
-                                                siteStatusRequest.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
+                                                siteStatusRequest.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigestAsync());
 
                                                 var siteStatusResponse = await httpClient.SendAsync(siteStatusRequest, new System.Threading.CancellationToken());
                                                 var siteStatusResponseString = await siteStatusResponse.Content.ReadAsStringAsync();
@@ -577,6 +809,38 @@ namespace OfficeDevPnP.Core.Sites
                                         }
                                         else
                                         {
+                                            var errorSb = new System.Text.StringBuilder();
+                                            errorSb.AppendLine($"Result:{responseString}");
+
+                                            //var System.Net.Http.HttpResponseMessage
+                                            //if(response.Headers["SPRequestGuid"] != null)
+                                            //if (response.Headers.AllKeys.Any(k => string.Equals(k, "SPRequestGuid", StringComparison.InvariantCultureIgnoreCase)))
+                                            if (response.Headers.Contains("SPRequestGuid"))
+                                            {
+                                                var values = response.Headers.GetValues("SPRequestGuid");
+                                                if (values != null)
+                                                {
+                                                    var spRequestGuid = values.FirstOrDefault();
+                                                    errorSb.AppendLine($"ServerErrorTraceCorrelationId: {spRequestGuid}");
+                                                }
+                                            }
+
+                                            clientContext.Web.EnsureProperty(w => w.CurrentUser);
+                                            clientContext.Web.CurrentUser.EnsureProperty(u => u.LoginName);
+                                            errorSb.AppendLine($"CurrentUser / Owner: {clientContext.Web.CurrentUser.LoginName}");
+#if SP2019
+
+                                            if (clientContext.Web.CurrentUser.LoginName.Contains("app@sharepoint"))
+                                            {
+                                                errorSb.AppendLine($"Please check the account used as owner for the site to create."
+                                                + $" Consider that the AppPrincipal for App-Only '{clientContext.Web.CurrentUser.LoginName}' cannot be used as site owner."
+                                                + " Setting the 'owner' property does not work. It will lead to the following exception: "
+                                                + " The property 'Owner' does not exist on type 'Microsoft.SharePoint.Portal.SPSiteCreationRequest'.Make sure to only use property names that are defined by the type.");
+
+                                            }
+#endif
+                                            Log.Error(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetryException, errorSb.ToString());
+
                                             throw new Exception($"OfficeDevPnP.Core.Sites.SiteCollection.CreateAsync: Could not create {payload["WebTemplate"].ToString()} site.");
                                         }
                                     }
@@ -600,6 +864,7 @@ namespace OfficeDevPnP.Core.Sites
                         {
                             System.Threading.Thread.Sleep(TimeSpan.FromSeconds(delayAfterCreation));
                         }
+#if !SP2019
                         else
                         {
                             if (!noWait)
@@ -608,6 +873,7 @@ namespace OfficeDevPnP.Core.Sites
                                 WaitForProvisioningIsComplete(responseContext.Web);
                             }
                         }
+#endif
                     }
                     else
                     {
@@ -619,6 +885,7 @@ namespace OfficeDevPnP.Core.Sites
             }
         }
 
+#if !SP2019
         private static void WaitForProvisioningIsComplete(Web web, int maxRetryCount = 80, int retryDelay = 1000 * 15)
         {
             bool isProvisioningComplete = true;
@@ -697,6 +964,7 @@ namespace OfficeDevPnP.Core.Sites
                 //throw new Exception($"Server side provisioning of this web did not finish after waiting for {maxRetryCount * retryDelay} milliseconds.");
             }
         }
+#endif
 
         private static Dictionary<string, object> GetRequestPayload(SiteCreationInformation siteCollectionCreationInformation)
         {
@@ -710,11 +978,14 @@ namespace OfficeDevPnP.Core.Sites
                 { "Description", siteCollectionCreationInformation.Description ?? "" },
                 { "WebTemplate", siteCollectionCreationInformation.WebTemplate },
                 { "WebTemplateExtensionId", Guid.Empty },
+#if !SP2019 // SP2019: Microsoft.OData.Core.ODataException: The property 'Owner' does not exist on type 'Microsoft.SharePoint.Portal.SPSiteCreationRequest'. Make sure to only use property names that are defined by the type.
                 { "Owner", siteCollectionCreationInformation.Owner }
+#endif
             };
             return payload;
         }
 
+#if !ONPREMISES
         /// <summary>
         /// Groupifies a classic team site by creating a group for it and connecting the site with the newly created group
         /// </summary>
@@ -756,6 +1027,13 @@ namespace OfficeDevPnP.Core.Sites
                 if (string.IsNullOrEmpty(accessToken))
                 {
                     handler.SetAuthenticationCookies(clientContext);
+                }
+                else
+                {
+                    if (clientContext.Credentials is System.Net.NetworkCredential networkCredential)
+                    {
+                        handler.Credentials = networkCredential;
+                    }
                 }
 
                 using (var httpClient = new PnPHttpProvider(handler))
@@ -804,8 +1082,15 @@ namespace OfficeDevPnP.Core.Sites
                     {
                         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                     }
+                    else
+                    {
+                        if (clientContext.Credentials is System.Net.NetworkCredential networkCredential)
+                        {
+                            handler.Credentials = networkCredential;
+                        }
+                    }
 
-                    requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
+                    requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigestAsync());
 
                     // Perform actual post operation
                     HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
@@ -839,7 +1124,7 @@ namespace OfficeDevPnP.Core.Sites
                 return await Task.Run(() => responseContext);
             }
         }
-
+#endif
 
         private static Guid GetSiteDesignId(CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation)
         {
@@ -869,6 +1154,7 @@ namespace OfficeDevPnP.Core.Sites
             return Guid.Empty;
         }
 
+#if !ONPREMISES
         /// <summary>
         /// Checks if a given alias is already in use or not
         /// </summary>
@@ -903,6 +1189,13 @@ namespace OfficeDevPnP.Core.Sites
                     if (!string.IsNullOrEmpty(accessToken))
                     {
                         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+                    else
+                    {
+                        if (context.Credentials is System.Net.NetworkCredential networkCredential)
+                        {
+                            handler.Credentials = networkCredential;
+                        }
                     }
 
                     // Perform actual GET request
@@ -1029,7 +1322,7 @@ namespace OfficeDevPnP.Core.Sites
 
                     string requestUrl = $"{context.Web.Url}/_api/groupservice/setgroupimage";
 
-                    var requestDigest = await context.GetRequestDigest();
+                    var requestDigest = await context.GetRequestDigestAsync();
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
                     request.Headers.Add("accept", "application/json;odata=verbose");
                     if (!string.IsNullOrEmpty(accessToken))
@@ -1120,13 +1413,13 @@ namespace OfficeDevPnP.Core.Sites
         /// Enable Microsoft Teams team in an O365 group connected team site
         /// Will also enable it on a newly Groupified classic site
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="context">Context to operate against</param>
         /// <returns></returns>
         public static async Task<string> TeamifySiteAsync(ClientContext context)
         {
             string responseString = null;
 
-            context.Site.EnsureProperties(s => s.GroupId);
+            context.Site.EnsureProperty(s => s.GroupId);
 
             if (context.Web.IsSubSite())
             {
@@ -1138,7 +1431,7 @@ namespace OfficeDevPnP.Core.Sites
             }
             else
             {
-                var result = await context.Web.ExecutePost("/_api/groupsitemanager/EnsureTeamForGroup", string.Empty);
+                var result = await context.Web.ExecutePostAsync("/_api/groupsitemanager/EnsureTeamForGroup", string.Empty);
 
                 var teamId = JObject.Parse(result);
 
@@ -1165,7 +1458,7 @@ namespace OfficeDevPnP.Core.Sites
             }
             else
             {
-                var result = await context.Web.ExecuteGet($"/_api/groupsitemanager/IsTeamifyPromptHidden?siteUrl='{context.Site.Url}'");
+                var result = await context.Web.ExecuteGetAsync($"/_api/groupsitemanager/IsTeamifyPromptHidden?siteUrl='{context.Site.Url}'");
 
                 var teamifyPromptHidden = JObject.Parse(result);
 
@@ -1188,11 +1481,11 @@ namespace OfficeDevPnP.Core.Sites
 
             if (context.Site.GroupId == Guid.Empty)
             {
-                throw new Exception("Teamify prompts can only be hidden in O365 group connected sites.");
+                throw new Exception("Teamify prompts can only be hidden in Microsoft 365 group connected sites.");
             }
             else
             {
-                var result = await context.Web.ExecutePost("/_api/groupsitemanager/HideTeamifyPrompt", $@" {{ ""siteUrl"": ""{context.Site.Url}"" }}");
+                var result = await context.Web.ExecutePostAsync("/_api/groupsitemanager/HideTeamifyPrompt", $@" {{ ""siteUrl"": ""{context.Site.Url}"" }}");
 
                 var teamifyPromptHidden = JObject.Parse(result);
 
@@ -1240,8 +1533,9 @@ namespace OfficeDevPnP.Core.Sites
                 throw new Exception("Invalid designPackageId specified. Use 96c933ac-3698-44c7-9f4a-5fd17d71af9e (Topic = default), 6142d2a0-63a5-4ba0-aede-d9fefca2c767 (Showcase) or f6cc5403-0d63-442e-96c0-285923709ffc (Blank)");
             }
 
-            await context.Web.ExecutePost("/_api/sitepages/communicationsite/enable", $@" {{ ""designPackageId"": ""{designPackageId.ToString()}"" }}");
+            await context.Web.ExecutePostAsync("/_api/sitepages/communicationsite/enable", $@" {{ ""designPackageId"": ""{designPackageId.ToString()}"" }}");
         }
+
 
         /// <summary>
         /// Get sensitivity label id for a given Label
@@ -1251,7 +1545,7 @@ namespace OfficeDevPnP.Core.Sites
         /// <returns></returns>
         private static async Task<Guid> GetSensitivityLabelId(ClientContext context, string sensitiveLabelString)
         {
-            var result = await context.Web.ExecuteGet("/_api/groupsitemanager/GetGroupCreationContext");
+            var result = await context.Web.ExecuteGetAsync("/_api/groupsitemanager/GetGroupCreationContext");
 
             var results = JObject.Parse(result);
 
@@ -1269,6 +1563,104 @@ namespace OfficeDevPnP.Core.Sites
             return await Task.Run(() => sensitivityLabelId);
         }
 
+
+        /// <summary>
+        /// Gets group alias information by group Id
+        /// </summary>
+        /// <param name="context">Context to operate against</param>
+        /// <param name="groupId">Id of the group</param>
+        /// <returns>True if in use, false otherwise</returns>
+        public static async Task<Dictionary<string, object>> GetGroupInfoByGroupIdAsync(ClientContext context, string groupId)
+        {
+            await new SynchronizationContextRemover();
+
+            Dictionary<string, object> siteInfo = new Dictionary<string, object>();
+
+            var accessToken = context.GetAccessToken();
+
+            using (var handler = new HttpClientHandler())
+            {
+                context.Web.EnsureProperty(w => w.Url);
+
+                if (string.IsNullOrEmpty(accessToken))
+                {
+                    handler.SetAuthenticationCookies(context);
+                }
+
+                using (var httpClient = new HttpClient(handler))
+                {
+                    string requestUrl = string.Format("{0}/_api/SP.Directory.DirectorySession/Group('{1}')?$select=PrincipalName,Id,DisplayName,Alias,Description,InboxUrl,CalendarUrl,DocumentsUrl,SiteUrl,EditGroupUrl,PictureUrl,PeopleUrl,NotebookUrl,Mail,IsPublic,CreationTime,Classification,teamsResources,yammerResources,allowToAddGuests,isDynamic,assignedLabels", context.Web.Url, groupId);
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+                    request.Headers.Add("accept", "application/json;odata.metadata=none");
+                    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    request.Headers.Add("odata-version", "4.0");
+
+                    if (!string.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+
+                    // Perform actual GET request
+                    HttpResponseMessage response = await httpClient.SendAsync(request);
+
+                    if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        siteInfo = null;
+                    }
+                    else if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        var responseString = await response.Content.ReadAsStringAsync();
+                        siteInfo = JsonConvert.DeserializeObject<Dictionary<string, object>>(responseString);
+                    }
+                    else
+                    {
+                        // Something went wrong...
+                        throw new Exception(await response.Content.ReadAsStringAsync());
+                    }
+                }
+                return await Task.Run(() => siteInfo);
+            }
+        }
+
+        /// <summary>
+        /// Deletes a Communication site or a Group-less Modern team site.
+        /// </summary>
+        /// <param name="context">Context to operate against</param>
+        /// <returns></returns>
+        public static async Task<bool> DeleteSiteAsync(ClientContext context)
+        {
+            bool siteDeleted = false;
+
+            var webTemplateId = context.Web.GetBaseTemplateId();
+
+            context.Site.EnsureProperties(s => s.Id, s => s.GroupId, s => s.Url);
+
+            if (webTemplateId == "SITEPAGEPUBLISHING#0" || webTemplateId == "STS#3")
+            {
+                var result = await context.Web.ExecutePostAsync("/_api/SPSiteManager/delete", $@" {{ ""siteId"": ""{context.Site.Id.ToString()}"" }}");
+
+                var parsedResult = JObject.Parse(result);
+
+                siteDeleted = Convert.ToBoolean(parsedResult["odata.null"]);
+
+                return await Task.Run(() => siteDeleted);
+            }
+            else if (webTemplateId == "GROUP#0" || context.Site.GroupId != Guid.Empty)
+            {
+                var result = await context.Web.ExecutePostAsync($"/_api/GroupSiteManager/Delete?siteUrl='{context.Site.Url}'", string.Empty);
+
+                var parsedResult = JObject.Parse(result);
+
+                siteDeleted = Convert.ToBoolean(parsedResult["odata.null"]);
+
+                return await Task.Run(() => siteDeleted);
+            }
+            else
+            {
+                throw new Exception("Only deletion of Communication site or Modern team site is supported by this method.");
+            }
+        }
+#endif
     }
 }
 #endif

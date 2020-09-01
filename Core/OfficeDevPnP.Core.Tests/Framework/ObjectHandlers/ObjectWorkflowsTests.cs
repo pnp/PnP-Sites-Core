@@ -26,6 +26,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
             using (var cc = TestCommon.CreateClientContext())
             {
+                this.CleanupWorkflowDefinitionsAndSubscriptions(cc.Web);
+
                 var listCI = new ListCreationInformation();
                 listCI.TemplateType = (int)ListTemplateType.GenericList;
                 listCI.Title = "Test_List_Workflows_" + DateTime.Now.ToFileTime();
@@ -49,12 +51,65 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
             using (var cc = TestCommon.CreateClientContext())
             {
+                this.CleanupWorkflowDefinitionsAndSubscriptions(cc.Web);
+
                 // Clean up list
                 var list = cc.Web.Lists.GetById(_listId);
                 list.DeleteObject();
                 cc.ExecuteQueryRetry();
             }
         }
+
+        private void CleanupWorkflowDefinitionsAndSubscriptions(Microsoft.SharePoint.Client.Web web)
+        {
+            // Get a reference to infrastructural services
+            Microsoft.SharePoint.Client.WorkflowServices.WorkflowServicesManager servicesManager = null;
+
+            try
+            {
+                servicesManager = new Microsoft.SharePoint.Client.WorkflowServices.WorkflowServicesManager(web.Context, web);
+            }
+            catch (ServerException)
+            {
+                // If there is no workflow service present in the farm this method will throw an error. 
+                // Swallow the exception
+            }
+
+            if (servicesManager != null)
+            {
+                var deploymentService = servicesManager.GetWorkflowDeploymentService();
+                var subscriptionService = servicesManager.GetWorkflowSubscriptionService();
+
+                if (subscriptionService != null)
+                {
+                    var subscription = subscriptionService.GetSubscription(this._wfSubscriptionId);
+                    web.Context.Load(subscription);
+                    web.Context.ExecuteQueryRetry();
+
+                    if (!subscription.ServerObjectIsNull())
+                    {
+                        subscriptionService.DeleteSubscription(this._wfSubscriptionId);
+                        web.Context.ExecuteQueryRetry();
+                    }
+                }
+
+                if (deploymentService != null)
+                {
+                    var definition = deploymentService.GetDefinition(this._wfDefinitionId);
+                    web.Context.Load(definition);
+                    web.Context.ExecuteQueryRetry();
+
+                    if (!definition.ServerObjectIsNull())
+                    {
+                        deploymentService.DeleteDefinition(this._wfDefinitionId);
+                        web.Context.ExecuteQueryRetry();
+                    }
+                }
+            }
+        }
+
+        private Guid _wfDefinitionId = new Guid("{19100c31-d561-42c3-88e0-5214d5c584c4}");
+        private Guid _wfSubscriptionId = new Guid("{d21cf99d-ada1-486b-bfcf-7d58b8a56974}");
 
         #endregion Test initialize and cleanup
 
@@ -72,7 +127,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             {
                 DisplayName = "PnP Test Workflow",
                 Description = "PnP Test Workflow Description",
-                Id = Guid.Parse("{19100c31-d561-42c3-88e0-5214d5c584c4}"),
+                Id = this._wfDefinitionId,
                 Published = true,
                 RestrictToType = "List",
                 RestrictToScope = _listId.ToString(),
@@ -110,6 +165,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 wfSubscription.Enabled = !wfSubscription.Enabled;
                 wfSubscription.ManualStartBypassesActivationLimit = !wfSubscription.ManualStartBypassesActivationLimit;
                 wfSubscription.StatusFieldName = WFStatusFieldName02;
+
+#if SP2013
+                // SP2013 Server Side compares the darft version with the workflow version and throws an InvalidOperationException if both version are equal.
+                wfDefinition.DraftVersion = null; 
+#endif
 
                 // Provision Updated Workflow
                 new ObjectWorkflows().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());

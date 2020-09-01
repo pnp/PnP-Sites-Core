@@ -2175,7 +2175,11 @@ namespace Microsoft.SharePoint.Client
                 {
                     // If this throws ServerException (does not belong to list), then shouldn't be trying to set properties)
                     // Handling the exception stating the "The object specified does not belong to a list."
+#if !ONPREMISES
+                    if (ex.ServerErrorCode != -2113929210)
+#else
                     if (ex.ServerErrorCode != -2146232832)
+#endif
                     {
                         throw;
                     }
@@ -2391,7 +2395,11 @@ namespace Microsoft.SharePoint.Client
                     catch (ServerException ex)
                     {
                         // Handling the exception stating the "The object specified does not belong to a list."
+#if !ONPREMISES
+                        if (ex.ServerErrorCode != -2113929210)
+#else
                         if (ex.ServerErrorCode != -2146232832)
+#endif
                         {
                             // TODO Replace this with an errorcode as well, does not work with localized o365 tenants
                             if (ex.Message.StartsWith("Cannot invoke method or retrieve property from null object. Object returned by the following call stack is null.") &&
