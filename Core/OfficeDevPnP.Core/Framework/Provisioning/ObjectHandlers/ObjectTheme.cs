@@ -50,13 +50,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 else
                 {
                     //The account used for authenticating needs to be tenant administrator.
-                    using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl()))
+                    try
                     {
-                        var tenant = new Tenant(tenantContext);
-                        var theme = tenant.GetTenantTheme(parsedName);
-                        tenantContext.Load(theme);
-                        tenant.SetWebTheme(parsedName, web.Url);
-                        tenantContext.ExecuteQueryRetry();
+                        using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl()))
+                        {
+                            var tenant = new Tenant(tenantContext);
+                            var theme = tenant.GetTenantTheme(parsedName);
+                            tenantContext.Load(theme);
+                            tenant.SetWebTheme(parsedName, web.Url);
+                            tenantContext.ExecuteQueryRetry();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        scope.LogError($"Custom theme could not be applied to site: {ex.Message}");
+                        throw;
                     }
                 }
             }
