@@ -63,7 +63,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     catch (Exception ex)
                     {
-                        scope.LogError($"Custom theme could not be applied to site: {ex.Message}");
+                        scope.LogWarning($"Custom theme could not be applied to site: {ex.Message}");
                         throw;
                     }
                 }
