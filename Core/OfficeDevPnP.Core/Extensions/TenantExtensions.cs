@@ -25,6 +25,7 @@ using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 #endif
 
 namespace Microsoft.SharePoint.Client
@@ -108,7 +109,7 @@ namespace Microsoft.SharePoint.Client
             }
             return urls;
         }
-        
+
         #endregion
 
         #region Site collection creation
@@ -1039,7 +1040,7 @@ namespace Microsoft.SharePoint.Client
         private static bool IsCurrentUserTenantAdminViaGraph()
         {
             string globalTenantAdminRole = "Company Administrator";
-            
+
             try
             {
                 var accessToken = PnPProvisioningContext.Current.AcquireToken(new Uri("https://graph.microsoft.com/").Authority, null);
@@ -1087,10 +1088,7 @@ namespace Microsoft.SharePoint.Client
             else
             {
                 // Otherwise, we need to target the Admin Site
-                var siteUrl = site.Url.EndsWith("/") ? site.Url : $"{site.Url}/";
-                var rootSiteUrl = siteUrl.Substring(0, siteUrl.IndexOf("/", siteUrl.IndexOf("sharepoint.com/")));
-                var adminSiteUrl = rootSiteUrl.Replace(".sharepoint.com", "-admin.sharepoint.com");
-
+                var adminSiteUrl = clientContext.Web.GetTenantAdministrationUrl();
                 try
                 {
                     // Connect to the Admin Site
@@ -1164,7 +1162,7 @@ namespace Microsoft.SharePoint.Client
                                 break;
                             }
                         }
-                    }                    
+                    }
                 }
             }
 
@@ -1218,10 +1216,10 @@ namespace Microsoft.SharePoint.Client
             return result;
         }
 #endif
-#endregion
+        #endregion
 
 
-#region Site status checks
+        #region Site status checks
         /// <summary>
         /// Returns if a site collection is in a particular status. If the URL contains a sub site then returns true is the sub site exists, false if not. 
         /// Status is irrelevant for sub sites
@@ -1396,9 +1394,9 @@ namespace Microsoft.SharePoint.Client
                 }
             }
         }
-#endregion
+        #endregion
 
-#region Private helper methods
+        #region Private helper methods
 #if !ONPREMISES
         private static bool WaitForIsComplete(Tenant tenant, SpoOperation op, Func<TenantOperationMessage, bool> timeoutFunction = null, TenantOperationMessage operationMessage = TenantOperationMessage.None)
         {
@@ -1514,9 +1512,9 @@ namespace Microsoft.SharePoint.Client
                 return false;
             }
         }
-#endregion
+        #endregion
 
-#region ClientSide Package Deployment
+        #region ClientSide Package Deployment
 
         /// <summary>
         /// Gets the Uri for the tenant's app catalog site (if that one has already been created)
@@ -1534,9 +1532,9 @@ namespace Microsoft.SharePoint.Client
 
             return null;
         }
-#endregion
+        #endregion
 
-#region Utilities
+        #region Utilities
 
 #if !ONPREMISES
         public static string GetTenantIdByUrl(string tenantUrl)
@@ -1615,7 +1613,7 @@ namespace Microsoft.SharePoint.Client
         }
 #endif
 
-#endregion
+        #endregion
 
     }
 
