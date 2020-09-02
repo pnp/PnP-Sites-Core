@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## Changes
 
+- Made enum nullable for certain types of Teams #2715 [gautamdsheth - Gautam Sheth]
 - Allow providing a specific URL with GetWebLoginClientContext to log on to #2707 [koenzomers - Koen Zomers]
 
 ## [3.24.2008.1 August 2020 release]
