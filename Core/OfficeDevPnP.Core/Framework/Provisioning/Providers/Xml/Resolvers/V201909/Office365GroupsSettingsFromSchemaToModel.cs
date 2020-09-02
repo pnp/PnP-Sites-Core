@@ -19,11 +19,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V2019
 
         public object Resolve(object source, Dictionary<string, IResolver> resolvers = null, bool recursive = false)
         {
-            var result = new Model.Office365Groups.Office365GroupsSettings();
+            Model.Office365Groups.Office365GroupsSettings result = null;
             var settings = source.GetPublicInstancePropertyValue("Office365GroupsSettings");
 
             if (null != settings)
             {
+                result = new Model.Office365Groups.Office365GroupsSettings();
                 foreach (var p in ((IEnumerable)settings))
                 {
                     result.Properties.Add(

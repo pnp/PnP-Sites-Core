@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using OfficeDevPnP.Core.Utilities;
 using OfficeDevPnP.Core.Utilities.Graph;
+using System.Text.Json;
 
 namespace OfficeDevPnP.Core.Framework.Graph
 {
@@ -327,7 +328,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
             }
 
             // Check if all other members not provided should be removed
-            if(!removeOtherMembers)
+            if (!removeOtherMembers)
             {
                 return;
             }
@@ -416,7 +417,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
             }
 
             // Check if all owners which have not been provided should be removed
-            if(!removeOtherOwners)
+            if (!removeOtherOwners)
             {
                 return;
             }
@@ -482,7 +483,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
             }
 
             // Ensure there's something to update
-            if(!hideFromAddressLists.HasValue && !hideFromOutlookClients.HasValue)
+            if (!hideFromAddressLists.HasValue && !hideFromOutlookClients.HasValue)
             {
                 return;
             }
@@ -580,7 +581,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         Id = groupToUpdate.Id
                     };
 
-#region Logic to update the group DisplayName and Description
+                    #region Logic to update the group DisplayName and Description
 
                     var updateGroup = false;
                     var groupUpdated = false;
@@ -639,9 +640,9 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         groupUpdated = true;
                     }
 
-#endregion
+                    #endregion
 
-#region Logic to update the group Logo
+                    #region Logic to update the group Logo
 
                     var logoUpdated = false;
 
@@ -651,7 +652,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         logoUpdated = true;
                     }
 
-#endregion
+                    #endregion
 
                     // If any of the previous update actions has been completed
                     return (groupUpdated || logoUpdated);
@@ -828,7 +829,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         group.Classification = g.Classification;
                     }
 
-                    if(includeHasTeam)
+                    if (includeHasTeam)
                     {
                         group.HasTeam = HasTeamsTeam(group.GroupId, accessToken);
                     }
@@ -863,7 +864,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
         public static List<UnifiedGroupEntity> ListUnifiedGroups(string accessToken,
             String displayName = null, string mailNickname = null,
             int startIndex = 0, int endIndex = 999, bool includeSite = true,
-            int retryCount = 10, int delay = 500, bool includeClassification = false, 
+            int retryCount = 10, int delay = 500, bool includeClassification = false,
             bool includeHasTeam = false)
         {
             if (String.IsNullOrEmpty(accessToken))
@@ -1275,7 +1276,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 {
                     var graphClient = CreateGraphClient(accessToken, retryCount, delay);
 
-                       await UpdateMembers(members, graphClient, groupId, removeExistingMembers);
+                    await UpdateMembers(members, graphClient, groupId, removeExistingMembers);
 
                 }).GetAwaiter().GetResult();
             }
@@ -1714,23 +1715,24 @@ namespace OfficeDevPnP.Core.Framework.Graph
             }
 
             bool hasTeamsTeam = false;
-            
+
             try
             {
                 groupId = groupId.ToLower();
+                string getGroupsInfo = $"{GraphHttpClient.MicrosoftGraphV1BaseUri}groups/{groupId}?&select=resourceProvisioningOptions";
+
                 string getGroupsWithATeamsTeam = $"{GraphHttpClient.MicrosoftGraphBetaBaseUri}groups?$filter=resourceProvisioningOptions/Any(x:x eq 'Team')&select=id,resourceProvisioningOptions";
 
                 var getGroupResult = GraphHttpClient.MakeGetRequestForString(
                     getGroupsWithATeamsTeam,
                     accessToken: accessToken);
 
-                JObject groupObject = JObject.Parse(getGroupResult);
-
-                foreach (var item in groupObject["value"])
+                using (var jsonDocument = JsonDocument.Parse(getGroupResult))
                 {
-                    if (item["id"].ToString().Equals(groupId, StringComparison.InvariantCultureIgnoreCase))
+                    var rootElement = jsonDocument.RootElement;
+                    if (rootElement.TryGetProperty("resourceProvisioningOptions", out JsonElement resourceProvisioningOptionsElement))
                     {
-                        return true;
+                        return resourceProvisioningOptionsElement.EnumerateArray().FirstOrDefault(p => p.ValueEquals("Team")).ValueKind != JsonValueKind.Undefined;
                     }
                 }
             }

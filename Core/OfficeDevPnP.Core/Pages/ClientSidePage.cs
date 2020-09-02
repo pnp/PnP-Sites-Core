@@ -2476,7 +2476,7 @@ namespace OfficeDevPnP.Core.Pages
                         }
                     }
 
-                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigest());
+                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigestAsync());
 
                     if (translationStatusCreationRequest != null && translationStatusCreationRequest.LanguageCodes.Count > 0)
                     {
