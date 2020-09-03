@@ -35,36 +35,39 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 var parsedName = parser.ParseString(template.Theme.Name);
 
-                web.EnsureProperty(w => w.Url);
-
-                if (Enum.TryParse<SharePointTheme>(parsedName, out SharePointTheme builtInTheme))
+                if (!string.IsNullOrEmpty(parsedName))
                 {
-                    ThemeManager.ApplyTheme(web, builtInTheme);
-                }                
-                else if (!string.IsNullOrEmpty(template.Theme.Palette))
-                {   
-                    var parsedPalette = parser.ParseString(template.Theme.Palette);
+                    web.EnsureProperty(w => w.Url);
 
-                    ThemeManager.ApplyTheme(web, parsedPalette, template.Theme.Name ?? parsedPalette);
-                }
-                else
-                {
-                    //The account used for authenticating needs to be tenant administrator.
-                    try
+                    if (Enum.TryParse<SharePointTheme>(parsedName, out SharePointTheme builtInTheme))
                     {
-                        using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl()))
-                        {
-                            var tenant = new Tenant(tenantContext);
-                            var theme = tenant.GetTenantTheme(parsedName);
-                            tenantContext.Load(theme);
-                            tenant.SetWebTheme(parsedName, web.Url);
-                            tenantContext.ExecuteQueryRetry();
-                        }
+                        ThemeManager.ApplyTheme(web, builtInTheme);
                     }
-                    catch (Exception ex)
+                    else if (!string.IsNullOrEmpty(template.Theme.Palette))
                     {
-                        scope.LogWarning($"Custom theme could not be applied to site: {ex.Message}");
-                        throw;
+                        var parsedPalette = parser.ParseString(template.Theme.Palette);
+
+                        ThemeManager.ApplyTheme(web, parsedPalette, template.Theme.Name ?? parsedPalette);
+                    }
+                    else
+                    {
+                        //The account used for authenticating needs to be tenant administrator.
+                        try
+                        {
+                            using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl()))
+                            {
+                                var tenant = new Tenant(tenantContext);
+                                var theme = tenant.GetTenantTheme(parsedName);
+                                tenantContext.Load(theme);
+                                tenant.SetWebTheme(parsedName, web.Url);
+                                tenantContext.ExecuteQueryRetry();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            scope.LogWarning($"Custom theme could not be applied to site: {ex.Message}");
+                            throw;
+                        }
                     }
                 }
             }

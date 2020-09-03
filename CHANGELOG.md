@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## Changes
 
+- Fix for being able to apply custom themes from provisioning templates #2680 [cmzaragoza - Cristian M. Zaragoza]
 - Handle update of taxonomy field specific properties seperately in UpdateField #2731 [NicolajHedeager - Nicolaj Hedeager Larsen]
 - Ensure decode of folderpath from uri segments to fix issue when url contains spacing #2730 [NicolajHedeager - Nicolaj Hedeager Larsen]
 - Log missing users which couldn't be added to a group and fix potential exception #2728 [heinrich-ulbricht Heinrich Ulbricht]
