@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## Changes
 
+- Fix missing (non-loaded) AlternateCssUrl property value for SP2016/SP2019 #2727 [heinrich-ulbricht Heinrich Ulbricht]
 - Checking for and ignore missing principals when provisioning object security #2724 [heinrich-ulbricht Heinrich Ulbricht]
 - Fixing handling of missing principal in site security handler #2722 [heinrich-ulbricht Heinrich Ulbricht]
 - Fixing SharePoint 2013 not returning any web parts #2721 [heinrich-ulbricht Heinrich Ulbricht]
