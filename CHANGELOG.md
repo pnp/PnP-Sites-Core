@@ -13,6 +13,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## Changes
 
+- Checking for and ignore missing principals when provisioning object security #2724 [heinrich-ulbricht Heinrich Ulbricht]
+- Fixing handling of missing principal in site security handler #2722 [heinrich-ulbricht Heinrich Ulbricht]
 - Fixing SharePoint 2013 not returning any web parts #2721 [heinrich-ulbricht Heinrich Ulbricht]
 - Made enum nullable for certain types of Teams #2715 [gautamdsheth - Gautam Sheth]
 - Allow providing a specific URL with GetWebLoginClientContext to log on to #2707 [koenzomers - Koen Zomers]
