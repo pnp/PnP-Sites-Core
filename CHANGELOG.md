@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## Added
 
+- Added support for O365 Group settings #2450 [gautamdsheth - Gautam Sheth]
 
 ## Changes
 
