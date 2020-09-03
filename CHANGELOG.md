@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## Changes
 
+- Ensure decode of folderpath from uri segments to fix issue when url contains spacing #2730 [NicolajHedeager - Nicolaj Hedeager Larsen]
 - Log missing users which couldn't be added to a group and fix potential exception #2728 [heinrich-ulbricht Heinrich Ulbricht]
 - Fix missing (non-loaded) AlternateCssUrl property value for SP2016/SP2019 #2727 [heinrich-ulbricht Heinrich Ulbricht]
 - Checking for and ignore missing principals when provisioning object security #2724 [heinrich-ulbricht Heinrich Ulbricht]
