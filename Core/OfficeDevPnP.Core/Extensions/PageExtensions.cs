@@ -419,7 +419,7 @@ namespace Microsoft.SharePoint.Client
                 }
                 
                 // apparently without a user agent SharePoint 2013 returns a 302 redirect to an error page without returning the actual web part
-                request.UserAgent = "Mozilla/5.0 (Windows NT; Windows NT 6.2; de-DE) ihateyousharepoint/5.1.19041.1";
+                request.UserAgent = "Mozilla/5.0 (Windows NT; Windows NT 6.2; de-DE) pnprocks/5.1.19041.1";
 
                 var response = request.GetResponse();
                 using (Stream stream = response.GetResponseStream())
