@@ -1303,7 +1303,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (PnPProvisioningContext.Current != null)
                         {
                             // Get a fresh Access Token for every request
-                            accessToken = PnPProvisioningContext.Current.AcquireToken(GraphHelper.MicrosoftGraphBaseURI, "Group.ReadWrite.All");
+                            accessToken = PnPProvisioningContext.Current.AcquireToken(new Uri(GraphHelper.MicrosoftGraphBaseURI).Authority, "Group.ReadWrite.All");
 
                             if (accessToken != null)
                             {
@@ -1327,7 +1327,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         WriteSubProgress("Teams", "Team", currentProgress, totalCount);
 
                         // Get a fresh Access Token for every request
-                        accessToken = PnPProvisioningContext.Current.AcquireToken(GraphHelper.MicrosoftGraphBaseURI, "Group.ReadWrite.All");
+                        accessToken = PnPProvisioningContext.Current.AcquireToken(new Uri(GraphHelper.MicrosoftGraphBaseURI).Authority, "Group.ReadWrite.All");
 
                         // Create the Team starting from the XML PnP Provisioning Schema definition
                         CreateTeamFromProvisioningSchema(scope, parser, hierarchy.Connector, team, accessToken);
@@ -1346,7 +1346,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(Name))
             {
-                var accessToken = PnPProvisioningContext.Current.AcquireTokenWithMultipleScopes(GraphHelper.MicrosoftGraphBaseURI, "Group.ReadWrite.All", "User.Read.All");
+                var accessToken = PnPProvisioningContext.Current.AcquireTokenWithMultipleScopes(new Uri(GraphHelper.MicrosoftGraphBaseURI).Authority, "Group.ReadWrite.All", "User.Read.All");
 
                 if (accessToken != null)
                 {

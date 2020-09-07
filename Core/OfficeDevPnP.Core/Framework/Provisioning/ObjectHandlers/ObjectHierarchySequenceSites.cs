@@ -292,7 +292,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             }
                                             catch
                                             {
-                                                graphAccessToken = PnPProvisioningContext.Current.AcquireToken(Core.Utilities.Graph.GraphHelper.MicrosoftGraphBaseURI, null);
+                                                graphAccessToken = PnPProvisioningContext.Current.AcquireToken(new Uri(Core.Utilities.Graph.GraphHelper.MicrosoftGraphBaseURI).Authority, null);
                                             }
                                         }
                                         WriteMessage($"Creating Team Site {siteInfo.Alias}", ProvisioningMessageType.Progress);
