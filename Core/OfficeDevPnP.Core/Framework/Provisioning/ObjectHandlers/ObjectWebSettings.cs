@@ -180,7 +180,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var serverUrl = $"{serverUri.Scheme}://{serverUri.Authority}";
             var fullUri = new Uri(UrlUtility.Combine(serverUrl, serverRelativeUrl));
 
-            var folderPath = fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/');
+            var folderPath = HttpUtility.UrlDecode(fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/'));
             var fileName = fullUri.Segments[fullUri.Segments.Count() - 1];
 
             // store as site relative path
@@ -324,6 +324,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         w => w.RootFolder,
                         w => w.Title,
                         w => w.Description,
+                        w => w.AlternateCssUrl,
                         w => w.WebTemplate,
                         w => w.HasUniqueRoleAssignments);
 

@@ -216,7 +216,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (file.Security != null &&
                             (file.Security.ClearSubscopes == true || file.Security.CopyRoleAssignments == true || file.Security.RoleAssignments.Count > 0))
                         {
-                            targetFile.ListItemAllFields.SetSecurity(parser, file.Security);
+                            targetFile.ListItemAllFields.SetSecurity(parser, file.Security, WriteMessage);
                         }
                     }
 

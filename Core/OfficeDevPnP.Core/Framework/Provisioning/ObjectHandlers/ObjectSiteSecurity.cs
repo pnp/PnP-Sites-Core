@@ -277,19 +277,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (!ownerGroup.ServerObjectIsNull())
                 {
-                    AddUserToGroup(web, ownerGroup, siteSecurity.AdditionalOwners, scope, parser);
+                    AddUserToGroup(web, ownerGroup, siteSecurity.AdditionalOwners, scope, parser, WriteMessage);
 
                     parser.AddToken(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.owners));                    
                 }
                 if (!memberGroup.ServerObjectIsNull())
                 {
-                    AddUserToGroup(web, memberGroup, siteSecurity.AdditionalMembers, scope, parser);
+                    AddUserToGroup(web, memberGroup, siteSecurity.AdditionalMembers, scope, parser, WriteMessage);
 
                     parser.AddToken(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.members));                    
                 }
                 if (!visitorGroup.ServerObjectIsNull())
                 {                    
-                    AddUserToGroup(web, visitorGroup, siteSecurity.AdditionalVisitors, scope, parser);
+                    AddUserToGroup(web, visitorGroup, siteSecurity.AdditionalVisitors, scope, parser, WriteMessage);
 
                     parser.AddToken(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.visitors));
                 }
@@ -467,7 +467,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     if (group != null && siteGroup.Members.Any())
                     {
-                        AddUserToGroup(web, group, siteGroup.Members, scope, parser);
+                        AddUserToGroup(web, group, siteGroup.Members, scope, parser, WriteMessage);
                     }
                 }
 
@@ -588,6 +588,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         roleDefinitionBindingCollection.Add(roleDefinition);
                                         web.RoleAssignments.Add(principal, roleDefinitionBindingCollection);
                                         web.Context.ExecuteQueryRetry();
+                                    } else
+                                    {
+                                        WriteMessage($"Principal '{roleAssignment.Principal}' not found, cannot grant permissions", ProvisioningMessageType.Warning);
                                     }
                                 }
                                 else
@@ -612,6 +615,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             break;
                                         }
                                     }
+                                }
+                                else
+                                {
+                                    WriteMessage($"Principal '{roleAssignment.Principal}' not found, cannot revoke permissions", ProvisioningMessageType.Warning);
                                 }
                             }
                         }
@@ -705,6 +712,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 catch (Exception ex)
                 {
                     scope.LogWarning(ex, "Failed to EnsureUser {0}", parsedRoleDefinition);
+                    principal = null;
                 }
             }
 
@@ -713,11 +721,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return principal;
         }
 
-        private static void AddUserToGroup(Web web, Group group, IEnumerable<User> members, PnPMonitoredScope scope, TokenParser parser)
+        private static void AddUserToGroup(Web web, Group group, IEnumerable<User> members, PnPMonitoredScope scope, TokenParser parser, ProvisioningMessagesDelegate WriteMessage)
         {
             if (members.Any())
             {
-                scope.LogDebug("Adding users to group {0}", group.IsObjectPropertyInstantiated("Title") ? group.Title : "");
+                var groupTitle = group.IsObjectPropertyInstantiated("Title") ? group.Title : "";
+                scope.LogDebug("Adding users to group {0}", groupTitle);
 
                 try
                 {
@@ -735,6 +744,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         catch (Exception ex)
                         {
                             scope.LogWarning(ex, "Failed to EnsureUser {0}", parsedUserName);
+                            WriteMessage($"User '{parsedUserName}' not found, cannot add to group {groupTitle}", ProvisioningMessageType.Warning);
                         }
                     }
 
@@ -742,7 +752,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 catch (Exception ex)
                 {
-                    scope.LogError(CoreResources.Provisioning_ObjectHandlers_SiteSecurity_Add_users_failed_for_group___0_____1_____2_, group.Title, ex.Message, ex.StackTrace);
+                    scope.LogError(CoreResources.Provisioning_ObjectHandlers_SiteSecurity_Add_users_failed_for_group___0_____1_____2_, groupTitle, ex.Message, ex.StackTrace);
                     throw;
                 }
             }
