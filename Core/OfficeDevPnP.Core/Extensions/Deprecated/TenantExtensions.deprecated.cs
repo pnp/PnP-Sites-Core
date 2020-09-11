@@ -30,5 +30,18 @@ namespace Microsoft.SharePoint.Client
             }
         }
 #endif
+
+        /// <summary>
+        /// Checks if a site collection exists, relies on tenant admin API. Sites that are recycled also return as existing sites
+        /// </summary>
+        /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
+        /// <param name="siteFullUrl">URL to the site collection</param>
+        /// <returns>True if existing, false if not</returns>
+        [Obsolete()]
+        public static bool SiteExists(this Tenant tenant, string siteFullUrl)
+        {
+            var exists = SiteExistsAnywhere(tenant, siteFullUrl);
+            return (exists == SiteExistence.Yes || exists == SiteExistence.Recycled);
+        }
     }
 }

@@ -93,7 +93,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration
             {
                 foreach (var handler in (Handlers[])Enum.GetValues(typeof(Handlers)))
                 {
-                    if(information.HandlersToProcess.HasFlag(handler))
+                    if (information.HandlersToProcess.HasFlag(handler))
                     {
                         if (Enum.TryParse<ConfigurationHandler>(handler.ToString(), out ConfigurationHandler configurationHandler))
                         {
@@ -108,9 +108,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration
             config.Taxonomy.IncludeSiteCollectionTermGroup = information.IncludeSiteCollectionTermGroup;
             config.SiteSecurity.IncludeSiteGroups = information.IncludeSiteGroups;
             config.Taxonomy.IncludeSecurity = information.IncludeTermGroupsSecurity;
-            if(information.ListsToExtract != null && information.ListsToExtract.Any())
+            if (information.ListsToExtract != null && information.ListsToExtract.Any())
             {
-                foreach(var list in information.ListsToExtract)
+                foreach (var list in information.ListsToExtract)
                 {
                     config.Lists.Lists.Add(new Configuration.Lists.Lists.ExtractListsListsConfiguration()
                     {
@@ -127,7 +127,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration
             }
             config.PersistAssetFiles = information.PersistBrandingFiles || information.PersistPublishingFiles;
             config.MultiLanguage.PersistResources = information.PersistMultiLanguageResources;
-            if(information.ProgressDelegate != null)
+            if (information.ProgressDelegate != null)
             {
                 config.ProgressDelegate = (message, step, total) =>
                 {
@@ -156,8 +156,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration
 
             ci.PersistBrandingFiles = PersistAssetFiles;
             ci.PersistPublishingFiles = PersistAssetFiles;
-            ci.BaseTemplate = BaseTemplate;
-            
+            ci.BaseTemplate = web.GetBaseTemplate();
+            ci.FileConnector = this.FileConnector;
+            ci.IncludeAllClientSidePages = this.Pages.IncludeAllClientSidePages;
+            ci.IncludeHiddenLists = this.Lists.IncludeHiddenLists;
+            ci.IncludeSiteGroups = this.SiteSecurity.IncludeSiteGroups;
+            ci.ContentTypeGroupsToInclude = this.ContentTypes.Groups;
+            ci.IncludeContentTypesFromSyndication = !this.ContentTypes.ExcludeFromSyndication;
+            ci.IncludeTermGroupsSecurity = this.Taxonomy.IncludeSecurity;
+            ci.IncludeSiteCollectionTermGroup = this.Taxonomy.IncludeSiteCollectionTermGroup;
+            ci.IncludeSearchConfiguration = this.SearchSettings.Include;
+            ci.IncludeAllTermGroups = this.Taxonomy.IncludeAllTermGroups;
+            ci.ExtensibilityHandlers = this.Extensibility.Handlers;
+            ci.IncludeAllTermGroups = this.Taxonomy.IncludeAllTermGroups;
+            ci.IncludeNativePublishingFiles = this.Publishing.IncludeNativePublishingFiles;
+            ci.ListsToExtract = this.Lists != null && this.Lists.Lists.Any() ? this.Lists.Lists.Select(l => l.Title).ToList() : null;
+            ci.PersistMultiLanguageResources = this.MultiLanguage.PersistResources;
+            ci.PersistPublishingFiles = this.Publishing.Persist;
+            ci.ResourceFilePrefix = this.MultiLanguage.ResourceFilePrefix;
+
             if (Handlers.Any())
             {
                 ci.HandlersToProcess = Model.Handlers.None;
@@ -183,17 +200,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration
             {
                 ci.HandlersToProcess = Model.Handlers.All;
             }
-            ci.FileConnector = this.FileConnector;
-            ci.IncludeAllClientSidePages = this.Pages.IncludeAllClientSidePages;
-            ci.IncludeHiddenLists = this.Lists.IncludeHiddenLists;
-            ci.IncludeSiteGroups = this.SiteSecurity.IncludeSiteGroups;
-            ci.ContentTypeGroupsToInclude = this.ContentTypes.Groups;
-            ci.IncludeContentTypesFromSyndication = !this.ContentTypes.ExcludeFromSyndication;
-            ci.IncludeTermGroupsSecurity = this.Taxonomy.IncludeSecurity;
-            ci.IncludeSiteCollectionTermGroup = this.Taxonomy.IncludeSiteCollectionTermGroup;
-            ci.IncludeSearchConfiguration = this.SearchSettings.Include;
-            ci.IncludeAllTermGroups = this.Taxonomy.IncludeAllTermGroups;
-            
+
             if (this.ProgressDelegate != null)
             {
                 ci.ProgressDelegate = (message, step, total) =>
@@ -208,14 +215,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration
                     MessagesDelegate(message, type);
                 };
             }
-            ci.BaseTemplate = this.BaseTemplate;
-            ci.ExtensibilityHandlers = this.Extensibility.Handlers;
-            ci.IncludeAllTermGroups = this.Taxonomy.IncludeAllTermGroups;
-            ci.IncludeNativePublishingFiles = this.Publishing.IncludeNativePublishingFiles;
-            ci.ListsToExtract = this.Lists.Lists.Select(l => l.Title).ToList();
-            ci.PersistMultiLanguageResources = this.MultiLanguage.PersistResources;
-            ci.PersistPublishingFiles = this.Publishing.Persist;
-            ci.ResourceFilePrefix = this.MultiLanguage.ResourceFilePrefix;
+
+     
             return ci;
         }
 

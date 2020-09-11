@@ -26,7 +26,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if DEBUG
             get { return $"Content Types ({_step})"; }
 #else
-            get { return $"Content Types"; }
+			get { return $"Content Types"; }
 #endif
         }
 
@@ -75,6 +75,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             if (newCT != null)
                             {
                                 existingCTs.Add(newCT);
+                                existingCT = newCT;
                             }
                         }
                         else
@@ -89,21 +90,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 if (newCT != null)
                                 {
                                     existingCTs.Add(newCT);
+                                    existingCT = newCT;
                                 }
                             }
                             else
                             {
-                                // We can't update a sealed content type unless we change sealed to false
-                                if (!existingCT.Sealed || !ct.Sealed)
+                                // We can't update a sealed or read only content type unless we change the value to false
+                                if ((!existingCT.Sealed || !ct.Sealed) && (!existingCT.ReadOnly || !ct.ReadOnly))
                                 {
                                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type___0_____1_, ct.Id, ct.Name);
-                                    UpdateContentType(web, template, existingCT, ct, parser, scope);
+                                    UpdateContentType(web, template, existingCT, ct, parser, template.Connector, scope, existingCTs, existingFields, isNoScriptSite);
                                 }
                                 else
                                 {
-                                    scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type_Sealed, ct.Id, ct.Name);
+                                    scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type_SealedOrReadOnly, ct.Id, ct.Name);
                                 }
                             }
+                        }
+
+                        // Set ReadOnly as the last thing because a ReadOnly content type cannot be updated
+                        if (this._step == FieldAndListProvisioningStepHelper.Step.LookupFields && existingCT.ReadOnly == false && ct.ReadOnly == true)
+                        {
+                            scope.LogPropertyUpdate("ReadOnly");
+                            existingCT.ReadOnly = ct.ReadOnly;
+
+                            existingCT.Update(false);
+                            existingCT.Context.ExecuteQueryRetry();
                         }
                     }
                 }
@@ -118,12 +130,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             Microsoft.SharePoint.Client.ContentType existingContentType,
             ContentType templateContentType,
             TokenParser parser,
+            FileConnectorBase connector,
             PnPMonitoredScope scope,
+            List<Microsoft.SharePoint.Client.ContentType> existingCTs = null,
+            List<Microsoft.SharePoint.Client.Field> existingFields = null,
             bool isNoScriptSite = false
             )
         {
             var isDirty = false;
             var reOrderFields = false;
+            var name = parser.ParseString(templateContentType.Name);
 
             if (existingContentType.Hidden != templateContentType.Hidden)
             {
@@ -131,7 +147,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 existingContentType.Hidden = templateContentType.Hidden;
                 isDirty = true;
             }
-            if (existingContentType.ReadOnly != templateContentType.ReadOnly)
+            // Only change ReadOnly here, if change is from True => False (not ReadOnly)
+            // If change is ReadOnly = True, it will be set later
+            if (existingContentType.ReadOnly == true && templateContentType.ReadOnly == false)
             {
                 scope.LogPropertyUpdate("ReadOnly");
                 existingContentType.ReadOnly = templateContentType.ReadOnly;
@@ -218,7 +236,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
             if (isDirty)
             {
-                existingContentType.Update(true);
+                // Default to false as there is no reason to update children on CT property changes.
+                existingContentType.Update(false);
                 web.Context.ExecuteQueryRetry();
             }
 
@@ -233,6 +252,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var sourceIds = templateContentType.FieldRefs.Select(c1 => c1.Id).ToList();
 
             var fieldsNotPresentInTarget = sourceIds.Except(targetIds).ToArray();
+
+            // Should child content types be updated.
+            bool UpdateChildren()
+            {
+                if (fieldsNotPresentInTarget.Any())
+                {
+                    return !templateContentType.FieldRefs.All(f => f.UpdateChildren == false);
+                }
+
+                return true;
+            }
 
             if (fieldsNotPresentInTarget.Any())
             {
@@ -263,7 +293,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
 
                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Adding_field__0__to_content_type, fieldId);
-                    web.AddFieldToContentType(existingContentType, field, fieldRef.Required, fieldRef.Hidden);
+                    web.AddFieldToContentType(existingContentType, field, 
+                        fieldRef.Required, 
+                        fieldRef.Hidden, 
+                        fieldRef.UpdateChildren
+#if !SP2013 && !SP2016
+                        ,
+                        fieldRef.ShowInDisplayForm,
+                        fieldRef.ReadOnly
+#endif
+                        );
                 }
             }
 
@@ -299,23 +338,117 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // The new CT is a DocumentSet, and the target should be, as well
             if (templateContentType.DocumentSetTemplate != null)
             {
-                if (!Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate.IsChildOfDocumentSetContentType(web.Context, existingContentType).Value)
+                var isChildOfDocumentSetContentType = Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate.IsChildOfDocumentSetContentType(web.Context, existingContentType);
+                web.Context.ExecuteQueryRetry();
+
+                if (!isChildOfDocumentSetContentType.Value)
                 {
                     scope.LogError(CoreResources.Provisioning_ObjectHandlers_ContentTypes_InvalidDocumentSet_Update_Request, existingContentType.Id, existingContentType.Name);
                 }
                 else
                 {
-                    Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate templateToUpdate =
+                    // Retrieve a reference to the DocumentSet Content Type
+                    Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate documentSetTemplate =
                         Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate.GetDocumentSetTemplate(web.Context, existingContentType);
 
-                    // TODO: Implement Delta Handling
-                    scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ContentTypes_DocumentSet_DeltaHandling_OnHold, existingContentType.Id, existingContentType.Name);
+                    // Keep a flag if changes have been made to the document set of the content type
+                    var documentSetIsDirty = false;
+
+                    // Load the collections to allow for deletion scenarions
+                    web.Context.Load(documentSetTemplate, d => d.AllowedContentTypes, d => d.DefaultDocuments, d => d.SharedFields, d => d.WelcomePageFields);
+                    web.Context.ExecuteQueryRetry();
+
+                    if (!String.IsNullOrEmpty(templateContentType.DocumentSetTemplate.WelcomePage))
+                    {
+                        // TODO: Customize the WelcomePage of the DocumentSet
+                    }
+
+                    // AllowedContentTypes
+                    // Add additional content types to the set of allowed content types
+                    foreach (string ctId in templateContentType.DocumentSetTemplate.AllowedContentTypes)
+                    {
+                        // Validate if the content type is not part of the document set content types yet
+                        if (documentSetTemplate.AllowedContentTypes.All(d => d.StringValue != ctId))
+                        {
+                            Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == ctId);
+                            if (ct != null)
+                            {
+                                documentSetTemplate.AllowedContentTypes.Add(ct.Id);
+                                documentSetIsDirty = true;
+                            }
+                        }
+                    }
+
+                    // DefaultDocuments
+                    if (!isNoScriptSite)
+                    {
+                        foreach (var doc in templateContentType.DocumentSetTemplate.DefaultDocuments)
+                        {                                
+                            // Ensure the default document is not part of the document set yet
+                            if (documentSetTemplate.DefaultDocuments.All(d => d.Name != doc.Name))
+                            {
+                                Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == doc.ContentTypeId);
+                                if (ct != null)
+                                {
+                                    using (Stream fileStream = connector.GetFileStream(doc.FileSourcePath))
+                                    {
+                                        documentSetTemplate.DefaultDocuments.Add(doc.Name, ct.Id, ReadFullStream(fileStream));
+                                        documentSetIsDirty = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (templateContentType.DocumentSetTemplate.DefaultDocuments.Any())
+                        {
+                            scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ContentTypes_SkipDocumentSetDefaultDocuments, name);
+                        }
+                    }
+
+                    // SharedFields
+                    foreach (var sharedField in templateContentType.DocumentSetTemplate.SharedFields)
+                    {                            
+                        // Ensure the shared field is not part of the document set yet
+                        if (documentSetTemplate.SharedFields.All(f => f.Id != sharedField))
+                        {
+                            Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == sharedField);
+                            if (field != null)
+                            {
+                                documentSetTemplate.SharedFields.Add(field);
+                                documentSetIsDirty = true;
+                            }
+                        }
+                    }
+
+                    // WelcomePageFields
+                    foreach (var welcomePageField in templateContentType.DocumentSetTemplate.WelcomePageFields)
+                    {
+                        // Ensure the welcomepage field is not part of the document set yet
+                        if (documentSetTemplate.WelcomePageFields.All(w => w.Id != welcomePageField))
+                        {
+                            Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == welcomePageField);
+                            if (field != null)
+                            {
+                                documentSetTemplate.WelcomePageFields.Add(field);
+                                documentSetIsDirty = true;
+                            }
+                        }
+                    }
+
+                    if (documentSetIsDirty)
+                    {
+                        documentSetTemplate.Update(true);
+                        isDirty = true;
+                    }
                 }
             }
 
             if (isDirty)
             {
-                existingContentType.Update(true);
+                scope.LogDebug("Update child Content Types: {0}", UpdateChildren());
+                existingContentType.Update(UpdateChildren());
                 web.Context.ExecuteQueryRetry();
             }
         }
@@ -365,13 +498,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 // Add it to the target content type
                 // Notice that this code will fail if the field does not exist
-                web.AddFieldToContentType(createdCT, field, fieldRef.Required, fieldRef.Hidden);
+                web.AddFieldToContentType(createdCT, field,
+                    fieldRef.Required, 
+                    fieldRef.Hidden,
+                    fieldRef.UpdateChildren
+#if !SP2013 && !SP2016
+                    ,
+                    fieldRef.ShowInDisplayForm,
+                    fieldRef.ReadOnly
+#endif
+                    );
             }
 
             // Add new CTs
             parser.AddToken(new ContentTypeIdToken(web, name, id));
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
             // Set resources
             if (templateContentType.Name.ContainsResourceToken())
             {
@@ -392,10 +534,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 createdCT.FieldLinks.Reorder(ctFields);
             }
-            if (createdCT.ReadOnly != templateContentType.ReadOnly)
-            {
-                createdCT.ReadOnly = templateContentType.ReadOnly;
-            }
+            // Set Hidden and Sealed property, ReadOnly will be set later
             if (createdCT.Hidden != templateContentType.Hidden)
             {
                 createdCT.Hidden = templateContentType.Hidden;
@@ -424,7 +563,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 {
                                     Microsoft.SharePoint.Client.Folder ctFolder = web.GetFolderByServerRelativeUrl($"{web.ServerRelativeUrl}/_cts/{name}");
                                     web.Context.Load(ctFolder, fl => fl.Files.Include(f => f.Name, f => f.ServerRelativeUrl));
-                                    web.Context.ExecuteQuery();
+                                    web.Context.ExecuteQueryRetry();
 
                                     FileCreationInformation newFile = new FileCreationInformation();
                                     newFile.ContentStream = fsstream;
@@ -432,7 +571,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                     Microsoft.SharePoint.Client.File uploadedFile = ctFolder.Files.Add(newFile);
                                     web.Context.Load(uploadedFile);
-                                    web.Context.ExecuteQuery();
+                                    web.Context.ExecuteQueryRetry();
                                 }
                             }
                             createdCT.DocumentTemplate = documentTemplate;
@@ -617,7 +756,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private IEnumerable<ContentType> GetEntities(Web web, PnPMonitoredScope scope, ProvisioningTemplateCreationInformation creationInfo, ProvisioningTemplate template)
         {
             var cts = web.ContentTypes;
-            web.Context.Load(cts, ctCollection => ctCollection.IncludeWithDefaultProperties(ct => ct.FieldLinks, ct => ct.SchemaXmlWithResourceTokens));
+            web.Context.Load(cts, 
+                ctCollection => ctCollection.IncludeWithDefaultProperties(
+                    ct => ct.FieldLinks,
+                    ct => ct.SchemaXmlWithResourceTokens
+#if !SP2013 && !SP2016
+                    ,
+                    ct => ct.FieldLinks.IncludeWithDefaultProperties(
+                        fl => fl.DisplayName,
+                        fl => fl.ReadOnly, 
+                        fl => fl.ShowInDisplayForm)
+                    
+#endif
+                    )
+                );
+
             web.Context.ExecuteQueryRetry();
 
             if (cts.Count > 0 && web.IsSubSite())
@@ -697,6 +850,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                  Id = fieldLink.Id,
                                  Hidden = fieldLink.Hidden,
                                  Required = fieldLink.Required,
+#if !SP2013 && !SP2016
+                                 DisplayName = fieldLink.DisplayName,
+                                 ShowInDisplayForm = fieldLink.ShowInDisplayForm,
+                                 ReadOnly = fieldLink.ReadOnly,
+#endif
                              })
                         )
                     {
@@ -760,7 +918,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                  ContentTypeId = defaultDocument.ContentTypeId.StringValue,
                                  Name = defaultDocument.Name,
 #if SP2013 || SP2016
-                                 FileSourcePath = string.Empty
+								 FileSourcePath = string.Empty
 #else
                                  FileSourcePath = creationInfo.PersistBrandingFiles ? $"_cts/{ct.Name}/{defaultDocument.DocumentPath.DecodedUrl}" : string.Empty
 #endif

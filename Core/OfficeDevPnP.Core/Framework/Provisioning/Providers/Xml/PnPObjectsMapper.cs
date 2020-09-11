@@ -181,6 +181,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                     // Default conversion to Boolean
                                     sourceValue = Boolean.Parse(sourceValue.ToString());
                                 }
+                                else if (sourceValue != null && dp.PropertyType.IsEnum)
+                                {
+                                    // Default conversion for a target enum type
+                                    sourceValue = Enum.Parse(dp.PropertyType, sourceValue.ToString());
+                                }
+                                else if (sourceValue != null && dp.PropertyType.Name == "Nullable`1" && dp.PropertyType.GenericTypeArguments[0].IsEnum)
+                                {
+                                    // Default conversion for a target nullable enum type
+                                    sourceValue = Enum.Parse(dp.PropertyType.GenericTypeArguments[0], sourceValue.ToString());
+                                }
                                 else if (sourceValue == null && 
                                     dp.ReflectedType.Namespace == typeof(ProvisioningTemplate).Namespace && 
                                     dp.GetValue(destination) != null)

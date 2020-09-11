@@ -226,6 +226,7 @@ namespace Microsoft.SharePoint.Client
                     clientTag = clientTag.Substring(0, 32);
                 }
                 features.Context.ClientTag = clientTag;
+
                 // Don't update this to ExecuteQueryRetry
 #if !ONPREMISES
                 await features.Context.ExecuteQueryAsync();

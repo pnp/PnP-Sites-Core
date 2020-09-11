@@ -175,9 +175,13 @@ FakesAssemblies/
 
 # App.Config files
 [Aa]pp.[Cc]onfig
+[Aa]pp.*.[Cc]onfig
 
 # Visual Studio 2015 cache/options directory
 .vs/
 
 # VS Code Settings
 .vscode/
+
+# Output XML Files
+Core/OfficeDevPnP.Core.Tests/Resources/Templates/ProvisioningTemplate-*-OUT*.xml

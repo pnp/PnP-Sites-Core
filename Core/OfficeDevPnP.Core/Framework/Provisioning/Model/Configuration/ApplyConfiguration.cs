@@ -104,7 +104,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration
                     switch (handler)
                     {
                         case ConfigurationHandler.Pages:
-                            handlerEnumValue = Model.Handlers.PageContents;
+                            handlerEnumValue = Model.Handlers.Pages 
+                                | Model.Handlers.PageContents;
                             break;
                         case ConfigurationHandler.Taxonomy:
                             handlerEnumValue = Model.Handlers.TermGroups;
@@ -133,6 +134,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration
                 ai.MessagesDelegate = (message, type) =>
                 {
                     MessagesDelegate(message, type);
+                };
+            }
+            if (this.SiteProvisionedDelegate != null)
+            {
+                ai.SiteProvisionedDelegate = (title, siteUrl) =>
+                {
+                    SiteProvisionedDelegate(title, siteUrl);
                 };
             }
 

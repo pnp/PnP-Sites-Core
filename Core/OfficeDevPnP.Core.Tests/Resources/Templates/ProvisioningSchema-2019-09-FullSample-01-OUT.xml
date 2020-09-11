@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.13.1909.0, Culture=neutral, PublicKeyToken=null">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.21.2005.0, Culture=neutral, PublicKeyToken=null">
     <pnp:Parameters>
       <pnp:Parameter Key="O365TenantName">contoso</pnp:Parameter>
       <pnp:Parameter Key="CodeProvidedParam" />
@@ -146,8 +146,14 @@
       </pnp:SPUserProfile>
     </pnp:SPUsersProfiles>
     <pnp:Office365GroupLifecyclePolicies>
-      <pnp:Office365GroupLifecyclePolicy ID="GROUP_LIFECYCLE_01" GroupLifetimeInDays="180" AlternateNotificationEmails="admin01@contoso.com,admin02@{parameter:O365TenantName}.onmicrosoft.com" ManagedGroupTypes="Selected " />
+      <pnp:Office365GroupLifecyclePolicy ID="GROUP_LIFECYCLE_01" GroupLifetimeInDays="180" AlternateNotificationEmails="admin01@contoso.com,admin02@{parameter:O365TenantName}.onmicrosoft.com" ManagedGroupTypes="Selected" />
     </pnp:Office365GroupLifecyclePolicies>
+    <pnp:Office365GroupsSettings>
+      <pnp:Property Key="UsageGuidelinesUrl" Value="http://aka.ms/SharePointPnP" />
+      <pnp:Property Key="ClassificationList" Value="HBI,MBI,LBI,GDPR,TopSecret" />
+      <pnp:Property Key="EnableGroupCreation" Value="true" />
+      <pnp:Property Key="DefaultClassification" Value="MBI" />
+    </pnp:Office365GroupsSettings>
   </pnp:Tenant>
   <pnp:Templates ID="CONTAINER-SPECIALTEAM">
     <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="1" BaseSiteTemplate="STS#0" ImagePreviewUrl="https://preview.png" DisplayName="Special Team Site" Description="This is a Special Team Site for custom provisioning" TemplateCultureInfo="1040" Scope="RootSite">
@@ -676,7 +682,7 @@
         <pnp:Webhook ServerNotificationUrl="http://myapp.azurewebsites.net/WebHookListener" ExpiresInDays="120" SiteWebhookType="WebDeleted" />
       </pnp:SiteWebhooks>
       <pnp:ClientSidePages>
-        <pnp:ClientSidePage PromoteAsNewsArticle="true" PromoteAsTemplate="true" Overwrite="true" Title="Client Side Page Title" ContentTypeID="0x01010012345" ThumbnailUrl="images/pageThumbnail.png" PageName="SamplePage" LCID="0" CreateTranslations="true">
+        <pnp:ClientSidePage PromoteAsNewsArticle="true" PromoteAsTemplate="true" Overwrite="true" Title="Client Side Page Title" ContentTypeID="0x01010012345" ThumbnailUrl="images/pageThumbnail.png" PageName="SamplePage" CreateTranslations="true">
           <pnp:Header Type="Custom" ServerRelativeImageUrl="./site%20assets/picture.png" TranslateX="10.56" TranslateY="15.12345" LayoutType="FullWidthImage" TextAlignment="Center" ShowTopicHeader="true" ShowPublishDate="true" TopicHeader="Topic header value" AlternativeText="Alternate text" Authors="John Black, Mike White" AuthorByLine="Bill Green" AuthorByLineId="5" />
           <pnp:Sections>
             <pnp:Section Order="1" Type="OneColumn" BackgroundEmphasis="Neutral">
@@ -706,7 +712,7 @@
             <pnp:Property Key="Key03" Value="Value 03" />
           </pnp:Properties>
         </pnp:ClientSidePage>
-        <pnp:ClientSidePage PromoteAsNewsArticle="true" PromoteAsTemplate="true" Overwrite="true" Title="Client Side Page Title" ContentTypeID="0x01010012345" PageName="SamplePageWithVerticalSection" LCID="0" CreateTranslations="true">
+        <pnp:ClientSidePage PromoteAsNewsArticle="true" PromoteAsTemplate="true" Overwrite="true" Title="Client Side Page Title" ContentTypeID="0x01010012345" PageName="SamplePageWithVerticalSection" CreateTranslations="true">
           <pnp:Header Type="Custom" ServerRelativeImageUrl="./site%20assets/picture.png" TranslateX="10.56" TranslateY="15.12345" LayoutType="FullWidthImage" TextAlignment="Center" ShowTopicHeader="true" ShowPublishDate="true" TopicHeader="Topic header value" AlternativeText="Alternate text" Authors="John Black, Mike White" AuthorByLine="Bill Green" AuthorByLineId="5" />
           <pnp:Sections>
             <pnp:Section Order="1" Type="TwoColumnLeftVerticalSection" BackgroundEmphasis="Neutral" VerticalSectionEmphasis="Strong">

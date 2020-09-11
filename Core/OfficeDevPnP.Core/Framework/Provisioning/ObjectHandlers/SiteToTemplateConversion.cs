@@ -35,7 +35,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Extraction))
             {
 
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
                 web.Context.DisableReturnValueCache = true;
 #endif
 
@@ -121,6 +121,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 objectHandlers.Add(new ObjectLocalization()); // Always add this one, check is done in the handler
 #if !ONPREMISES
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Tenant)) objectHandlers.Add(new ObjectTenant());
+#endif
+#if !SP2013 && !SP2016
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.ApplicationLifecycleManagement)) objectHandlers.Add(new ObjectApplicationLifecycleManagement());
 #endif
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.ExtensibilityProviders)) objectHandlers.Add(new ObjectExtensibilityHandlers());
@@ -298,7 +300,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Provisioning))
             {
 
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
                 web.Context.DisableReturnValueCache = true;
 #endif
 
@@ -403,9 +405,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.PageContents)) objectHandlers.Add(new ObjectPageContents());
 #if !ONPREMISES
                 if (!calledFromHierarchy && provisioningInfo.HandlersToProcess.HasFlag(Handlers.Tenant)) objectHandlers.Add(new ObjectTenant());
-                if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ApplicationLifecycleManagement)) objectHandlers.Add(new ObjectApplicationLifecycleManagement());
 #endif
 #if !SP2013 && !SP2016
+                if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ApplicationLifecycleManagement)) objectHandlers.Add(new ObjectApplicationLifecycleManagement());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Pages)) objectHandlers.Add(new ObjectClientSidePages());
 #endif
 #if !ONPREMISES
@@ -524,117 +526,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         foreach (var webhook in webhooks.Where(w => w.Kind == kind))
                         {
-                            var requestParameters = new Dictionary<String, String>();
-
-                            if (exception != null)
-                            {
-                                // For GET requests we limit the size of the exception to avoid issues
-                                requestParameters["__exception"] =
-                                    webhook.Method == ProvisioningTemplateWebhookMethod.GET ?
-                                    exception.Message : exception.ToString();
-                            }
-
-                            SimpleTokenParser internalParser = new SimpleTokenParser();
-                            foreach (var webhookparam in webhook.Parameters)
-                            {
-                                requestParameters.Add(webhookparam.Key, parser.ParseString(webhookparam.Value));
-                                internalParser.AddToken(new WebhookParameter(webhookparam.Key, requestParameters[webhookparam.Key]));
-                            }
-                            var url = parser.ParseString(webhook.Url); // parse for template scoped parameters
-                            url = internalParser.ParseString(url); // parse for webhook scoped parameters
-
-                            switch (webhook.Method)
-                            {
-                                case ProvisioningTemplateWebhookMethod.GET:
-                                    {
-                                        url += $"&__webhookKind={kind.ToString()}"; // add the webhook kind to the REST request URL
-
-                                        foreach (var k in requestParameters.Keys)
-                                        {
-                                            url += $"&{HttpUtility.UrlEncode(k)}={HttpUtility.UrlEncode(requestParameters[k])}";
-                                        }
-
-                                        if (kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted
-                                            || kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningCompleted
-                                            || kind == ProvisioningTemplateWebhookKind.ExceptionOccurred)
-                                        {
-                                            url += $"&__handler={HttpUtility.UrlEncode(objectHandler)}"; // add the handler name to the REST request URL
-                                        }
-                                        try
-                                        {
-                                            if (webhook.Async)
-                                            {
-                                                Task.Factory.StartNew(async () =>
-                                                {
-                                                    await httpClient.GetAsync(url);
-                                                });
-                                            }
-                                            else
-                                            {
-                                                httpClient.GetAsync(url).GetAwaiter().GetResult();
-                                            }
-                                        }
-                                        catch (HttpRequestException ex)
-                                        {
-                                            scope.LogError(ex, "Error calling provisioning template webhook");
-                                        }
-                                        break;
-                                    }
-                                case ProvisioningTemplateWebhookMethod.POST:
-                                    {
-                                        requestParameters.Add("__webhookKind", kind.ToString()); // add the webhook kind to the parameters of the request body
-
-                                        if (kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningCompleted
-                                            || kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted
-                                            || kind == ProvisioningTemplateWebhookKind.ExceptionOccurred)
-                                        {
-                                            requestParameters.Add("__handler", objectHandler); // add the handler name to the parameters of the request body
-                                        }
-                                        try
-                                        {
-                                            if (webhook.Async)
-                                            {
-                                                Task.Factory.StartNew(async () =>
-                                                {
-                                                    switch (webhook.BodyFormat)
-                                                    {
-                                                        case ProvisioningTemplateWebhookBodyFormat.Json:
-                                                            await httpClient.PostAsJsonAsync(url, requestParameters);
-                                                            break;
-                                                        case ProvisioningTemplateWebhookBodyFormat.Xml:
-                                                            await httpClient.PostAsXmlAsync(url, requestParameters);
-                                                            break;
-                                                        case ProvisioningTemplateWebhookBodyFormat.FormUrlEncoded:
-                                                            var content = new FormUrlEncodedContent(requestParameters);
-                                                            await httpClient.PostAsync(url, content);
-                                                            break;
-                                                    }
-                                                });
-                                            }
-                                            else
-                                            {
-                                                switch (webhook.BodyFormat)
-                                                {
-                                                    case ProvisioningTemplateWebhookBodyFormat.Json:
-                                                        httpClient.PostAsJsonAsync(url, requestParameters).GetAwaiter().GetResult();
-                                                        break;
-                                                    case ProvisioningTemplateWebhookBodyFormat.Xml:
-                                                        httpClient.PostAsXmlAsync(url, requestParameters).GetAwaiter().GetResult();
-                                                        break;
-                                                    case ProvisioningTemplateWebhookBodyFormat.FormUrlEncoded:
-                                                        var content = new FormUrlEncodedContent(requestParameters);
-                                                        httpClient.PostAsync(url, content).GetAwaiter().GetResult();
-                                                        break;
-                                                }
-                                            }
-                                        }
-                                        catch (HttpRequestException ex)
-                                        {
-                                            scope.LogError(ex, "Error calling provisioning template webhook");
-                                        }
-                                        break;
-                                    }
-                            }
+                            WebhookSender.InvokeWebhook(webhook, httpClient, kind, parser, objectHandler, exception, scope);
                         }
                     }
                 }

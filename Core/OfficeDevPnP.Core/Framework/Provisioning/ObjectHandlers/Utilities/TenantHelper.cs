@@ -2,13 +2,17 @@
 using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.Online.SharePoint.TenantAdministration.Internal;
 using Microsoft.SharePoint.Client;
+using Microsoft.SharePoint.Client.UserProfiles;
 using Newtonsoft.Json;
 using OfficeDevPnP.Core.ALM;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Framework.Graph;
+using OfficeDevPnP.Core.Framework.Graph.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
+using OfficeDevPnP.Core.Utilities.Graph;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -677,6 +681,224 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                 returnDict.Add((SPOTenantCdnPolicyType)Enum.Parse(typeof(SPOTenantCdnPolicyType), entryArray[0]), entryArray[1]);
             }
             return returnDict;
+        }
+
+        public static TokenParser ProcessUserProfiles(Tenant tenant, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope, ProvisioningMessagesDelegate messagesDelegate)
+        {
+            if (provisioningTenant.SPUsersProfiles != null && provisioningTenant.SPUsersProfiles.Any())
+            {
+                messagesDelegate?.Invoke("Processing User Profiles", ProvisioningMessageType.Progress);
+
+                foreach (var profile in provisioningTenant.SPUsersProfiles)
+                {
+                    string parsedUser;
+                    if (!string.IsNullOrEmpty(profile.TargetUser))
+                    {
+                        parsedUser = parser.ParseString(profile.TargetUser);
+                    }
+                    else
+                    {
+                        parsedUser = parser.ParseString(profile.TargetGroup);
+                    }
+
+                    PeopleManager peopleManager = new PeopleManager(tenant.Context);
+                    try
+                    {
+                        // Currently only supports setting Single Valued property
+                        // We don't have a way at the moment to set Multi-valued property
+                        foreach (var props in profile.Properties)
+                        {
+                            peopleManager.SetSingleValueProfileProperty($"i:0#.f|membership|{parsedUser}", props.Key, parser.ParseString(props.Value));
+                        }
+                        tenant.Context.ExecuteQueryRetry();
+                    }
+                    catch (Exception ex)
+                    {
+                        scope.LogError($"Error processing user profile for {parsedUser}. Skipped due to error: ${ex.Message}");
+                    }
+                }
+            }
+            return parser;
+        }
+
+        public static TokenParser ProcessSharingSettings(Tenant tenant, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope, ProvisioningMessagesDelegate messagesDelegate)
+        {
+            var sharingSettings = provisioningTenant.SharingSettings;
+            if (sharingSettings != null)
+            {
+                // Set general setting of Sharing Capability
+                tenant.SharingCapability = (Microsoft.Online.SharePoint.TenantManagement.SharingCapabilities)Enum.Parse(typeof(Microsoft.Online.SharePoint.TenantManagement.SharingCapabilities), sharingSettings.SharingCapability.ToString());
+
+                if (sharingSettings.SharingCapability != SharingCapability.Disabled)
+                {
+                    // Configure the number of days for anonymous links expiration
+                    tenant.RequireAnonymousLinksExpireInDays = sharingSettings.RequireAnonymousLinksExpireInDays;
+                    // Configure the default anonymous link type for files
+                    tenant.FileAnonymousLinkType = (Microsoft.SharePoint.Client.AnonymousLinkType)Enum.Parse(typeof(Microsoft.SharePoint.Client.AnonymousLinkType), sharingSettings.FileAnonymousLinkType.ToString());
+                    // Configure the default anonymous link type for folders
+                    tenant.FolderAnonymousLinkType = (Microsoft.SharePoint.Client.AnonymousLinkType)Enum.Parse(typeof(Microsoft.SharePoint.Client.AnonymousLinkType), sharingSettings.FolderAnonymousLinkType.ToString());
+                    // Configure the default sharing link type
+                    tenant.DefaultSharingLinkType = (Microsoft.Online.SharePoint.TenantManagement.SharingLinkType)Enum.Parse(typeof(Microsoft.Online.SharePoint.TenantManagement.SharingLinkType), sharingSettings.DefaultSharingLinkType.ToString());
+                    // Configure whether external users are prevented from re-sharing shared content
+                    tenant.PreventExternalUsersFromResharing = sharingSettings.PreventExternalUsersFromResharing;
+                    // Configure if the the guest account must match the invited account
+                    tenant.RequireAcceptingAccountMatchInvitedAccount = sharingSettings.RequireAcceptingAccountMatchInvitedAccount;
+                    // Configure the domain restriction mode
+                    tenant.SharingDomainRestrictionMode = (Microsoft.Online.SharePoint.TenantManagement.SharingDomainRestrictionModes)Enum.Parse(typeof(Microsoft.Online.SharePoint.TenantManagement.SharingDomainRestrictionModes), sharingSettings.SharingDomainRestrictionMode.ToString());
+
+                    if (sharingSettings.SharingDomainRestrictionMode == SharingDomainRestrictionMode.AllowList)
+                    {
+                        // Configure the list of allowed domains
+                        tenant.SharingAllowedDomainList = sharingSettings.AllowedDomainList.Aggregate(string.Empty, (acc, next) => acc += $" {next}").Trim();
+                    }
+                    else if (sharingSettings.SharingDomainRestrictionMode == SharingDomainRestrictionMode.BlockList)
+                    {
+                        // Configure the list of blocked domains
+                        tenant.SharingBlockedDomainList = sharingSettings.BlockedDomainList.Aggregate(string.Empty, (acc, next) => acc += $" {next}").Trim();
+                    }
+                }
+
+                // Save the new settings
+                tenant.Context.ExecuteQueryRetry();
+            }
+            return parser;
+        }
+
+        public static TokenParser ProcessO365GroupSettings(Tenant tenant, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope, ProvisioningMessagesDelegate messagesDelegate)
+        {
+            if (provisioningTenant.Office365GroupsSettings != null && provisioningTenant.Office365GroupsSettings.Properties.Any())
+            {
+                messagesDelegate?.Invoke("Processing Office 365 Group Settings", ProvisioningMessageType.Progress);
+                bool siteClassificationSettingsExists = false;
+                if (PnPProvisioningContext.Current != null)
+                {
+                    string accessToken = string.Empty;
+                    try
+                    {
+                        // Get a fresh Access Token for every request
+                        accessToken = PnPProvisioningContext.Current.AcquireToken(GraphHelper.MicrosoftGraphBaseURI, "Directory.ReadWrite.All");
+
+                        if (accessToken != null)
+                        {
+                            try
+                            {
+                                var siteClassificationSettings = tenant.GetSiteClassificationsSettings(accessToken);
+                                siteClassificationSettingsExists = true;
+                            }
+                            catch (Exception ex)
+                            {
+                                // Tenant classification doesn't exist, just swallow the exception.
+                            }
+
+                            if (siteClassificationSettingsExists)
+                            {
+                                // Tenant classification exists, update the necessary values for Group Settings.
+                                try
+                                {
+                                    string directorySettingTemplatesUrl = $"{GraphHttpClient.MicrosoftGraphV1BaseUri}groupSettings";
+                                    var directorySettingTemplatesJson = GraphHttpClient.MakeGetRequestForString(directorySettingTemplatesUrl, accessToken);
+                                    var directorySettingTemplates = JsonConvert.DeserializeObject<DirectorySettingTemplates>(directorySettingTemplatesJson);
+
+                                    // Retrieve the setinngs for "Group.Unified"
+                                    var unifiedGroupSetting = directorySettingTemplates.Templates.FirstOrDefault(t => t.DisplayName == "Group.Unified");
+
+                                    if (unifiedGroupSetting != null)
+                                    {
+                                        var props = provisioningTenant.Office365GroupsSettings.Properties;
+                                        foreach (var v in unifiedGroupSetting.SettingValues)
+                                        {
+                                            var item = props.Where(p => p.Key == v.Name).FirstOrDefault();
+                                            if (!string.IsNullOrEmpty(item.Key))
+                                            {
+                                                v.Value = parser.ParseString(item.Value);
+                                            }
+                                        }
+
+                                        string updateDirectorySettingUrl = $"{GraphHttpClient.MicrosoftGraphV1BaseUri}groupSettings/{unifiedGroupSetting.Id}";
+                                        var updateDirectorySettingResult = GraphHttpClient.MakePatchRequestForString(
+                                            updateDirectorySettingUrl,
+                                            content: new
+                                            {
+                                                templateId = unifiedGroupSetting.Id,
+                                                values = from v in unifiedGroupSetting.SettingValues select new { name = v.Name, value = v.Value },
+                                            },
+                                            contentType: "application/json",
+                                            accessToken: accessToken);
+
+                                    }
+                                    else
+                                    {
+                                        throw new ApplicationException("Missing DirectorySettingTemplate for \"Group.Unified\"");
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    scope.LogError($"Error occurred processing O365 Group settings ${ex.Message}");
+                                }
+                            }
+                            else
+                            {
+                                // Tenant classification doesn't exist, create the necessary template for Group Settings.
+
+                                try
+                                {
+                                    string directorySettingTemplatesUrl = $"{GraphHttpClient.MicrosoftGraphV1BaseUri}groupSettingTemplates";
+                                    var directorySettingTemplatesJson = GraphHttpClient.MakeGetRequestForString(directorySettingTemplatesUrl, accessToken);
+                                    var directorySettingTemplates = JsonConvert.DeserializeObject<DirectorySettingTemplates>(directorySettingTemplatesJson);
+
+                                    // Retrieve the setinngs for "Group.Unified"
+                                    var unifiedGroupSetting = directorySettingTemplates.Templates.FirstOrDefault(t => t.DisplayName == "Group.Unified");
+
+                                    if (unifiedGroupSetting != null)
+                                    {
+                                        var props = provisioningTenant.Office365GroupsSettings.Properties;
+                                        foreach (var v in unifiedGroupSetting.SettingValues)
+                                        {
+                                            var item = props.Where(p => p.Key == v.Name).FirstOrDefault();
+                                            if (!string.IsNullOrEmpty(item.Key))
+                                            {
+                                                v.Value = parser.ParseString(item.Value);
+                                            }
+                                            else
+                                            {
+                                                // Set default value because null is not supported
+                                                // It only accepts entire collection and not individual properties
+                                                v.Value = v.DefaultValue;
+                                            }
+                                        }
+
+                                        string updateDirectorySettingUrl = $"{GraphHttpClient.MicrosoftGraphV1BaseUri}groupSettings";
+                                        var updateDirectorySettingResult = GraphHttpClient.MakePostRequestForString(
+                                            updateDirectorySettingUrl,
+                                            content: new
+                                            {
+                                                templateId = unifiedGroupSetting.Id,
+                                                values = from v in unifiedGroupSetting.SettingValues select new { name = v.Name, value = v.Value },
+                                            },
+                                            contentType: "application/json",
+                                            accessToken: accessToken);
+
+                                    }
+                                    else
+                                    {
+                                        throw new ApplicationException("Missing DirectorySettingTemplate for \"Group.Unified\"");
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    scope.LogError($"Error occurred processing O365 Group settings ${ex.Message}");
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        scope.LogError($"Error occurred processing O365 Group settings ${ex.Message}");
+                    }
+
+                }
+            }
+            return parser;
         }
     }
 }

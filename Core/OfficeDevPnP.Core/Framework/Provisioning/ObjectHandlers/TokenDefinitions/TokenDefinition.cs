@@ -49,7 +49,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         {
             get
             {
-                if (_context == null)
+                // CHANGED: the URL can be null ...
+                if (_context == null && Web.IsPropertyAvailable(w => w.Url))
                 {
                     // Make sure that the Url property has been loaded on the web in the constructor
                     _context = Web.Context.Clone(Web.Url);
