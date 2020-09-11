@@ -1782,7 +1782,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 }
                 catch (Exception ex)
                 {
-                    // Don't wait more than 300 seconds
+                    // Don't wait more than the requested timeout in seconds
                     if (iterations * 30 >= timeoutSeconds)
                     {
                         wait = false;
