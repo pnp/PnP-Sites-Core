@@ -407,7 +407,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             {
                                 parser.Tokens.Remove(existingToken);
                             }
-                            parser.AddToken(new SiteScriptIdToken(null, parsedTitle, existingId));
+                            parser.AddToken(new SiteDesignIdToken(null, parsedTitle, existingId));
 
                             if (siteDesign.Grants != null && siteDesign.Grants.Any())
                             {

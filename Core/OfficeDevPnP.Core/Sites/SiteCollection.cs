@@ -166,6 +166,10 @@ namespace OfficeDevPnP.Core.Sites
             if (siteDesignId != Guid.Empty)
             {
                 payload.Add("SiteDesignId", siteDesignId);
+
+                // As per https://github.com/SharePoint/sp-dev-docs/issues/4810 the WebTemplateExtensionId property
+                // is what currently drives the application of a custom site design during the creation of a modern site.
+                payload["WebTemplateExtensionId"] = siteDesignId;
             }
 #if !SP2019
             payload.Add("HubSiteId", siteCollectionCreationInformation.HubSiteId);
