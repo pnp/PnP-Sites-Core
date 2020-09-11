@@ -397,7 +397,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
 
                             var now = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss:Z");
-                            web.ExecutePostAsync($"/_api/navigation/SaveMenuState", $@"{{ ""menuState"":{{ ""Version"":""{now}"",""StartingNodeTitle"":""3a94b35f-030b-468e-80e3-b75ee84ae0ad"",""SPSitePrefix"":""/"",""SPWebPrefix"":""{web.ServerRelativeUrl}"",""FriendlyUrlPrefix"":"""",""SimpleUrl"":"""",""Nodes"":[]}}}}").GetAwaiter().GetResult();
+                            web.ExecutePostAsync($"/_api/navigation/SaveMenuState", $@"{{ ""menuState"":{{ ""Version"":""{now}"",""StartingNodeTitle"":""3a94b35f-030b-468e-80e3-b75ee84ae0ad"",""SPSitePrefix"":""/"",""SPWebPrefix"":""{web.ServerRelativeUrl}"",""FriendlyUrlPrefix"":"""",""SimpleUrl"":"""",""Nodes"":[]}}}}", defaultCulture.Name).GetAwaiter().GetResult();
                             structureString = web.ExecuteGetAsync($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'", defaultCulture.Name).GetAwaiter().GetResult();
                             menuState = JsonConvert.DeserializeObject<MenuState>(structureString);
                         }
@@ -430,13 +430,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 Title = Constants.SITEFOOTER_MENUNODEKEY
                             });
                         }
+
                         foreach (var footerLink in template.Footer.FooterLinks)
                         {
-                            menuNode.Children.Add(new NavigationNodeCreationInformation()
+                            var navNode = menuNode.Children.Add(new NavigationNodeCreationInformation()
                             {
-                                Url = parser.ParseString(footerLink.Url),
+                                Url = ObjectNavigation.ReplaceFileUniqueToken(web, parser.ParseString(footerLink.Url)),
                                 Title = parser.ParseString(footerLink.DisplayName)
                             });
+                            if (footerLink.DisplayName.ContainsResourceToken())
+                            {
+                                web.Context.ExecuteQueryRetry();
+                                navNode.LocalizeNavigationNode(web, footerLink.DisplayName, parser, scope);
+                            }
                         }
                         if (web.Context.PendingRequestCount() > 0)
                         {

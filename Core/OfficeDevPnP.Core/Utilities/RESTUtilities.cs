@@ -130,7 +130,7 @@ namespace OfficeDevPnP.Core.Utilities
             return await Task.Run(() => returnObject);
         }
 
-        internal static async Task<string> ExecutePostAsync(this Web web, string endpoint, string payload)
+        internal static async Task<string> ExecutePostAsync(this Web web, string endpoint, string payload, string cultureLanguageName = null)
         {
             string returnObject = null;
             var accessToken = web.Context.GetAccessToken();
@@ -165,6 +165,11 @@ namespace OfficeDevPnP.Core.Utilities
                     }
                     var requestDigest = await (web.Context as ClientContext).GetRequestDigestAsync().ConfigureAwait(false);
                     request.Headers.Add("X-RequestDigest", requestDigest);
+
+                    if (!string.IsNullOrWhiteSpace(cultureLanguageName))
+                    {
+                        request.Headers.Add("Accept-Language", cultureLanguageName);
+                    }
 
                     if (!string.IsNullOrEmpty(payload))
                     {
