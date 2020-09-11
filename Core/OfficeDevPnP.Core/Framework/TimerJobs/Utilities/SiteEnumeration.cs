@@ -110,9 +110,15 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs.Utilities
         /// <param name="excludeOD4B">Exlude OD4B sites</param>
         private void FillSitesViaTenantAPI(Tenant tenant,bool excludeOD4B)
         {
-#if !ONPREMISES
+#if !SP2013
             // Use tenant API to get the regular sites
-            var props = tenant.GetSiteCollections(includeDetail: false, includeOD4BSites: !excludeOD4B);
+            var props = tenant.GetSiteCollections(
+                includeDetail: false
+#if !ONPREMISES
+                ,
+                includeOD4BSites: !excludeOD4B
+#endif
+                );
             
             if (props.Count == 0)
             {

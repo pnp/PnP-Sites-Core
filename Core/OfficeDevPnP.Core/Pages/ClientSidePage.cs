@@ -1,9 +1,12 @@
 ﻿using AngleSharp.Parser.Html;
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using OfficeDevPnP.Core.Utilities;
 using OfficeDevPnP.Core.Utilities.Async;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -45,6 +48,8 @@ namespace OfficeDevPnP.Core.Pages
         public const string _OriginalSourceWebId = "_OriginalSourceWebId";
         public const string _OriginalSourceListId = "_OriginalSourceListId";
         public const string _OriginalSourceItemId = "_OriginalSourceItemId";
+        public const string IdField = "ID";
+        public const string _SPSitePageFlags = "_SPSitePageFlags";
 
         // feature
         public const string SitePagesFeatureId = "b6917cb1-93a0-4b97-a84d-7cf49975d4ec";
@@ -55,6 +60,16 @@ namespace OfficeDevPnP.Core.Pages
         // Properties
         public const string TemplatesFolderGuid = "vti_TemplatesFolderGuid";
 
+        // Spaces
+        public const string SpacesLayoutType = "d39ad2cb-84bd-48a0-9daa-4aea9f644cd4";
+        public const string SpaceContentField = "SpaceContent";
+
+        // Topic pages
+        public const string TopicLayoutType = "Topic";
+        public const string TopicEntityId = "_EntityId";
+        public const string TopicEntityRelations = "_EntityRelations";
+        public const string TopicEntityType = "_EntityType";
+
         private ClientContext context;
         private string pageName;
         private string pagesLibrary;
@@ -63,14 +78,16 @@ namespace OfficeDevPnP.Core.Pages
         private string sitePagesServerRelativeUrl;
         private bool securityInitialized = false;
         private string accessToken;
-        private System.Collections.Generic.List<CanvasSection> sections = new System.Collections.Generic.List<CanvasSection>(1);
-        private System.Collections.Generic.List<CanvasControl> controls = new System.Collections.Generic.List<CanvasControl>(5);
+        private readonly List<CanvasSection> sections = new List<CanvasSection>(1);
+        private readonly List<CanvasControl> controls = new List<CanvasControl>(5);
+        private readonly List<CanvasControl> headerControls = new List<CanvasControl>();
         private ClientSidePageLayoutType layoutType;
         private bool keepDefaultWebParts;
         private string pageTitle;
         private string thumbnailUrl;
         private bool isDefaultDescription;
         private ClientSidePageHeader pageHeader;
+        private int? pageId;
         #endregion
 
         #region construction
@@ -139,7 +156,7 @@ namespace OfficeDevPnP.Core.Pages
         /// <summary>
         /// Collection of sections that exist on this client side page
         /// </summary>
-        public System.Collections.Generic.List<CanvasSection> Sections
+        public List<CanvasSection> Sections
         {
             get
             {
@@ -150,11 +167,22 @@ namespace OfficeDevPnP.Core.Pages
         /// <summary>
         /// Collection of all control that exist on this client side page
         /// </summary>
-        public System.Collections.Generic.List<CanvasControl> Controls
+        public List<CanvasControl> Controls
         {
             get
             {
                 return this.controls;
+            }
+        }
+
+        /// <summary>
+        /// Collection of all header control that exist on this client side page
+        /// </summary>
+        public List<CanvasControl> HeaderControls
+        {
+            get
+            {
+                return this.headerControls;
             }
         }
 
@@ -326,7 +354,64 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// ID value of the page (only available when the page was saved)
+        /// </summary>
+        public int? PageId
+        {
+            get
+            {
+                return this.pageId;
+            }
+        }
 
+        /// <summary>
+        /// Space content field (JSON) for spaces pages
+        /// </summary>
+        public string SpaceContent
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Entity id field for topic pages
+        /// </summary>
+        public string EntityId
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Entity relations field for topic pages
+        /// </summary>
+        public string EntityRelations
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Entity type field for topic pages
+        /// </summary>
+        public string EntityType
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// List the languages this page possibly can be translated into
+        /// </summary>
+        public List<int> SupportedUILanguages
+        {
+            get
+            {
+                return this.Context.Web.EnsureProperty(p => p.SupportedUILanguageIds).ToList();
+            }
+        }
+
+        public object htmlWriter { get; private set; }
+        #endregion
+
+        #region public methods
         /// <summary>
         /// Returns the name of the templates folder, and creates if it doesn't exist.
         /// </summary>
@@ -360,11 +445,6 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
-
-
-        #endregion
-
-        #region public methods
         /// <summary>
         /// Clears all control and sections from this page
         /// </summary>
@@ -604,6 +684,26 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
+        /// Adds a new header control to your client side page with a given order
+        /// </summary>
+        /// <param name="control"><see cref="CanvasControl"/> to add</param>
+
+        /// <param name="order">Order of the control in the given section</param>
+        public void AddHeaderControl(CanvasControl control, int order)
+        {
+            if (control == null)
+            {
+                throw new ArgumentNullException("Passed control cannot be null");
+            }
+
+            control.section = this.DefaultSection;
+            control.column = this.DefaultSection.DefaultColumn;
+            control.Order = order;
+
+            this.headerControls.Add(control);
+        }
+
+        /// <summary>
         /// Deletes a control from a page
         /// </summary>
         public void Delete()
@@ -617,6 +717,26 @@ namespace OfficeDevPnP.Core.Pages
             this.Context.ExecuteQueryRetry();
         }
 
+        internal string HeaderControlsToHtml()
+        {
+            if (headerControls.Any())
+            {
+                StringBuilder html = new StringBuilder();
+
+                float order = 1;
+                foreach(var headerControl in headerControls)
+                {
+                    html.Append(headerControl.ToHtml(order));
+                }
+
+                return html.ToString();
+            }
+            else
+            {
+                return "";
+            }
+        }
+
         /// <summary>
         /// Returns the html representation of this client side page. This is the content that will be persisted in the <see cref="ClientSidePage.PageListItem"/> list item.
         /// </summary>
@@ -625,6 +745,9 @@ namespace OfficeDevPnP.Core.Pages
         {
             StringBuilder html = new StringBuilder(100);
 #if NETSTANDARD2_0
+            
+            if (this.sections.Count == 0) return string.Empty;
+
             html.Append($@"<div>");
             // Normalize section order by starting from 1, users could have started from 0 or left gaps in the numbering
             var sectionsToOrder = this.sections.OrderBy(p => p.Order).ToList();
@@ -640,6 +763,10 @@ namespace OfficeDevPnP.Core.Pages
                 html.Append(section.ToHtml());
 
             }
+            // Thumbnail
+            var thumbnailData = new { controlType = 0, pageSettingsSlice = new { isDefaultDescription = this.isDefaultDescription, isDefaultThumbnail = string.IsNullOrEmpty(thumbnailUrl) } };
+            html.Append($@"<div data-sp-canvascontrol="""" data-sp-canvasdataversion=""1.0"" data-sp-controldata=""{JsonConvert.SerializeObject(thumbnailData).Replace("\"", "&quot;")}""></div>");
+
             html.Append("</div>");
 #else
             using (var htmlWriter = new HtmlTextWriter(new System.IO.StringWriter(html), ""))
@@ -728,15 +855,63 @@ namespace OfficeDevPnP.Core.Pages
                 page.pageListItem = item;
                 page.pageTitle = Convert.ToString(item[ClientSidePage.Title]);
 
+                if (int.TryParse(item[ClientSidePage.IdField].ToString(), out int pageIdValue))
+                {
+                    page.pageId = pageIdValue;
+                }
+
                 // set layout type
                 if (item.FieldValues.ContainsKey(ClientSidePage.PageLayoutType) && item[ClientSidePage.PageLayoutType] != null && !string.IsNullOrEmpty(item[ClientSidePage.PageLayoutType].ToString()))
                 {
-                    page.LayoutType = (ClientSidePageLayoutType)Enum.Parse(typeof(ClientSidePageLayoutType), item[ClientSidePage.PageLayoutType].ToString());
+#if !SP2019
+                    if (item[ClientSidePage.PageLayoutType].ToString().Equals(SpacesLayoutType, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        page.LayoutType = ClientSidePageLayoutType.Spaces;
+                    }
+                    else if (item[ClientSidePage.PageLayoutType].ToString().Equals(TopicLayoutType, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        page.LayoutType = ClientSidePageLayoutType.Topic;
+                    }
+                    else
+                    {
+#endif
+                        page.LayoutType = (ClientSidePageLayoutType)Enum.Parse(typeof(ClientSidePageLayoutType), item[ClientSidePage.PageLayoutType].ToString());
+#if !SP2019
+                    }
+#endif
                 }
                 else
                 {
                     throw new Exception($"Page layout type could not be determined for page {pageName}");
                 }
+
+#if !SP2019
+                if (page.LayoutType == ClientSidePageLayoutType.Spaces)
+                {
+                    if (item.FieldValues.ContainsKey(ClientSidePage.SpaceContentField) && item[ClientSidePage.SpaceContentField] != null && !string.IsNullOrEmpty(item[ClientSidePage.SpaceContentField].ToString()))
+                    {
+                        page.SpaceContent = item[ClientSidePage.SpaceContentField].ToString();
+                    }
+                }
+
+                if (page.LayoutType == ClientSidePageLayoutType.Topic)
+                {
+                    if (item.FieldValues.ContainsKey(ClientSidePage.TopicEntityId) && item[ClientSidePage.TopicEntityId] != null && !string.IsNullOrEmpty(item[ClientSidePage.TopicEntityId].ToString()))
+                    {
+                        page.EntityId = item[ClientSidePage.TopicEntityId].ToString();
+                    }
+
+                    if (item.FieldValues.ContainsKey(ClientSidePage.TopicEntityRelations) && item[ClientSidePage.TopicEntityRelations] != null && !string.IsNullOrEmpty(item[ClientSidePage.TopicEntityRelations].ToString()))
+                    {
+                        page.EntityRelations = item[ClientSidePage.TopicEntityRelations].ToString();
+                    }
+
+                    if (item.FieldValues.ContainsKey(ClientSidePage.TopicEntityType) && item[ClientSidePage.TopicEntityType] != null && !string.IsNullOrEmpty(item[ClientSidePage.TopicEntityType].ToString()))
+                    {
+                        page.EntityType = item[ClientSidePage.TopicEntityType].ToString();
+                    }
+                }
+#endif
 
                 // default canvas content for an empty page (this field contains the page's web part properties)
                 var canvasContent1Html = @"<div><div data-sp-canvascontrol="""" data-sp-canvasdataversion=""1.0"" data-sp-controldata=""&#123;&quot;controlType&quot;&#58;0,&quot;pageSettingsSlice&quot;&#58;&#123;&quot;isDefaultDescription&quot;&#58;true,&quot;isDefaultThumbnail&quot;&#58;true&#125;&#125;""></div></div>";
@@ -812,12 +987,27 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             var pageHeaderHtml = "";
-            if (this.pageHeader != null && this.pageHeader.Type != ClientSidePageHeaderType.None && this.LayoutType != ClientSidePageLayoutType.RepostPage)
-            {
+            if (this.pageHeader != null && this.pageHeader.Type != ClientSidePageHeaderType.None && this.LayoutType != ClientSidePageLayoutType.RepostPage
+#if !SP2019
+                && this.LayoutType != ClientSidePageLayoutType.Topic
+#endif
+                )
+            {               
                 // this triggers resolving of the header image which has to be done early as otherwise there will be version conflicts
                 // (see here: https://github.com/SharePoint/PnP-Sites-Core/issues/2203)
                 pageHeaderHtml = this.pageHeader.ToHtml(this.PageTitle);
             }
+
+#if !SP2019
+            if (this.LayoutType == ClientSidePageLayoutType.Topic)
+            {
+                // If we have extra header controls (e.g. with topic pages) then we need to persist those controls to a html snippet that will need to be embedded in the header
+                if (this.headerControls.Any())
+                {
+                    pageHeaderHtml = $"<div>{HeaderControlsToHtml()}</div>";
+                }
+            }
+#endif
 
             // Try to load the page
             if (pageFile == null && pagesLibrary == null)
@@ -861,15 +1051,58 @@ namespace OfficeDevPnP.Core.Pages
                 // create page listitem
                 item = folderHostingThePage.Files.AddTemplateFile(serverRelativePageName, TemplateFileType.ClientSidePage).ListItemAllFields;
                 // Fix page to be modern
-                item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.ModernArticlePage;
+#if !SP2019
+                if (this.LayoutType == ClientSidePageLayoutType.Spaces)
+                {
+                    item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.SpacesPage;
+                }
+                else
+                {
+#endif
+                    item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.ModernArticlePage;
+#if !SP2019
+                }
+#endif
                 item[ClientSidePage.Title] = string.IsNullOrWhiteSpace(this.pageTitle) ? System.IO.Path.GetFileNameWithoutExtension(this.pageName) : this.pageTitle;
                 item[ClientSidePage.ClientSideApplicationId] = ClientSidePage.SitePagesFeatureId;
-                item[ClientSidePage.PageLayoutType] = this.layoutType.ToString();
-                if (this.layoutType == ClientSidePageLayoutType.Article)
+
+#if !SP2019
+                if (this.LayoutType == ClientSidePageLayoutType.Spaces)
                 {
-                    item[ClientSidePage.PromotedStateField] = (Int32)PromotedState.NotPromoted;
+                    item[ClientSidePage.PageLayoutType] = SpacesLayoutType;
+                    if (!string.IsNullOrEmpty(this.SpaceContent))
+                    {
+                        item[ClientSidePage.SpaceContentField] = this.SpaceContent;
+                    }
+                }
+                else if (this.LayoutType == ClientSidePageLayoutType.Topic)
+                {
+                    item[ClientSidePage.PageLayoutType] = TopicLayoutType;
+                    item[ClientSidePage.TopicEntityId] = this.EntityId;
+                    item[ClientSidePage.TopicEntityRelations] = this.EntityRelations;
+                    item[ClientSidePage.TopicEntityType] = this.EntityType;
+
+                    // Set the _SPSitePageFlags field
+                    item[_SPSitePageFlags] = ";#TopicPage;#";
+
+                }
+                else
+                {
+#endif
+                    item[ClientSidePage.PageLayoutType] = this.layoutType.ToString();
+#if !SP2019
+                }
+#endif
+                if (this.layoutType == ClientSidePageLayoutType.Article
+#if !SP2019
+                    || this.LayoutType == ClientSidePageLayoutType.Spaces
+#endif
+                    )
+                {
                     item[ClientSidePage.BannerImageUrl] = "/_layouts/15/images/sitepagethumbnail.png";
                 }
+
+                item[ClientSidePage.PromotedStateField] = (Int32)PromotedState.NotPromoted;
                 item.UpdateOverwriteVersion();
                 this.Context.Web.Context.Load(item);
             }
@@ -979,9 +1212,18 @@ namespace OfficeDevPnP.Core.Pages
             this.Context.Web.Context.Load(item);
             this.Context.ExecuteQueryRetry();
 
+            if (int.TryParse(item[ClientSidePage.IdField].ToString(), out int pageIdValue))
+            {
+                this.pageId = pageIdValue;
+            }
+
             // Try to set the page banner image url if not yet set
             bool isDirty = false;
-            if (this.layoutType == ClientSidePageLayoutType.Article && item[ClientSidePage.BannerImageUrl] != null)
+            if ((this.layoutType == ClientSidePageLayoutType.Article
+#if !SP2019
+                || this.LayoutType == ClientSidePageLayoutType.Spaces
+#endif
+                ) && item[ClientSidePage.BannerImageUrl] != null)
             {
                 if (string.IsNullOrEmpty((item[ClientSidePage.BannerImageUrl] as FieldUrlValue).Url) || (item[ClientSidePage.BannerImageUrl] as FieldUrlValue).Url.IndexOf("/_layouts/15/images/sitepagethumbnail.png", StringComparison.InvariantCultureIgnoreCase) >= 0)
                 {
@@ -1032,14 +1274,23 @@ namespace OfficeDevPnP.Core.Pages
                 }
             }
 
-            if (item[ClientSidePage.PageLayoutType] as string != this.layoutType.ToString())
+#if !SP2019
+            if (this.LayoutType != ClientSidePageLayoutType.Spaces)
             {
-                item[ClientSidePage.PageLayoutType] = this.layoutType.ToString();
-                isDirty = true;
+                if (item[ClientSidePage.PageLayoutType] as string != this.layoutType.ToString())
+                {
+                    item[ClientSidePage.PageLayoutType] = this.layoutType.ToString();
+                    isDirty = true;
+                }
             }
+#endif
 
             // Try to set the page description if not yet set
-            if (this.layoutType == ClientSidePageLayoutType.Article && item.FieldValues.ContainsKey(ClientSidePage.DescriptionField))
+            if ((this.layoutType == ClientSidePageLayoutType.Article
+#if !SP2019
+                || this.LayoutType == ClientSidePageLayoutType.Spaces
+#endif
+                ) && item.FieldValues.ContainsKey(ClientSidePage.DescriptionField))
             {
                 if (item[ClientSidePage.DescriptionField] == null || string.IsNullOrEmpty(item[ClientSidePage.DescriptionField].ToString()))
                 {
@@ -1355,6 +1606,167 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
+        /// Generate translations for this page
+        /// </summary>
+        /// <param name="translationStatusCreationRequest">Languages to generate a translation for</param>
+        /// <returns><see cref="TranslationStatusCollection"/> collection listing translated and untranslated pages</returns>
+        public TranslationStatusCollection GenerateTranslations(TranslationStatusCreationRequest translationStatusCreationRequest)
+        {
+            // When we're using app-only we do need an accesstoken for the REST request
+            if (!this.securityInitialized && this.Context.Credentials == null)
+            {
+                this.InitializeSecurity();
+            }
+
+            Task<String> result = Task.Run(() => GenerateTranslationsImplementationAsync(this.accessToken, this.Context, this.PageId, translationStatusCreationRequest).GetAwaiter().GetResult());
+
+            if (!string.IsNullOrEmpty(result.Result))
+            {
+                var translationStatus = JsonConvert.DeserializeObject<TranslationStatusCollection>(result.Result, new JsonSerializerSettings
+                {
+                    MissingMemberHandling = MissingMemberHandling.Ignore
+                });
+                return translationStatus;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the translation status of this page
+        /// </summary>
+        /// <returns><see cref="TranslationStatusCollection"/> collection listing translated and untranslated pages</returns>
+        public TranslationStatusCollection Translations()
+        {
+            // When we're using app-only we do need an accesstoken for the REST request
+            if (!this.securityInitialized && this.Context.Credentials == null)
+            {
+                this.InitializeSecurity();
+            }
+
+            Task<string> result = Task.Run(() => GetTranslationsImplementationAsync(this.accessToken, this.Context, this.PageId).GetAwaiter().GetResult());
+
+            if (!string.IsNullOrEmpty(result.Result))
+            {
+                var translationStatus = JsonConvert.DeserializeObject<TranslationStatusCollection>(result.Result, new JsonSerializerSettings
+                {
+                    MissingMemberHandling = MissingMemberHandling.Ignore
+                });
+                return translationStatus;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the translation status of this page
+        /// </summary>
+        /// <returns><see cref="TranslationStatusCollection"/> collection listing translated and untranslated pages</returns>
+        public async Task<TranslationStatusCollection> TranslationsAsync()
+        {
+            // When we're using app-only we do need an accesstoken for the REST request
+            await new SynchronizationContextRemover();
+
+            if (!this.securityInitialized)
+            {
+                await this.InitializeSecurityAsync();
+            }
+
+            string result = await GetTranslationsImplementationAsync(this.accessToken, this.Context, this.PageId);
+
+            if (!string.IsNullOrEmpty(result))
+            {
+                var translationStatus = JsonConvert.DeserializeObject<TranslationStatusCollection>(result, new JsonSerializerSettings
+                {
+                    MissingMemberHandling = MissingMemberHandling.Ignore
+                });
+                return translationStatus;
+            }
+
+            return null;
+        }
+        /// <summary>
+        /// Generate translations for this page, for all languages defined in this site
+        /// </summary>
+        /// <returns><see cref="TranslationStatusCollection"/> collection listing translated and untranslated pages</returns>
+        public TranslationStatusCollection GenerateTranslations()
+        {
+            // When we're using app-only we do need an accesstoken for the REST request
+            if (!this.securityInitialized && this.Context.Credentials == null)
+            {
+                this.InitializeSecurity();
+            }
+            
+            Task<string> result = Task.Run(() => GenerateTranslationsImplementationAsync(this.accessToken, this.Context, this.PageId, null).GetAwaiter().GetResult());
+
+            if (!string.IsNullOrEmpty(result.Result))
+            {
+                var translationStatus = JsonConvert.DeserializeObject<TranslationStatusCollection>(result.Result, new JsonSerializerSettings
+                {
+                    MissingMemberHandling = MissingMemberHandling.Ignore
+                });
+                return translationStatus;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Generate translations for this page
+        /// </summary>
+        /// <param name="translationStatusCreationRequest">Languages to generate a translation for</param>
+        /// <returns><see cref="TranslationStatusCollection"/> collection listing translated and untranslated pages</returns>
+        public async Task<TranslationStatusCollection> GenerateTranslationsAsync(TranslationStatusCreationRequest translationStatusCreationRequest)
+        {
+            await new SynchronizationContextRemover();
+
+            if (!this.securityInitialized)
+            {
+                await this.InitializeSecurityAsync();
+            }
+
+            string result = await GenerateTranslationsImplementationAsync(this.accessToken, this.Context, this.PageId, translationStatusCreationRequest);
+
+            if (!string.IsNullOrEmpty(result))
+            {
+                var translationStatus = JsonConvert.DeserializeObject<TranslationStatusCollection>(result, new JsonSerializerSettings
+                {
+                    MissingMemberHandling = MissingMemberHandling.Ignore
+                });
+                return translationStatus;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Generate translations for this page, for all languages defined in this site
+        /// </summary>
+        /// <returns><see cref="TranslationStatusCollection"/> collection listing translated and untranslated pages</returns>
+        public async Task<TranslationStatusCollection> GenerateTranslationsAsync()
+        {
+            await new SynchronizationContextRemover();
+
+            if (!this.securityInitialized)
+            {
+                await this.InitializeSecurityAsync();
+            }
+
+            string result = await GenerateTranslationsImplementationAsync(this.accessToken, this.Context, this.PageId, null);
+
+            if (!string.IsNullOrEmpty(result))
+            {
+                var translationStatus = JsonConvert.DeserializeObject<TranslationStatusCollection>(result, new JsonSerializerSettings
+                {
+                    MissingMemberHandling = MissingMemberHandling.Ignore
+                });
+                return translationStatus;
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Publishes a client side page
         /// </summary>
         public void Publish()
@@ -1495,6 +1907,12 @@ namespace OfficeDevPnP.Core.Pages
                 TranslateY = translateY
             };
         }
+
+        public void CreateTranslations()
+        {
+
+        }
+
 #endregion
 
                 #region Internal and private methods
@@ -1830,8 +2248,41 @@ namespace OfficeDevPnP.Core.Pages
             // Reindex the control order. We're starting control order from 1 for each column.
             ReIndex();
 
-            // Load the page header
-            this.pageHeader.FromHtml(pageHeaderHtml);
+#if !SP2019
+            // Load page header controls. Cortex Topic pages do have 5 controls in the header (= controls that cannot be moved)
+            if (LayoutType == ClientSidePageLayoutType.Topic)
+            {
+                using (var document = parser.Parse(pageHeaderHtml))
+                {
+                    // select all control div's
+                    var clientSideHeaderControls = document.All.Where(m => m.HasAttribute(CanvasControl.ControlDataAttribute));
+
+                    int headerControlOrder = 1;
+                    foreach (var clientSideHeaderControl in clientSideHeaderControls)
+                    {
+                        // Process the extra header controls
+                        var controlData = clientSideHeaderControl.GetAttribute(CanvasControl.ControlDataAttribute);
+
+                        var control = new ClientSideWebPart()
+                        {
+                            Order = headerControlOrder,
+                            IsHeaderControl = true,
+                        };
+                        control.FromHtml(clientSideHeaderControl);
+
+                        headerControls.Add(control);
+                        headerControlOrder++;
+                    }
+                }
+            }
+            else
+            {
+#endif
+                // Load the page header
+                this.pageHeader.FromHtml(pageHeaderHtml);
+#if !SP2019
+            }
+#endif
         }
 
         private void ReIndex()
@@ -1852,50 +2303,209 @@ namespace OfficeDevPnP.Core.Pages
 
         private void ApplySectionAndColumn(CanvasControl control, ClientSideCanvasControlPosition position, ClientSideSectionEmphasis emphasis)
         {
-            var currentSection = this.sections.Where(p => p.Order == position.ZoneIndex).FirstOrDefault();
-            if (currentSection == null)
+            if (position == null)
             {
-                this.AddSection(new CanvasSection(this) { ZoneEmphasis = emphasis != null ? emphasis.ZoneEmphasis : 0 }, position.ZoneIndex);
-                currentSection = this.sections.Where(p => p.Order == position.ZoneIndex).First();
-            }
+                var currentSection = this.sections.FirstOrDefault();
+                if (currentSection == null)
+                {
+                    this.AddSection(new CanvasSection(this) { ZoneEmphasis = 0 }, 0);
+                    currentSection = this.sections.FirstOrDefault();
+                }
 
-            var currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex).FirstOrDefault();
+                var currentColumn = currentSection.Columns.FirstOrDefault();
+                if (currentColumn == null)
+                {
+                    currentSection.AddColumn(new CanvasColumn(currentSection));
+                    currentColumn = currentSection.Columns.FirstOrDefault();
+                }
+
+                control.section = currentSection;
+                control.column = currentColumn;
+            }
+            else
+            {
+                var currentSection = this.sections.Where(p => p.Order == position.ZoneIndex).FirstOrDefault();
+                if (currentSection == null)
+                {
+                    this.AddSection(new CanvasSection(this) { ZoneEmphasis = emphasis != null ? emphasis.ZoneEmphasis : 0 }, position.ZoneIndex);
+                    currentSection = this.sections.Where(p => p.Order == position.ZoneIndex).First();
+                }
+
+                var currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex).FirstOrDefault();
 
 #if !SP2019
-            // if layout index was set this means that we possibly have a vertical section column
-            if (position.LayoutIndex.HasValue)
-            {
-                currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex && p.LayoutIndex == position.LayoutIndex.Value).FirstOrDefault();
-            }
-#endif
-
-            if (currentColumn == null)
-            {
-#if !SP2019
+                // if layout index was set this means that we possibly have a vertical section column
                 if (position.LayoutIndex.HasValue)
                 {
-                    currentSection.AddColumn(new CanvasColumn(currentSection, position.SectionIndex, position.SectionFactor, position.LayoutIndex.Value));
-                    currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex && p.LayoutIndex == position.LayoutIndex.Value).First();
+                    currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex && p.LayoutIndex == position.LayoutIndex.Value).FirstOrDefault();
+                }
+#endif
 
-                    // ZoneEmphasis on a vertical section column needs to be retained as that "overrides" the zone emphasis set on the section
-                    if (currentColumn.IsVerticalSectionColumn)
+                if (currentColumn == null)
+                {
+#if !SP2019
+                    if (position.LayoutIndex.HasValue)
                     {
-                        currentColumn.VerticalSectionEmphasis = emphasis != null ? emphasis.ZoneEmphasis : 0;
+                        currentSection.AddColumn(new CanvasColumn(currentSection, position.SectionIndex, position.SectionFactor, position.LayoutIndex.Value));
+                        currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex && p.LayoutIndex == position.LayoutIndex.Value).First();
+
+                        // ZoneEmphasis on a vertical section column needs to be retained as that "overrides" the zone emphasis set on the section
+                        if (currentColumn.IsVerticalSectionColumn)
+                        {
+                            currentColumn.VerticalSectionEmphasis = emphasis != null ? emphasis.ZoneEmphasis : 0;
+                        }
                     }
+                    else
+                    {
+#endif
+                        currentSection.AddColumn(new CanvasColumn(currentSection, position.SectionIndex, position.SectionFactor));
+                        currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex).First();
+#if !SP2019
+                    }
+#endif
+                }
+
+                control.section = currentSection;
+                control.column = currentColumn;
+            }
+        }
+
+        private async Task<string> GetTranslationsImplementationAsync(string accessToken, ClientContext context, int? pageID)
+        {
+            await new SynchronizationContextRemover();
+
+            if (!pageId.HasValue)
+            {
+                throw new Exception("First save the page before generating translations");
+            }
+
+
+            string responseString = null;
+
+            using (var handler = new HttpClientHandler())
+            {
+                context.Web.EnsureProperty(w => w.Url);
+
+                // we're not in app-only or user + app context, so let's fall back to cookie based auth
+                if (String.IsNullOrEmpty(accessToken))
+                {
+                    handler.SetAuthenticationCookies(context);
                 }
                 else
                 {
-#endif
-                    currentSection.AddColumn(new CanvasColumn(currentSection, position.SectionIndex, position.SectionFactor));
-                    currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex).First();
-#if !SP2019
+                    if (context.Credentials is System.Net.NetworkCredential networkCredential)
+                    {
+                        handler.Credentials = networkCredential;
+                    }
                 }
-#endif
+
+                using (var httpClient = new PnPHttpProvider(handler))
+                {
+                    string requestUrl = $"{context.Web.Url}/_api/sitepages/pages({pageID.Value})/translations";
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+                    request.Headers.Add("accept", "application/json;odata.metadata=none");
+                    request.Headers.Add("odata-version", "4.0");
+
+                    // We've an access token, so we're in app-only or user + app context
+                    if (!String.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+                    else
+                    {
+                        if (context.Credentials is NetworkCredential networkCredential)
+                        {
+                            handler.Credentials = networkCredential;
+                        }
+                    }
+
+                    HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        responseString = await response.Content.ReadAsStringAsync();
+                    }
+                    else
+                    {
+                        // Something went wrong...
+                        throw new Exception(await response.Content.ReadAsStringAsync());
+                    }
+                }
+                return responseString;
+            }
+        }
+
+        private async Task<string> GenerateTranslationsImplementationAsync(string accessToken, ClientContext context, int? pageID, TranslationStatusCreationRequest translationStatusCreationRequest)
+        {
+            await new SynchronizationContextRemover();
+
+            if (!pageId.HasValue)
+            {
+                throw new Exception("First save the page before generating translations");
             }
 
-            control.section = currentSection;
-            control.column = currentColumn;
+            string responseString = null;
+
+            using (var handler = new HttpClientHandler())
+            {
+                context.Web.EnsureProperty(w => w.Url);
+
+                // we're not in app-only or user + app context, so let's fall back to cookie based auth
+                if (String.IsNullOrEmpty(accessToken))
+                {
+                    handler.SetAuthenticationCookies(context);
+                }
+
+                using (var httpClient = new PnPHttpProvider(handler))
+                {
+                    string requestUrl = $"{context.Web.Url}/_api/sitepages/pages({pageID.Value})/translations/create";
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
+                    request.Headers.Add("accept", "application/json;odata.metadata=none");
+                    request.Headers.Add("odata-version", "4.0");
+
+                    // We've an access token, so we're in app-only or user + app context
+                    if (!String.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+                    else
+                    {
+                        if (context.Credentials is NetworkCredential networkCredential)
+                        {
+                            handler.Credentials = networkCredential;
+                        }
+                    }
+
+                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigestAsync());
+
+                    if (translationStatusCreationRequest != null && translationStatusCreationRequest.LanguageCodes.Count > 0)
+                    {
+                        var body = new { request = translationStatusCreationRequest };
+                        var jsonBody = JsonConvert.SerializeObject(body);
+                        var requestBody = new StringContent(jsonBody);
+                        request.Content = requestBody;
+                        if (MediaTypeHeaderValue.TryParse("application/json;odata.metadata=none;charset=utf-8", out MediaTypeHeaderValue sharePointJsonMediaType))
+                        {
+                            requestBody.Headers.ContentType = sharePointJsonMediaType;
+                        }
+                    }
+
+                    HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        responseString = await response.Content.ReadAsStringAsync();
+                    }
+                    else
+                    {
+                        // Something went wrong...
+                        throw new Exception(await response.Content.ReadAsStringAsync());
+                    }
+                }
+                return responseString;
+            }
         }
+
 
         private async Task<string> GetClientSideWebPartsAsync(string accessToken, ClientContext context)
         {
@@ -1980,7 +2590,7 @@ namespace OfficeDevPnP.Core.Pages
                 this.accessToken = e.WebRequestExecutor.RequestHeaders.Get("Authorization").Replace("Bearer ", "");
             }
         }
-                #endregion
+#endregion
     }
 #endif
         }

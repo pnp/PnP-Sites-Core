@@ -9,8 +9,10 @@ using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using System.Xml.XPath;
 using Field = OfficeDevPnP.Core.Framework.Provisioning.Model.Field;
 using SPField = Microsoft.SharePoint.Client.Field;
 
@@ -187,9 +189,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             web.Context.ExecuteQueryRetry();
                         }
-                        catch (ServerException se)
+                        catch (Exception ex)
                         {
-                            if (se.ServerErrorTypeName == "Microsoft.SharePoint.Client.ClientServiceTimeoutException")
+                            if ((ex is ServerException && (ex as ServerException).ServerErrorTypeName == "Microsoft.SharePoint.Client.ClientServiceTimeoutException")
+                               || (ex is WebException && (ex as WebException).Status == WebExceptionStatus.Timeout))
                             {
                                 string fieldName = existingFieldElement.Attribute("Name") != null ? existingFieldElement.Attribute("Name").Value : existingFieldElement.Attribute("StaticName").Value;
                                 WriteMessage(string.Format(CoreResources.Provisioning_ObjectHandlers_Fields_Updating_field__0__timeout, fieldName), ProvisioningMessageType.Warning);
@@ -228,12 +231,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         if ((existingField.TypeAsString == "TaxonomyFieldType" || existingField.TypeAsString == "TaxonomyFieldTypeMulti"))
                         {
-                            var taxField = web.Context.CastTo<TaxonomyField>(existingField);
+                            var taxField = web.Context.CastTo<TaxonomyField>(existingField); 
+                            web.Context.Load(taxField);
+                            web.Context.ExecuteQueryRetry();
+
                             if (!string.IsNullOrEmpty(existingField.DefaultValue))
                             {
                                 ValidateTaxonomyFieldDefaultValue(taxField);
                             }
-                            SetTaxonomyFieldOpenValue(taxField, originalFieldXml);
+                            UpdateTaxonomyField(taxField, existingFieldElement);
                         }
                     }
                     else
@@ -368,7 +374,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         ValidateTaxonomyFieldDefaultValue(taxField);
                     }
-                    SetTaxonomyFieldOpenValue(taxField, originalFieldXml);
                 }
             }
             else
@@ -380,16 +385,47 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-
-
-        private static void SetTaxonomyFieldOpenValue(TaxonomyField field, string taxonomyFieldXml)
+        private static void UpdateTaxonomyField(TaxonomyField field, XElement taxonomyFieldElement)
         {
-            bool openValue;
-            var taxonomyFieldElement = XElement.Parse(taxonomyFieldXml);
-            var openAttributeValue = taxonomyFieldElement.Attribute("Open") != null ? taxonomyFieldElement.Attribute("Open").Value : "";
-            if (bool.TryParse(openAttributeValue, out openValue))
+            bool isDirty = false;
+
+            var sspIdElement = taxonomyFieldElement.XPathSelectElement("./Customization/ArrayOfProperty/Property[Name = 'SspId']/Value");
+            if (sspIdElement != null && Guid.TryParse(sspIdElement.Value, out Guid sspIdValue) && field.SspId.Equals(sspIdValue) == false)
+            {
+                field.SspId = sspIdValue;
+                isDirty = true;
+            }
+
+            var termSetIdElement = taxonomyFieldElement.XPathSelectElement("./Customization/ArrayOfProperty/Property[Name = 'TermSetId']/Value");
+            if (termSetIdElement != null && Guid.TryParse(termSetIdElement.Value, out Guid termSetIdValue) && field.TermSetId.Equals(termSetIdValue) == false)
+            {
+                field.TermSetId = termSetIdValue;
+                isDirty = true;
+            }
+
+            var anchorIdElement = taxonomyFieldElement.XPathSelectElement("./Customization/ArrayOfProperty/Property[Name = 'AnchorId']/Value");
+            if (anchorIdElement != null & Guid.TryParse(anchorIdElement.Value, out Guid anchorIdValue) && field.AnchorId.Equals(anchorIdValue) == false)
+            {
+                field.AnchorId = anchorIdValue;
+                isDirty = true;
+            }
+
+            var openElement = taxonomyFieldElement.XPathSelectElement("./Customization/ArrayOfProperty/Property[Name = 'Open']/Value");
+            if (openElement != null && bool.TryParse(openElement.Value, out bool openValue) && field.Open.Equals(openValue) == false)
             {
                 field.Open = openValue;
+                isDirty = true;
+            }
+
+            var isPathRenderedElement = taxonomyFieldElement.XPathSelectElement("./Customization/ArrayOfProperty/Property[Name = 'IsPathRendered']/Value");
+            if (isPathRenderedElement != null && bool.TryParse(isPathRenderedElement.Value, out bool isPathRenderedValue) && field.IsPathRendered.Equals(isPathRenderedValue) == false)
+            {
+                field.IsPathRendered = isPathRenderedValue;
+                isDirty = true;
+            }
+
+            if (isDirty)
+            {
                 field.UpdateAndPushChanges(true);
                 field.Context.ExecuteQueryRetry();
             }

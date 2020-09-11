@@ -22,7 +22,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
         {
             using (var context = TestCommon.CreateClientContext())
             {
-                OfficeDevPnP.Core.Sites.SiteCollection.GetGroupInfo(context, "demo1").GetAwaiter().GetResult();
+                OfficeDevPnP.Core.Sites.SiteCollection.GetGroupInfoAsync(context, "demo1").GetAwaiter().GetResult();
             }
         }
 
@@ -68,6 +68,18 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
         [TestMethod]
         public void ProvisionTenantTemplate()
         {
+            if (TestCommon.AppOnlyTesting())
+            {
+                Assert.Inconclusive("This test does not yet work with app-only due to group connected site creation");
+            }
+            
+            string tenantNameParamValue = new Uri(TestCommon.DevSiteUrl).DnsSafeHost.Split('.')[0];
+            string accountDomainParamValue = TestCommon.O365AccountDomain;
+            if (string.IsNullOrEmpty(accountDomainParamValue))
+            {
+                accountDomainParamValue = "contoso.com";
+            }
+
             var resourceFolder = string.Format(@"{0}\..\..\Resources\Templates", AppDomain.CurrentDomain.BaseDirectory);
             XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(resourceFolder, "");
 
@@ -92,9 +104,23 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
 
             hierarchy.Parameters.Add("CompanyName", "Contoso");
 
-            var sequence = new ProvisioningSequence();
+            if (!string.IsNullOrEmpty(tenantNameParamValue))
+            {
+                hierarchy.Parameters.Add("O365TenantName", tenantNameParamValue);
+            }
 
-            sequence.TermStore = new ProvisioningTermStore();
+            if (!string.IsNullOrEmpty(accountDomainParamValue))
+            {
+                hierarchy.Parameters.Add("O365AccountDomain", accountDomainParamValue);
+            }
+
+            var sequence = new ProvisioningSequence
+            {
+                ID = Guid.NewGuid().ToString(),
+
+                TermStore = new ProvisioningTermStore()
+            };
+            
             var termGroup = new TermGroup() { Name = "Contoso TermGroup" };
             var termSet = new TermSet() { Name = "Projects", Id = Guid.NewGuid(), IsAvailableForTagging = true, Language = 1033 };
             var term = new Term() { Name = "Contoso Term" };
@@ -151,8 +177,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
 
             using (var tenantContext = TestCommon.CreateTenantClientContext())
             {
-                var applyingInformation = new ProvisioningTemplateApplyingInformation();
-                applyingInformation.ProgressDelegate = (message, step, total) =>
+                var applyConfiguration = new ApplyConfiguration();
+                applyConfiguration.ProgressDelegate = (message, step, total) =>
                 {
                     if (message != null)
                     {
@@ -163,7 +189,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
 
                 var tenant = new Tenant(tenantContext);
 
-                tenant.ApplyProvisionHierarchy(hierarchy, sequence.ID, applyingInformation);
+                tenant.ApplyTenantTemplate(hierarchy, sequence.ID, applyConfiguration);
             }
         }
     }

@@ -499,7 +499,7 @@ namespace Microsoft.SharePoint.Client.Tests
         #endregion
 
         #region NoScript tests
-#if !ONPREMISES
+#if !SP2013 && !SP2016
         [TestMethod]
         public void IsNoScriptSiteTest()
         {
@@ -728,7 +728,7 @@ namespace Microsoft.SharePoint.Client.Tests
         #endregion
 
         #region ClientSide Package Deployment tests
-#if !ONPREMISES
+#if !SP2013 && !SP2016
         [TestMethod()]
         public void DeploySharePointFrameworkSolutionTest()
         {

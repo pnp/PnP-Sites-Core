@@ -141,6 +141,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                 expressions.Add($"{baseClientSidePageType}.Security", new Resolvers.V201807.ClientSidePageSecurityFromModelToSchemaTypeResolver());
                 expressions.Add($"{objectSecurityType}.BreakRoleInheritance", new RoleAssignmentsFromModelToSchemaTypeResolver());
 
+                // Force the specified property for LCID
+                expressions.Add($"{clientSidePageType}.LCIDSpecified", new ExpressionValueResolver(((s, p) => {
+                    var csp = s as ClientSidePage;
+                    if (csp != null)
+                    {
+                        return (csp.LCID > 0);
+                    }
+                    else
+                    {
+                        return (false);
+                    }
+                })));
+
                 persistence.GetPublicInstanceProperty("ClientSidePages")
                     .SetValue(
                         persistence,

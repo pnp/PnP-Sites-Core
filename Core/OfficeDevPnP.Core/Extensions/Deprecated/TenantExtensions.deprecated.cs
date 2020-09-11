@@ -29,6 +29,7 @@ namespace Microsoft.SharePoint.Client
                 ApplyTenantTemplate(tenant, hierarchy, sequenceId, ApplyConfiguration.FromApplyingInformation(applyingInformation));
             }
         }
+#endif
 
         /// <summary>
         /// Checks if a site collection exists, relies on tenant admin API. Sites that are recycled also return as existing sites
@@ -42,6 +43,5 @@ namespace Microsoft.SharePoint.Client
             var exists = SiteExistsAnywhere(tenant, siteFullUrl);
             return (exists == SiteExistence.Yes || exists == SiteExistence.Recycled);
         }
-#endif
     }
 }

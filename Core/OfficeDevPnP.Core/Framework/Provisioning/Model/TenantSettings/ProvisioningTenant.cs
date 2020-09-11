@@ -278,6 +278,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 }
             }
         }
+
+        public SharingSettings SharingSettings { get; set; }
+
         #endregion
 
         #region Comparison code
@@ -287,7 +290,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}",
                 this.AppCatalog?.GetHashCode() ?? 0,
                 this.ContentDeliveryNetwork?.GetHashCode() ?? 0,
                 this.SiteDesigns.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
@@ -297,7 +300,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Themes.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.Office365GroupsSettings.GetHashCode(),
                 this.Office365GroupLifecyclePolicies.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                this.SPUsersProfiles.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
+                this.SPUsersProfiles.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.SharingSettings.GetHashCode()
             ).GetHashCode());
         }
 
@@ -318,7 +322,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Compares ProvisioningTenant object based on AppCatalog, CDN, SiteDesigns, SiteScripts,
         /// StorageEntities, WebApiPermissions, Themes, Office365GroupsSettings, Office365GroupLifecyclePolicies,
-        /// and SPUserProfiles
+        /// SPUserProfiles, and SharingSettings
         /// </summary>
         /// <param name="other">ProvisioningTenant object</param>
         /// <returns>true if the ProvisioningTenant object is equal to the current object; otherwise, false.</returns>
@@ -338,7 +342,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Themes.DeepEquals(other.Themes) &&
                 this.Office365GroupsSettings.Equals(other.Office365GroupsSettings) &&
                 this.Office365GroupLifecyclePolicies.DeepEquals(other.Office365GroupLifecyclePolicies) &&
-                this.SPUsersProfiles.DeepEquals(other.SPUsersProfiles)
+                this.SPUsersProfiles.DeepEquals(other.SPUsersProfiles) &&
+                this.SharingSettings.Equals(other.SharingSettings)
                 );
         }
 

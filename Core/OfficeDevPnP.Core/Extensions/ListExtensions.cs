@@ -1061,7 +1061,7 @@ namespace Microsoft.SharePoint.Client
         }
 
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
         /// <summary>
         /// Can be used to set translations for different cultures. 
         /// <see href="http://blogs.msdn.com/b/vesku/archive/2014/03/20/office365-multilingual-content-types-site-columns-and-site-other-elements.aspx"/>
@@ -1103,9 +1103,7 @@ namespace Microsoft.SharePoint.Client
             List list = web.GetList(listTitle);
             SetLocalizationLabelsForList(list, cultureName, titleResource, descriptionResource);
         }
-#endif
 
-#if !ONPREMISES
         /// <summary>
         /// Can be used to set translations for different cultures. 
         /// </summary>
@@ -1654,7 +1652,11 @@ namespace Microsoft.SharePoint.Client
                         path = path.Equals("/") ? list.RootFolder.ServerRelativeUrl : UrlUtility.Combine(list.RootFolder.ServerRelativeUrl, path);
                         // Find all in the same path:
                         var defaultColumnValuesInSamePath = columnValues.Where(x => x.FolderRelativePath == defaultColumnValue.FolderRelativePath);
+#if !NETSTANDARD2_0
                         path = Utilities.HttpUtility.UrlPathEncode(path, false);
+#else
+                        path = System.Web.HttpUtility.UrlEncode(path);
+#endif
 
                         var xATag = new XElement("a", new XAttribute("href", path));
 
@@ -1734,10 +1736,10 @@ namespace Microsoft.SharePoint.Client
                         EventReceiverDefinitionCreationInformation eventCi = new EventReceiverDefinitionCreationInformation();
                         eventCi.Synchronization = EventReceiverSynchronization.Synchronous;
                         eventCi.EventType = EventReceiverType.ItemAdded;
-#if !ONPREMISES
-                        eventCi.ReceiverAssembly = "Microsoft.Office.DocumentManagement, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c";
-#else
+#if SP2013
                         eventCi.ReceiverAssembly = "Microsoft.Office.DocumentManagement, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c";
+#else
+                        eventCi.ReceiverAssembly = "Microsoft.Office.DocumentManagement, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c";
 #endif
                         eventCi.ReceiverClass = "Microsoft.Office.DocumentManagement.LocationBasedMetadataDefaultsReceiver";
                         eventCi.ReceiverName = "LocationBasedMetadataDefaultsReceiver ItemAdded";
@@ -1804,7 +1806,11 @@ namespace Microsoft.SharePoint.Client
                         foreach (var value in values)
                         {
                             var href = value.Attribute("href").Value;
+#if !NETSTANDARD2_0
                             href = Utilities.HttpUtility.UrlKeyValueDecode(href);
+#else
+                            href = System.Web.HttpUtility.UrlDecode(href);
+#endif
                             href = href.Replace(list.RootFolder.ServerRelativeUrl, "/").Replace("//", "/");
                             var defaultValues = from d in value.Descendants("DefaultValue") select d;
                             foreach (var defaultValue in defaultValues)
@@ -2025,7 +2031,12 @@ namespace Microsoft.SharePoint.Client
                         foreach (var value in values)
                         {
                             var href = value.Attribute("href").Value;
+#if !NETSTANDARD2_0
                             href = Utilities.HttpUtility.UrlKeyValueDecode(href);
+#else
+                            href = System.Web.HttpUtility.UrlDecode(href);
+#endif
+
                             href = href.Replace(list.RootFolder.ServerRelativeUrl, "/").Replace("//", "/");
                             var defaultValues = from d in value.Descendants("DefaultValue") select d;
                             foreach (var defaultValue in defaultValues)
@@ -2156,7 +2167,11 @@ namespace Microsoft.SharePoint.Client
                         foreach (var value in values)
                         {
                             var href = value.Attribute("href").Value;
+#if !NETSTANDARD2_0
                             href = Utilities.HttpUtility.UrlKeyValueDecode(href);
+#else
+                            href = System.Web.HttpUtility.UrlDecode(href);
+#endif
                             href = href.Replace(list.RootFolder.ServerRelativeUrl, "/").Replace("//", "/");
 
                             var defaultValues = from d in value.Descendants("DefaultValue") select d;

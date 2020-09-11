@@ -28,7 +28,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
             {
                 return entry.Value;
             }
-            else { return ""; }
+            else {
+                // fallback
+                return _resourceEntries.First().Value;
+            }
 
         }
 

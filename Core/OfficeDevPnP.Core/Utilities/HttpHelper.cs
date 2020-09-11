@@ -493,7 +493,7 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="spContext">An optional SharePoint client context</param>
         /// <typeparam name="TResult">The type of the result, if any</typeparam>
         /// <returns>The value of the result, if any</returns>
-        private static TResult MakeHttpRequest<TResult>(
+        internal static TResult MakeHttpRequest<TResult>(
             string httpMethod,
             string requestUrl,
             out HttpResponseHeaders responseHeaders,
@@ -532,7 +532,7 @@ namespace OfficeDevPnP.Core.Utilities
 
                     if (!requestHeaders.ContainsKey("X-RequestDigest"))
                     {
-                        requestHeaders.Add("X-RequestDigest", spContext.GetRequestDigest().GetAwaiter().GetResult());
+                        requestHeaders.Add("X-RequestDigest", spContext.GetRequestDigestAsync().GetAwaiter().GetResult());
                     }
                 }
 
@@ -636,9 +636,13 @@ namespace OfficeDevPnP.Core.Utilities
             {
                 throw new ApplicationException(
                     string.Format("Exception while invoking endpoint {0}.", requestUrl),
+#if !NETSTANDARD2_0
                     new HttpException(
                         (int)response.StatusCode,
                         response.Content.ReadAsStringAsync().Result));
+#else
+                    new Exception(response.Content.ReadAsStringAsync().Result));
+#endif
             }
 
             return (result);
@@ -647,12 +651,15 @@ namespace OfficeDevPnP.Core.Utilities
         private static void SetAuthenticationCookies(HttpClientHandler handler, ClientContext context)
         {
             context.Web.EnsureProperty(w => w.Url);
+#if !NETSTANDARD2_0
             if (context.Credentials is SharePointOnlineCredentials spCred)
             {
                 handler.Credentials = context.Credentials;
                 handler.CookieContainer.SetCookies(new Uri(context.Web.Url), spCred.GetAuthenticationCookie(new Uri(context.Web.Url)));
             }
-            else if (context.Credentials == null)
+            else 
+#endif            
+            if (context.Credentials == null)
             {
                 var cookieString = CookieReader.GetCookie(context.Web.Url).Replace("; ", ",").Replace(";", ",");
                 var authCookiesContainer = new System.Net.CookieContainer();

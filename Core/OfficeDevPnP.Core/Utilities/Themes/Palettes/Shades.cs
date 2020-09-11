@@ -10,6 +10,7 @@ namespace OfficeDevPnP.Core.Utilities.Themes.Palettes
     public enum Shade
     {
         Unshaded = 0,
+#pragma warning disable CA1712 // Do not prefix enum values with type name
         Shade1 = 1,
         Shade2 = 2,
         Shade3 = 3,
@@ -18,6 +19,7 @@ namespace OfficeDevPnP.Core.Utilities.Themes.Palettes
         Shade6 = 6,
         Shade7 = 7,
         Shade8 = 8
+#pragma warning restore CA1712 // Do not prefix enum values with type name
     }
 
     public class Shades

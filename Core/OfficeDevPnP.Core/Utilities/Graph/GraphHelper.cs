@@ -58,11 +58,17 @@ namespace OfficeDevPnP.Core.Utilities.Graph
                 {
                     case HttpMethodVerb.POST:
                         json = HttpHelper.MakePostRequestForString(uri, content, contentType, accessToken);
-                        itemId = JToken.Parse(json).Value<String>("id");
+                        if (!string.IsNullOrEmpty(json))
+                        {
+                            itemId = JToken.Parse(json).Value<String>("id");
+                        }                        
                         break;
                     case HttpMethodVerb.PUT:
                         json = HttpHelper.MakePutRequestForString(uri, content, contentType, accessToken);
-                        itemId = JToken.Parse(json).Value<String>("id");
+                        if (!string.IsNullOrEmpty(json))
+                        {
+                            itemId = JToken.Parse(json).Value<String>("id");
+                        }                        
                         break;
                     case HttpMethodVerb.POST_WITH_RESPONSE_HEADERS:
                         responseHeaders = HttpHelper.MakePostRequestForHeaders(uri, content, contentType, accessToken);
@@ -97,6 +103,10 @@ namespace OfficeDevPnP.Core.Utilities.Graph
                             // Filter by field and value specified
                             id = ItemAlreadyExists(uri, matchingFieldName, matchingFieldValue, accessToken);
                             uri = $"{uri}/{id}";
+                        }
+                        else
+                        {
+                            id = matchingFieldValue;
                         }
 
                         // Patch the item, if supported

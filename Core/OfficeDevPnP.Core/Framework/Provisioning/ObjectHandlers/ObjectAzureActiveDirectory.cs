@@ -224,7 +224,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     foreach (var u in users)
                     {
                         // Get a fresh Access Token for every request
-                        accessToken = PnPProvisioningContext.Current.AcquireToken(GraphHelper.MicrosoftGraphBaseURI, "User.ReadWrite.All");
+                        accessToken = PnPProvisioningContext.Current.AcquireToken(new Uri(GraphHelper.MicrosoftGraphBaseURI).Authority, "User.ReadWrite.All");
 
                         // Creates or updates the User starting from the provisioning template definition
                         var userId = CreateOrUpdateUser(scope, parser, u, accessToken);

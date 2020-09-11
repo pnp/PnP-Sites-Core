@@ -1,4 +1,7 @@
-﻿using OfficeDevPnP.Core.Diagnostics;
+﻿#if NETSTANDARD2_0
+using Newtonsoft.Json;
+#endif
+using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using System;
@@ -8,6 +11,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Xml.Serialization;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -43,13 +47,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             SimpleTokenParser internalParser = new SimpleTokenParser();
-            foreach (var webhookparam in webhook.Parameters)
+            if (webhook.Parameters != null)
             {
-                requestParameters.Add(webhookparam.Key, parser != null ? parser.ParseString(webhookparam.Value) : webhookparam.Value);
-                internalParser.AddToken(new WebhookParameter(webhookparam.Key, requestParameters[webhookparam.Key]));
+                foreach (var webhookparam in webhook.Parameters)
+                {
+                    requestParameters.Add(webhookparam.Key, parser != null ? parser.ParseString(webhookparam.Value) : webhookparam.Value);
+                    internalParser.AddToken(new WebhookParameter(webhookparam.Key, requestParameters[webhookparam.Key]));
+                }
             }
             var url = parser != null ? parser.ParseString(webhook.Url) : webhook.Url; // parse for template scoped parameters
             url = internalParser.ParseString(url); // parse for webhook scoped parameters
+
+            // Fix URL if it does not contain ?
+            if (!url.Contains("?"))
+            {
+                url += "?";
+            }
 
             switch (webhook.Method)
             {
@@ -107,10 +120,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     switch (webhook.BodyFormat)
                                     {
                                         case ProvisioningTemplateWebhookBodyFormat.Json:
+#if !NETSTANDARD2_0
                                             await httpClient.PostAsJsonAsync(url, requestParameters);
+#else
+                                            await httpClient.PostAsync(url, new StringContent(JsonConvert.SerializeObject(requestParameters), Encoding.UTF8, "application/json"));
+#endif
                                             break;
                                         case ProvisioningTemplateWebhookBodyFormat.Xml:
+#if !NETSTANDARD2_0
                                             await httpClient.PostAsXmlAsync(url, requestParameters);
+#else
+                                            await httpClient.PostAsync(url, new StringContent(SerializeXml(requestParameters), Encoding.UTF8, "application/xml"));
+#endif
                                             break;
                                         case ProvisioningTemplateWebhookBodyFormat.FormUrlEncoded:
                                             var content = new FormUrlEncodedContent(requestParameters);
@@ -124,10 +145,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 switch (webhook.BodyFormat)
                                 {
                                     case ProvisioningTemplateWebhookBodyFormat.Json:
+#if !NETSTANDARD2_0
                                         httpClient.PostAsJsonAsync(url, requestParameters).GetAwaiter().GetResult();
+#else
+                                        httpClient.PostAsync(url, new StringContent(JsonConvert.SerializeObject(requestParameters), Encoding.UTF8, "application/json")).GetAwaiter().GetResult();
+#endif
                                         break;
                                     case ProvisioningTemplateWebhookBodyFormat.Xml:
+#if !NETSTANDARD2_0
                                         httpClient.PostAsXmlAsync(url, requestParameters).GetAwaiter().GetResult();
+#else
+                                        httpClient.PostAsync(url, new StringContent(SerializeXml(requestParameters), Encoding.UTF8, "application/xml"));
+#endif
                                         break;
                                     case ProvisioningTemplateWebhookBodyFormat.FormUrlEncoded:
                                         var content = new FormUrlEncodedContent(requestParameters);
@@ -144,5 +173,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
             }
         }
+
+#if NETSTANDARD2_0
+        private static string SerializeXml<T>(T dataToSerialize)
+        {
+            try
+            {
+                var stringwriter = new System.IO.StringWriter();
+                var serializer = new XmlSerializer(typeof(T));
+                serializer.Serialize(stringwriter, dataToSerialize);
+                return stringwriter.ToString();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+#endif
+
     }
 }

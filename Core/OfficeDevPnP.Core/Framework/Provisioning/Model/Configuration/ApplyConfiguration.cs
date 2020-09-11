@@ -104,7 +104,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration
                     switch (handler)
                     {
                         case ConfigurationHandler.Pages:
-                            handlerEnumValue = Model.Handlers.PageContents;
+                            handlerEnumValue = Model.Handlers.Pages 
+                                | Model.Handlers.PageContents;
                             break;
                         case ConfigurationHandler.Taxonomy:
                             handlerEnumValue = Model.Handlers.TermGroups;

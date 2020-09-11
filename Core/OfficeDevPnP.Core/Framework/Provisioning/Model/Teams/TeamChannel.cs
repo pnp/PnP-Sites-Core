@@ -47,7 +47,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// <summary>
         /// Declares the ID for the Channel
         /// </summary>
-        public String ID { get; set; }        
+        public String ID { get; set; }
+
+        /// <summary>
+        /// Declares whether the Channel is private or not
+        /// </summary>
+        public bool Private { get; set; } = false;
 
         #endregion
 
