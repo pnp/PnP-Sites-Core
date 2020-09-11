@@ -225,7 +225,7 @@ namespace OfficeDevPnP.Core.Pages
                 foreach (var column in this.columns.OrderBy(z => z.LayoutIndex).ThenBy(z => z.Order))
                 {
 #if NETSTANDARD2_0
-                html.Append(column.ToHtml());
+                    html.Append(column.ToHtml());
 #else
                     htmlWriter.Write(column.ToHtml());
 #endif

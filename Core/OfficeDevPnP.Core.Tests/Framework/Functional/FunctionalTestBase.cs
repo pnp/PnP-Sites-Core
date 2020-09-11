@@ -36,7 +36,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                     // Add a default sub site
                     centralSubSiteUrl = CreateTestSubSite(tenant, centralSiteCollectionUrl, centralSubSiteName);
 
-#if !ONPREMISES                    
+#if !SP2013 && !SP2016               
                     // Apply noscript setting
                     if (noScriptSite)
                     {
@@ -75,6 +75,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         [TestInitialize()]
         public virtual void Initialize()
         {
+            TestCommon.FixAssemblyResolving("Newtonsoft.Json");
             sitecollectionName = sitecollectionNamePrefix + Guid.NewGuid().ToString();
         }
 
@@ -237,7 +238,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             tenant.CreateSiteCollection(siteToCreate);
 
             // Create the default groups
-            using (ClientContext cc = new ClientContext(siteToCreateUrl))
+            using (ClientContext cc = TestCommon.CreateClientContext(siteToCreateUrl))
             {
                 var owners = cc.Web.AddGroup("Test Owners", "", true, false);
                 var members = cc.Web.AddGroup("Test Members", "", true, false);
@@ -251,7 +252,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
         internal static string CreateTestSubSite(Tenant tenant, string sitecollectionUrl, string subSiteName)
         {
-            using (ClientContext cc = new ClientContext(sitecollectionUrl))
+            using (ClientContext cc = TestCommon.CreateClientContext(sitecollectionUrl))
             {
                 //Create sub site
                 SiteEntity sub = new SiteEntity() { Title = "Sub site for engine testing", Url = subSiteName, Description = "" };

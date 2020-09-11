@@ -13,6 +13,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.CanProvisionRules
         [TestMethod]
         public void CanProvisionSite()
         {
+            if (TestCommon.AppOnlyTesting()) Assert.Inconclusive("Template requires term store work, so this will not work in app-only");
+
             XMLTemplateProvider provider =
                 new XMLFileSystemTemplateProvider(
                     String.Format(@"{0}\..\..\Resources",
@@ -20,6 +22,21 @@ namespace OfficeDevPnP.Core.Tests.Framework.CanProvisionRules
                     "Templates");
 
             var hierarchy = provider.GetHierarchy("ProvisioningSchema-2019-03-FullSample-01.xml");
+
+            var applyingInformation = new ProvisioningTemplateApplyingInformation();
+            var template = hierarchy.Templates[0];
+            if (TestCommon.AppOnlyTesting())
+            {
+                if (applyingInformation.HandlersToProcess.Has(Core.Framework.Provisioning.Model.Handlers.TermGroups)
+                    || applyingInformation.HandlersToProcess.Has(Core.Framework.Provisioning.Model.Handlers.SearchSettings))
+                {
+                    bool templateSupportsAppOnly = this.IsTemplateSupportedForAppOnly(template);
+                    if (!templateSupportsAppOnly)
+                    {
+                        Assert.Inconclusive("Taxonomy and SearchSettings tests are not supported when testing using app-only context.");
+                    }
+                }
+            }
 
             CanProvisionResult result = null;
 
@@ -27,13 +44,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.CanProvisionRules
             {
                 using (var context = TestCommon.CreateClientContext())
                 {
-                    var applyingInformation = new ProvisioningTemplateApplyingInformation();
                     result = CanProvisionRulesManager.CanProvision(context.Web, hierarchy.Templates[0], applyingInformation);
                 }
             }
 
             Assert.IsNotNull(result);
-#if ONPREMISES
+#if SP2013 || SP2016
             // Because the "apps" rule is verified here
             Assert.IsFalse(result.CanProvision);
 #else
@@ -41,9 +57,34 @@ namespace OfficeDevPnP.Core.Tests.Framework.CanProvisionRules
 #endif
         }
 
+        private bool IsTemplateSupportedForAppOnly(Core.Framework.Provisioning.Model.ProvisioningTemplate template)
+        {
+            bool result = true;
+
+            if (template.TermGroups != null
+                && template.TermGroups.Count > 0)
+            {
+                result = false;
+            }
+            else if (!string.IsNullOrEmpty(template.SiteSearchSettings))
+            {
+                result = false;
+            }
+            else if (!string.IsNullOrEmpty(template.WebSearchSettings))
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+
+
         [TestMethod]
         public void CanProvisionHierarchy()
         {
+            if (TestCommon.AppOnlyTesting()) Assert.Inconclusive("Template requires term store work, so this will not work in app-only");
+
             XMLTemplateProvider provider =
                 new XMLFileSystemTemplateProvider(
                     String.Format(@"{0}\..\..\Resources",
@@ -52,20 +93,52 @@ namespace OfficeDevPnP.Core.Tests.Framework.CanProvisionRules
 
             var hierarchy = provider.GetHierarchy("ProvisioningSchema-2019-03-FullSample-01.xml");
 
+            var applyingInformation = new ProvisioningTemplateApplyingInformation();
+            if (TestCommon.AppOnlyTesting())
+            {
+                bool templateSupportsAppOnly = true;
+
+                if (applyingInformation.HandlersToProcess.Has(Core.Framework.Provisioning.Model.Handlers.TermGroups)
+                    || applyingInformation.HandlersToProcess.Has(Core.Framework.Provisioning.Model.Handlers.SearchSettings))
+                {
+                    if (hierarchy.Templates.Count > 0)
+                    {
+                        foreach (var template in hierarchy.Templates)
+                        {
+                            templateSupportsAppOnly = this.IsTemplateSupportedForAppOnly(template);
+                            if (!templateSupportsAppOnly)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (!templateSupportsAppOnly)
+                {
+                    Assert.Inconclusive("Taxonomy and SearchSettings tests are not supported when testing using app-only context.");
+                }
+            }
+
             CanProvisionResult result = null;
 
             using (var pnpContext = new PnPProvisioningContext())
             {
                 using (var tenantContext = TestCommon.CreateTenantClientContext())
                 {
-                    var applyingInformation = new ProvisioningTemplateApplyingInformation();
                     var tenant = new Tenant(tenantContext);
                     result = CanProvisionRulesManager.CanProvision(tenant, hierarchy, String.Empty, applyingInformation);
                 }
             }
 
             Assert.IsNotNull(result);
+#if SP2013 || SP2016
+            // Because the "apps" rule is verified here
+            Assert.IsFalse(result.CanProvision);
+#else
             Assert.IsTrue(result.CanProvision);
+            Assert.IsTrue(result.CanProvision);
+#endif
         }
 
         [TestMethod]

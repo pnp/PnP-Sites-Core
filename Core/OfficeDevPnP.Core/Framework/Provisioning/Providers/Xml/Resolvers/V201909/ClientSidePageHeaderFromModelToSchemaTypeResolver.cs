@@ -1,8 +1,6 @@
-﻿using System;
+﻿using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V201909
 {
@@ -22,7 +20,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V2019
             Object result = null;
 
             // Try with the tenant-wide AppCatalog
-            var page = source as Model.ClientSidePage;
+            BaseClientSidePage page;
+            if (source is ClientSidePage)
+            {
+                page = source as ClientSidePage;
+            }
+            else
+            {
+                page = source as TranslatedClientSidePage;
+            }
+            
+            //var page = source as Model.ClientSidePage;
             var header = page?.Header;
 
             if (null != header)

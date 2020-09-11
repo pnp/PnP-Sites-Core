@@ -5,12 +5,9 @@ using OfficeDevPnP.Core.Entities;
 using OfficeDevPnP.Core.Utilities.Async;
 using OfficeDevPnP.Core.Utilities.Webhooks;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Utilities
@@ -33,7 +30,7 @@ namespace OfficeDevPnP.Core.Utilities
     internal static class WebhookUtility
     {
         private const string SubscriptionsUrlPart = "subscriptions";
-        private const string ListIdentifierFormat = @"{0}/_api/web/lists('{1}')";
+        private const string ListIdentifierFormat = @"{0}/_api/web/lists(guid'{1}')";
         public const int MaximumValidityInMonths = 6;
         public const int ExpirationDateTimeMaxDays = 180;
 
@@ -85,7 +82,7 @@ namespace OfficeDevPnP.Core.Utilities
                     string requestUrl = identifierUrl + "/" + SubscriptionsUrlPart;
 
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
-                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigest());
+                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigestAsync());
                     request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     if (!string.IsNullOrEmpty(accessToken))
                     {
@@ -184,7 +181,7 @@ namespace OfficeDevPnP.Core.Utilities
                     
                     string requestUrl = string.Format("{0}/{1}('{2}')", identifierUrl, SubscriptionsUrlPart, subscriptionId);
                     HttpRequestMessage request = new HttpRequestMessage(new HttpMethod("PATCH"), requestUrl);
-                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigest());
+                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigestAsync());
                     request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     if (!string.IsNullOrEmpty(accessToken))
                     {
@@ -260,7 +257,7 @@ namespace OfficeDevPnP.Core.Utilities
                     string requestUrl = string.Format("{0}/{1}('{2}')", identifierUrl, SubscriptionsUrlPart, subscriptionId);
 
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, requestUrl);
-                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigest());
+                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigestAsync());
                     request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
 

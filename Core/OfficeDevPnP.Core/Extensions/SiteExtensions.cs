@@ -132,7 +132,8 @@ namespace Microsoft.SharePoint.Client
             // fall back to Graph untill we've a SharePoint approach that works
             result = UnifiedGroupsUtility.HasTeamsTeam(site.GroupId.ToString(), accessToken);
 
-            /**Problem is that this folder property is not always set
+            // Problem is that this folder property is not always set
+            /*
             site.EnsureProperties(s => s.RootWeb, s => s.GroupId);
             List defaultDocumentLibrary = site.RootWeb.DefaultDocumentLibrary();
             site.RootWeb.Context.Load(defaultDocumentLibrary, f=>f.RootFolder);

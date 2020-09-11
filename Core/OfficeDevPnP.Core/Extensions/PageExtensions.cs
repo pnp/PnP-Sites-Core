@@ -399,14 +399,27 @@ namespace Microsoft.SharePoint.Client
                 var pageUrl = $"{uri.Scheme}://{uri.Host}:{uri.Port}{serverRelativePageUrl}";
                 var request = (HttpWebRequest)WebRequest.Create($"{webUrl}/_vti_bin/exportwp.aspx?pageurl={HttpUtility.UrlKeyValueEncode(pageUrl)}&guidstring={id}");
 
+                var cookieCollection = web.Context.GetCookieCollection();
+
                 if (web.Context.Credentials != null)
                 {
                     request.Credentials = web.Context.Credentials;
+                }
+                else if (cookieCollection != null && cookieCollection.Count > 0)
+                {
+                    if (request.CookieContainer == null)
+                    {
+                       request.CookieContainer = new CookieContainer();
+                    }
+                    request.CookieContainer.Add(cookieCollection);
                 }
                 else
                 {
                     request.UseDefaultCredentials = true;
                 }
+                
+                // apparently without a user agent SharePoint 2013 returns a 302 redirect to an error page without returning the actual web part
+                request.UserAgent = "Mozilla/5.0 (Windows NT; Windows NT 6.2; de-DE) pnprocks/5.1.19041.1";
 
                 var response = request.GetResponse();
                 using (Stream stream = response.GetResponseStream())

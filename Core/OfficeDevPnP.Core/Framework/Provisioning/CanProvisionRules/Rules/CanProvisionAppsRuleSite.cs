@@ -21,7 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
             // Prepare the default output
             var result = new CanProvisionResult();
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
 
             Model.ProvisioningTemplate targetTemplate = null;
 
@@ -51,7 +51,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
                 targetTemplate.ParentHierarchy?.Tenant?.AppCatalog?.Packages != null && targetTemplate.ParentHierarchy?.Tenant?.AppCatalog?.Packages.Count > 0))
             {
                 // First of all check if the currently connected user is a Tenant Admin
+#if !ONPREMISES
                 if (!TenantExtensions.IsCurrentUserTenantAdmin(web.Context as ClientContext))
+#else
+                if (!TenantExtensions.IsCurrentUserTenantAdmin(web.Context as ClientContext, this.TenantAdminSiteUrl))
+#endif
                 {
                     result.CanProvision = false;
                     result.Issues.Add(new CanProvisionIssue()
@@ -107,8 +111,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
 
                                 var rootFolder = appCatalogContext.Web.EnsureProperty(w => w.RootFolder);
                                 var timeCreated = rootFolder.TimeCreated;
-                                
-                                if (DateTime.UtcNow.Subtract(timeCreated).Hours < 2)
+
+                                if (DateTime.UtcNow.Subtract(timeCreated).TotalHours < 2)
                                 {
                                     result.CanProvision = false;
                                     result.Issues.Add(new CanProvisionIssue()
@@ -142,7 +146,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
 #else
             result.CanProvision = false;
 #endif
-            return result;
+                    return result;
         }
     }
 }

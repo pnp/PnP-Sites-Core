@@ -1,6 +1,7 @@
 ﻿using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client.Search.Administration;
 using Microsoft.SharePoint.Client.Search.Portability;
+using Newtonsoft.Json;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
@@ -220,6 +221,71 @@ namespace Microsoft.SharePoint.Client
             context.ExecuteQueryRetry();
         }
 
+#if !ONPREMISES
+        public static void SetSearchBoxPlaceholderText(this Site site, string placeholderText)
+        {
+            SetSearchBoxPlaceholderTextImpl(site.RootWeb, placeholderText, true);
+        }
+
+        public static void SetSearchBoxPlaceholderText(this Web web, string placeholderText)
+        {
+            SetSearchBoxPlaceholderTextImpl(web, placeholderText, false);
+        }
+
+        private static void SetSearchBoxPlaceholderTextImpl(Web web, string placeholderText, bool siteScope)
+        {
+            if (placeholderText == null)
+            {
+                throw new ArgumentNullException(nameof(placeholderText));
+            }
+
+            ClientContext adminContext = null;
+
+            var ctx = ((ClientContext)web.Context);
+            ctx.Load(ctx.Web, w => w.EffectiveBasePermissions); // reload permissions
+            ctx.ExecuteQueryRetry();
+
+            Site site = ctx.Site;
+
+            #region Enable scripting if needed and context has access
+            Tenant tenant = null;
+            if (ctx.Web.IsNoScriptSite() && TenantExtensions.IsCurrentUserTenantAdmin(ctx))
+            {
+                site.EnsureProperty(s => s.Url);
+                var adminSiteUrl = web.GetTenantAdministrationUrl();
+                adminContext = ctx.Clone(adminSiteUrl);
+                tenant = new Tenant(adminContext);
+                tenant.SetSiteProperties(site.Url, noScriptSite: false);
+            }
+            #endregion
+
+            try
+            {
+                if (siteScope)
+                {
+                    site.SearchBoxPlaceholderText = placeholderText;
+                }
+                else
+                {
+                    web.SearchBoxPlaceholderText = placeholderText;
+                    web.Update();
+                }
+                ctx.ExecuteQueryRetry();
+            }
+            finally
+            {
+                #region Disable scripting if previously enabled
+                if (adminContext != null)
+                {
+                    // Reset disabling setting the property bag if needed
+                    tenant.SetSiteProperties(site.Url, noScriptSite: true);
+                    adminContext.Dispose();
+                }
+                #endregion
+            }
+        }
+#endif
+
         /// <summary>
         /// Sets the search center URL on site collection (Site Settings -> Site collection administration --> Search Settings)
         /// </summary>
@@ -240,7 +306,11 @@ namespace Microsoft.SharePoint.Client
             Tenant tenant = null;
             Site site = null;
             ClientContext adminContext = null;
-            if (web.IsNoScriptSite() && TenantExtensions.IsCurrentUserTenantAdmin(web.Context as ClientContext))
+            var ctx = ((ClientContext)web.Context);
+            ctx.Load(ctx.Web, w => w.EffectiveBasePermissions); // reload permissions in case changed after connect
+            ctx.ExecuteQueryRetry();
+
+            if (ctx.Web.IsNoScriptSite() && TenantExtensions.IsCurrentUserTenantAdmin(web.Context as ClientContext))
             {
                 site = ((ClientContext)web.Context).Site;
                 site.EnsureProperty(s => s.Url);
@@ -373,13 +443,47 @@ namespace Microsoft.SharePoint.Client
         /// Get the search results page URL for the web (Site Settings -> Search --> Search Settings)
         /// </summary>
         /// <param name="web">SharePoint site - current web</param>
+        /// <param name="urlOnly">Allows to declare to return the URL only and not the full JSON settings</param>
         /// <returns>Search results page URL for web</returns>
-        public static string GetWebSearchCenterUrl(this Web web)
+        public static string GetWebSearchCenterUrl(this Web web, bool urlOnly = false)
         {
-            string keyName = web.IsSubSite() ? "SRCH_SB_SET_WEB" : "SRCH_SB_SET_SITE";
+            bool isSubSite = web.IsSubSite();
+            string keyName = isSubSite ? "SRCH_SB_SET_WEB" : "SRCH_SB_SET_SITE";
 
-            // Get search results page URL of the current web
-            return web.GetPropertyBagValueString(keyName, string.Empty);
+            // Get the Search Settings JSON value
+            var searchSettingsValue = web.GetPropertyBagValueString(keyName, string.Empty);
+            if (!isSubSite && string.IsNullOrWhiteSpace(searchSettingsValue))
+            {
+                // fallback to read web value on sc root
+                searchSettingsValue = web.GetPropertyBagValueString("SRCH_SB_SET_WEB", string.Empty);
+            }
+
+            // Convert the settings into a typed object
+            var searchSettings = JsonConvert.DeserializeAnonymousType(searchSettingsValue, new
+            {
+                Inherit = false,
+                ResultsPageAddress = String.Empty,
+                ShowNavigation = false,
+            });
+
+            if (searchSettings != null && !searchSettings.Inherit)
+            {
+                if (!urlOnly)
+                {
+                    // Return the whole JSON settings
+                    return searchSettingsValue;
+                }
+                else
+                {
+                    // Return the search results page URL of the current web
+                    return searchSettings?.ResultsPageAddress;
+                }
+            }
+            else
+            {
+                // If we're inheriting settings, just return NULL
+                return null;
+            }
         }
     }
 }

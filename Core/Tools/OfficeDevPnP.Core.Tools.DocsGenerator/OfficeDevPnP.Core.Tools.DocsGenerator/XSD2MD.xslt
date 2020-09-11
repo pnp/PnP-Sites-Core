@@ -153,8 +153,8 @@ Element|Type|Description
 <xsl:if test="$currentTypeAttributes">
 Here follow the available attributes for the <xsl:value-of select="@name"/> element.<xsl:call-template name="CRLF" />
 
-Attibute|Type|Description
---------|----|-----------
+Attibute|Type|Description|Required|Default
+--------|----|-----------|--------|-------
 <xsl:for-each select="$currentTypeAttributes">
 
 <!-- Determine the attribute type -->  
@@ -169,9 +169,7 @@ Attibute|Type|Description
 </xsl:choose>
 </xsl:variable>
   
-<xsl:value-of select="./@name"/>|<xsl:value-of select="$attibuteType"/>|<xsl:if test="./xsd:annotation/xsd:documentation != ''">
-<xsl:value-of select="normalize-space(./xsd:annotation/xsd:documentation)" />
-</xsl:if><xsl:call-template name="CRLF" />
+<xsl:value-of select="./@name"/>|<xsl:value-of select="$attibuteType"/>|<xsl:if test="./xsd:annotation/xsd:documentation != ''"><xsl:value-of select="normalize-space(./xsd:annotation/xsd:documentation)" /></xsl:if>|<xsl:choose><xsl:when test="./@use != 'required'">No</xsl:when><xsl:otherwise>Yes</xsl:otherwise></xsl:choose>|<xsl:if test="./@default != ''"><xsl:value-of select="./@default" /></xsl:if><xsl:call-template name="CRLF" />
 </xsl:for-each>
 </xsl:if>
 

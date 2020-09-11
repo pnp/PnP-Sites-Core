@@ -16,13 +16,21 @@ using System.Linq;
 using System.Resources;
 using System.Text.RegularExpressions;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Framework.Graph;
+using System.Text.Json;
+//using System.Web.UI.WebControls.WebParts;
+using System.IO;
+//using System.Web.UI.WebControls;
+#if NETSTANDARD2_0
+using System.Xml.Linq;
+#endif
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
     /// <summary>
     /// Handles methods for token parser
     /// </summary>
-    public class TokenParser
+    public class TokenParser : ICloneable
     {
         public Web _web;
 
@@ -81,8 +89,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new SiteToken(web));
 
             // remove list tokens
-            if (tokenIds.Contains("listid") || tokenIds.Contains("listurl") || tokenIds.Contains("viewid"))
-                AddListTokens(web); // tokens are remove in method
+            if (tokenIds.Contains("listid") || tokenIds.Contains("listurl") || tokenIds.Contains("viewid") || tokenIds.Contains("listcontenttypeid"))
+            {
+                RebuildListTokens(web);
+            }
             // remove content type tokens
             if (tokenIds.Contains("contenttypeid"))
                 AddContentTypeTokens(web);
@@ -106,6 +116,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
+        /// <summary>
+        /// Creates a new TokenParser. Only to be used by Clone().
+        /// </summary>
+        /// <param name="tokens">The list with TokenDefinitions to copy over</param>
+        /// <param name="web">The Web context to copy over</param>
+        private TokenParser(Web web, List<TokenDefinition> tokens)
+        {
+            _web = web;
+            _tokens = tokens;
+        }
+
         public TokenParser(Tenant tenant, Model.ProvisioningHierarchy hierarchy) :
             this(tenant, hierarchy, null)
         {
@@ -113,7 +134,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public TokenParser(Tenant tenant, Model.ProvisioningHierarchy hierarchy, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            var web = ((ClientContext)tenant.Context).Web;
+            // CHANGED: To avoid issues with low privilege users
+            Web web = null;
+
+#if !ONPREMISES
+            if (TenantExtensions.IsCurrentUserTenantAdmin((ClientContext)tenant.Context))
+            {
+                web = ((ClientContext)tenant.Context).Web;
+            }
+            else
+            {
+#endif
+            var rootSiteUrl = tenant.Context.Url.Replace("-admin", "");
+            var context = ((ClientContext)tenant.Context).Clone(rootSiteUrl);
+            web = context.Web;
+#if !ONPREMISES
+            }
+#endif
+
             web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url, w => w.Language);
             _web = web;
             _tokens = new List<TokenDefinition>();
@@ -125,8 +163,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new CurrentUserIdToken(web));
             _tokens.Add(new CurrentUserLoginNameToken(web));
             _tokens.Add(new CurrentUserFullNameToken(web));
+#if !NETSTANDARD2_0
             _tokens.Add(new AuthenticationRealmToken(web));
+#endif
             _tokens.Add(new HostUrlToken(web));
+            _tokens.Add(new FqdnToken(web));
             AddResourceTokens(web, hierarchy.Localizations, hierarchy.Connector);
             _initializedFromHierarchy = true;
         }
@@ -183,6 +224,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 _tokens.Add(new SiteOwnerToken(web));
             if (tokenIds.Contains("sitetitle") || tokenIds.Contains("sitename"))
                 _tokens.Add(new SiteTitleToken(web));
+            if (tokenIds.Contains("groupsitetitle") || tokenIds.Contains("groupsitename"))
+                _tokens.Add(new GroupSiteTitleToken(web));
             if (tokenIds.Contains("associatedownergroupid"))
                 _tokens.Add(new AssociatedGroupIdToken(web, AssociatedGroupIdToken.AssociatedGroupType.owners));
             if (tokenIds.Contains("associatedmembergroupid"))
@@ -205,10 +248,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 _tokens.Add(new CurrentUserLoginNameToken(web));
             if (tokenIds.Contains("currentuserfullname"))
                 _tokens.Add(new CurrentUserFullNameToken(web));
+#if !NETSTANDARD2_0
             if (tokenIds.Contains("authenticationrealm"))
                 _tokens.Add(new AuthenticationRealmToken(web));
+#endif
             if (tokenIds.Contains("hosturl"))
                 _tokens.Add(new HostUrlToken(web));
+            if (tokenIds.Contains("fqdn"))
+                _tokens.Add(new FqdnToken(web));
 #if !ONPREMISES
             if (tokenIds.Contains("sitecollectionconnectedoffice365groupid"))
                 _tokens.Add(new SiteCollectionConnectedOffice365GroupId(web));
@@ -219,7 +266,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
 
             if (tokenIds.Contains("listid") || tokenIds.Contains("listurl") || tokenIds.Contains("viewid"))
-                AddListTokens(web);
+                RebuildListTokens(web);
             if (tokenIds.Contains("contenttypeid"))
                 AddContentTypeTokens(web);
 
@@ -264,7 +311,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES
             if (tokenIds.Contains("apppackageid"))
                 AddAppPackagesTokens(web);
+            if (tokenIds.Contains("pageuniqueid"))
+                AddPageUniqueIdTokens(web, applyingInformation);
 #endif
+            if (tokenIds.Contains("propertybagvalue"))
+                AddPropertyBagTokens(web);
 
             // TermStore related tokens
             AddTermStoreTokens(web, tokenIds);
@@ -293,22 +344,49 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var localizationEntry in localizations)
                 {
                     var filePath = localizationEntry.ResourceFile;
-                    using (var stream = connector.GetFileStream(filePath))
+                    if (filePath.ToLower().EndsWith(".resx"))
                     {
-                        if (stream != null)
+                        using (var stream = connector.GetFileStream(filePath))
                         {
-#if !NETSTANDARD2_0
-                            using (ResXResourceReader resxReader = new ResXResourceReader(stream))
-#else
-                            using (ResourceReader resxReader = new ResourceReader(stream))
-#endif
+                            if (stream != null)
                             {
-                                foreach (DictionaryEntry entry in resxReader)
+#if !NETSTANDARD2_0
+                                // are we talking a resx file or a json file?
+                                if (filePath.ToLower().EndsWith(".resx"))
                                 {
-                                    // One can have multiple resource files in a single file, by adding tokens with resource file name and without we allow both scenarios to resolve
-                                    resourceEntries.Add(new Tuple<string, uint, string>($"{localizationEntry.Name}:{entry.Key}", (uint)localizationEntry.LCID, entry.Value.ToString().Replace("\"", "&quot;")));
-                                    resourceEntries.Add(new Tuple<string, uint, string>(entry.Key.ToString(), (uint)localizationEntry.LCID, entry.Value.ToString().Replace("\"", "&quot;")));
+                                    using (ResXResourceReader resxReader = new ResXResourceReader(stream))
+                                    {
+                                        foreach (DictionaryEntry entry in resxReader)
+                                        {
+                                            // One can have multiple resource files in a single file, by adding tokens with resource file name and without we allow both scenarios to resolve
+                                            resourceEntries.Add(new Tuple<string, uint, string>($"{localizationEntry.Name}:{entry.Key}", (uint)localizationEntry.LCID, entry.Value.ToString().Replace("\"", "&quot;")));
+                                            resourceEntries.Add(new Tuple<string, uint, string>(entry.Key.ToString(), (uint)localizationEntry.LCID, entry.Value.ToString().Replace("\"", "&quot;")));
+                                        }
+                                    }
                                 }
+#else
+                                var xElement = XElement.Load(stream);
+                                    foreach (var dataElement in xElement.Descendants("data"))
+                                    {
+                                        var key = dataElement.Attribute("name").Value;
+                                        var value = dataElement.Value;
+                                        resourceEntries.Add(new Tuple<string, uint, string>($"{localizationEntry.Name}:{key}", (uint)localizationEntry.LCID, value.ToString().Replace("\"", "&quot;")));
+                                        resourceEntries.Add(new Tuple<string, uint, string>(key.ToString(), (uint)localizationEntry.LCID, value.ToString().Replace("\"", "&quot;")));
+                                    }
+#endif
+                            }
+                        }
+                    }
+                    else if (filePath.ToLower().EndsWith(".json"))
+                    {
+                        var jsonString = connector.GetFile(filePath);
+                        if (!string.IsNullOrEmpty(jsonString))
+                        {
+                            var dict = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(jsonString);
+                            foreach (var entry in dict)
+                            {
+                                resourceEntries.Add(new Tuple<string, uint, string>($"{localizationEntry.Name}:{entry.Key}", (uint)localizationEntry.LCID, entry.Value.ToString().Replace("\"", "&quot;")));
+                                resourceEntries.Add(new Tuple<string, uint, string>(entry.Key.ToString(), (uint)localizationEntry.LCID, entry.Value.ToString().Replace("\"", "&quot;")));
                             }
                         }
                     }
@@ -330,6 +408,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             _tokens.RemoveAll(t => t is FieldTitleToken || t is FieldIdToken);
 
+            // Add all the site columns
             var fields = web.AvailableFields;
             web.Context.Load(fields, flds => flds.Include(f => f.Title, f => f.InternalName, f => f.Id));
             web.Context.ExecuteQueryRetry();
@@ -338,6 +417,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 _tokens.Add(new FieldTitleToken(web, field.InternalName, field.Title));
                 _tokens.Add(new FieldIdToken(web, field.InternalName, field.Id));
             }
+
+            // Add all the list columns
+            //var lists = web.Lists;
+            //web.Context.Load(lists, list => list.Include(listField => listField.Fields.Include(field => field.Title, field => field.InternalName, field => field.Id)));
+            //web.Context.ExecuteQueryRetry();
+            //foreach (var list in lists)
+            //{
+            //    foreach (var field in list.Fields)
+            //    {
+            //        _tokens.Add(new FieldTitleToken(web, field.InternalName, field.Title));
+            //        _tokens.Add(new FieldIdToken(web, field.InternalName, field.Id));
+            //    }
+            //}
 
             //if (web.IsSubSite())
             //{
@@ -363,6 +455,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             foreach (var roleDef in web.RoleDefinitions)
             {
                 _tokens.Add(new RoleDefinitionIdToken(web, roleDef.Name, roleDef.Id));
+            }
+        }
+
+        private void AddPropertyBagTokens(Web web)
+        {
+            web.EnsureProperty(w => w.AllProperties);
+
+            foreach (var keyValue in web.AllProperties.FieldValues)
+            {
+                _tokens.Add(new PropertyBagValueToken(web, keyValue.Key, keyValue.Value.ToString()));
             }
         }
 
@@ -392,20 +494,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (PnPProvisioningContext.Current != null)
             {
-                var accessToken = PnPProvisioningContext.Current.AcquireToken("https://graph.microsoft.com/", "Group.Read.All");
+                var accessToken = PnPProvisioningContext.Current.AcquireToken(new Uri(Core.Utilities.Graph.GraphHelper.MicrosoftGraphBaseURI).Authority, "Group.Read.All");
                 if (accessToken != null)
                 {
                     // Get Office 365 Groups
-
-                    var officeGroups = HttpHelper.MakeGetRequestForString("https://graph.microsoft.com/v1.0/groups?$filter=groupTypes/any(c:c+eq+'Unified')&$select=id,displayName,mailNickname", accessToken);
-                    var returnObject = JObject.Parse(officeGroups);
-                    var groupsArray = returnObject["value"].Value<JArray>();
-                    foreach (var group in groupsArray)
+                    var officeGroups = UnifiedGroupsUtility.GetUnifiedGroups(accessToken, includeSite: false);
+                    foreach (var group in officeGroups)
                     {
-                        _tokens.Add(new O365GroupIdToken(web, group["displayName"].Value<string>(), group["id"].Value<string>()));
-                        if (!group["displayName"].Value<string>().Equals(group["mailNickname"].Value<string>()))
+                        _tokens.Add(new O365GroupIdToken(web, group.DisplayName, group.GroupId));
+                        if (!group.DisplayName.Equals(group.MailNickname))
                         {
-                            _tokens.Add(new O365GroupIdToken(web, group["mailNickname"].Value<string>(), group["id"].Value<string>()));
+                            _tokens.Add(new O365GroupIdToken(web, group.MailNickname, group.GroupId));
                         }
                     }
                 }
@@ -591,6 +690,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
+        private void AddPageUniqueIdTokens(Web web, ProvisioningTemplateApplyingInformation applyingInformation)
+        {
+
+            var pagesList = web.GetListByUrl("SitePages", p => p.RootFolder);
+
+            var query = new CamlQuery()
+            {
+                ViewXml = $"<View><ViewFields><FieldRef Name='UniqueId'/><FieldRef Name='FileLeafRef' /></ViewFields></View><RowLimit Paging='TRUE'>100</RowLimit>"
+            };
+            do
+            {
+                var items = pagesList.GetItems(query);
+                web.Context.Load(items);
+                web.Context.ExecuteQueryRetry();
+                foreach (var item in items)
+                {
+                    _tokens.Add(new PageUniqueIdToken(web, $"SitePages/{item["FileLeafRef"]}", Guid.Parse(item["UniqueId"].ToString())));
+                    _tokens.Add(new PageUniqueIdEncodedToken(web, $"SitePages/{item["FileLeafRef"]}", Guid.Parse(item["UniqueId"].ToString())));
+                }
+                query.ListItemCollectionPosition = items.ListItemCollectionPosition;
+            } while (query.ListItemCollectionPosition != null);
+        }
+
         private void AddSiteScriptTokens(Web web, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             try
@@ -626,15 +748,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        internal void AddListTokens(Web web)
+        internal void RebuildListTokens(Web web)
         {
             web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Language);
 
-            _tokens.RemoveAll(t => t.GetType() == typeof(ListIdToken));
-            _tokens.RemoveAll(t => t.GetType() == typeof(ListUrlToken));
-            _tokens.RemoveAll(t => t.GetType() == typeof(ListViewIdToken));
+            //Remove tokens from TokenDictionary and ListTokenDictionary
+            Predicate<TokenDefinition> listTokenTypes = t => (t.GetType() == typeof(ListIdToken) || t.GetType() == typeof(ListUrlToken) || t.GetType() == typeof(ListViewIdToken) || t.GetType() == typeof(ListContentTypeIdToken));
+            foreach (var listToken in _tokens.FindAll(listTokenTypes))
+            {
+                foreach (string token in listToken.GetTokens())
+                {
+                    var tokenKey = Regex.Unescape(token);
+                    TokenDictionary.Remove(tokenKey);
+                    if (listToken is ListIdToken)
+                    {
+                        ListTokenDictionary.Remove(tokenKey);
+                    }
+                }
+            }
+            _tokens.RemoveAll(listTokenTypes);
 
-            web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl, l => l.Views
+            web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl, l => l.Views, l => l.ContentTypes
 #if !SP2013
             , l => l.TitleResource
 #endif
@@ -656,6 +790,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var view in list.Views)
                 {
                     _tokens.Add(new ListViewIdToken(web, list.Title, view.Title, view.Id));
+                }
+
+                foreach (var contentType in list.ContentTypes)
+                {
+                    _tokens.Add(new ListContentTypeIdToken(web, list.Title, contentType.Name, contentType.Id));
+                    _tokens.Add(new ListContentTypeIdToken(web, list.Title, contentType.Id.GetParentIdValue(), contentType.Id));
                 }
             }
 
@@ -691,6 +831,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         public List<Tuple<string, string>> GetResourceTokenResourceValues(string tokenValue)
         {
             List<Tuple<string, string>> resourceValues = new List<Tuple<string, string>>();
+            tokenValue = $"{{{Regex.Escape(tokenValue.Trim(new char[] { '{', '}' }))}}}"; // since LocalizationToken are Regex.Escaped before load
             var resourceTokens = _tokens.Where(t => t is LocalizationToken && t.GetTokens().Contains(tokenValue));
             foreach (LocalizationToken resourceToken in resourceTokens)
             {
@@ -1109,6 +1250,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 });
             } while (hasMatch && xml != tempXml);
             return tokenIds;
+        }
+
+        /// <summary>
+        /// Clones the current TokenParser instance into a new instance
+        /// </summary>
+        /// <returns>New cloned instance of the TokenParser</returns>
+        public object Clone()
+        {
+            return new TokenParser(_web, _tokens);
         }
     }
 }

@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>OfficeDevPnP.Core</RootNamespace>
     <AssemblyName>OfficeDevPnP.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -360,6 +360,9 @@
       <HintPath>..\packages\AngleSharp.0.9.9\lib\net45\AngleSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Data.Edm, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Data.Edm.5.8.4\lib\net40\Microsoft.Data.Edm.dll</HintPath>
     </Reference>
@@ -425,6 +428,9 @@
       <HintPath>..\packages\SharePointPnP.IdentityModel.Extensions.1.2.4\lib\net45\SharePointPnP.IdentityModel.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -435,10 +441,20 @@
     <Reference Include="System.IdentityModel.Tokens.Jwt, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.5.2.4\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
     </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.7.1\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
@@ -446,9 +462,17 @@
     <Reference Include="System.Spatial, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Spatial.5.8.4\lib\net40\System.Spatial.dll</HintPath>
     </Reference>
-    <Reference Include="System.Text.Encodings.Web, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Text.Encodings.Web.4.0.0\lib\netstandard1.0\System.Text.Encodings.Web.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="System.Text.Encodings.Web, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encodings.Web.4.7.1\lib\net461\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Json.4.7.2\lib\net461\System.Text.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
@@ -484,6 +508,9 @@
     <Compile Include="Entities\WebhookNotification.cs" />
     <Compile Include="Entities\WebhookSubscription.cs" />
     <Compile Include="Enums\AppCatalogScope.cs" />
+    <Compile Include="Enums\GraphSubscriptionChangeType.cs" />
+    <Compile Include="Enums\GraphSubscriptionTlsVersion.cs" />
+    <Compile Include="Enums\Office365Geography.cs" />
     <Compile Include="Enums\SharePointTheme.cs" />
     <Compile Include="Extensions\ClientContextExtensions.cs" />
     <Compile Include="Extensions\ClientObjectExtensions.cs" />
@@ -527,7 +554,14 @@
     <Compile Include="Framework\Graph\Model\DirectorySettingTemplates.cs" />
     <Compile Include="Framework\Graph\GraphHttpClient.cs" />
     <Compile Include="Framework\Graph\Model\DirectorySettingValue.cs" />
+    <Compile Include="Framework\Graph\Model\GroupCreationRequest.cs" />
     <Compile Include="Framework\Graph\Model\SiteClassificationsSettings.cs" />
+    <Compile Include="Framework\Graph\Model\Subscription.cs" />
+    <Compile Include="Framework\Graph\Model\Group.cs" />
+    <Compile Include="Framework\Graph\Model\User.cs" />
+    <Compile Include="Framework\Graph\SubscriptionsUtility.cs" />
+    <Compile Include="Framework\Graph\Model\UserDelta.cs" />
+    <Compile Include="Framework\Graph\UsersUtility.cs" />
     <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionIssueTags.cs" />
     <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionRuleAttribute.cs" />
     <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionRulesManager.cs" />
@@ -649,6 +683,7 @@
     <Compile Include="Framework\Provisioning\Model\SharePoint\ModernExperiences\SiteScript.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\Customizations\SiteWebhook.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\Customizations\SiteWebhookCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\TenantSettings\SharingSettings.cs" />
     <Compile Include="Framework\Provisioning\Model\TenantSettings\ProvisioningTenant.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\Customizations\StorageEntity.cs" />
     <Compile Include="Framework\Provisioning\Model\Hierarchy\SubSite.cs" />
@@ -708,11 +743,16 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectHierarchySequenceTermGroups.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSiteSettings.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\PnPProvisioningContext.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\RecycledSiteException.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\AssociatedGroupIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\EveryoneToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\EveryoneButExternalUsersToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FieldIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\GroupSiteTitleToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FqdnToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ListContentTypeIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\O365GroupIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\PropertyBagValueToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SequenceSiteGroupIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SequenceSiteIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SequenceSiteCollectionIdToken.cs" />
@@ -738,10 +778,15 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\RoleDefinitionIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FieldUpdateValue.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FileUtilities.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\PageToExport.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\WebhookSender.cs" />
     <Compile Include="Framework\Provisioning\Providers\ITemplateFormatterWithValidation.cs" />
     <Compile Include="Framework\Provisioning\Providers\ValidationResult.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-09.cs">
       <DependentUpon>ProvisioningSchema-2019-09.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2020-02.cs">
+      <DependentUpon>ProvisioningSchema-2020-02.xsd</DependentUpon>
     </Compile>
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201807\ClientSidePageSecurityFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\ClientSidePageHeaderFromModelToSchemaTypeResolver.cs" />
@@ -755,6 +800,8 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\TeamSecurityFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\AlternateUICultureFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\TeamSecurityFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V202002\SharingSettingsFromModelToSchema.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V202002\SharingSettingsFromSchemaToModel.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\ClientSidePagesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\DriveSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\ListInstancesSerializer.cs" />
@@ -764,8 +811,13 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\TenantSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\SiteSettingsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\WebSettingsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V202002\TenantSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV202002Serializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201909Serializer.cs" />
     <Compile Include="Pages\ClientSidePageSettingsSlice.cs" />
+    <Compile Include="Pages\HeaderControlData.cs" />
+    <Compile Include="Pages\TranslationStatus.cs" />
+    <Compile Include="Pages\TranslationStatusCreationRequest.cs" />
     <Compile Include="Utilities\Graph\GraphHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ListItemUtilities.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ConnectorFileHelper.cs" />
@@ -1294,10 +1346,12 @@
     <Compile Include="Framework\Graph\SiteClassificationUtility.cs" />
     <Compile Include="Utilities\HttpHelper.cs" />
     <Compile Include="Utilities\JsonConverters\EmphasisJsonConverter.cs" />
+    <Compile Include="Utilities\JsonConverters\VersionConverter.cs" />
     <Compile Include="Utilities\PnPCoreUtilities.cs" />
     <Compile Include="Utilities\PnPHttpProvider.cs" />
     <Compile Include="Utilities\PnPHttpUtility.cs" />
     <Compile Include="Utilities\RESTUtilities.cs" />
+    <Compile Include="Utilities\REST\ResultCollection.cs" />
     <Compile Include="Utilities\StringUtilities.cs" />
     <Compile Include="Utilities\Themes\Palettes\Color.cs" />
     <Compile Include="Utilities\Themes\Palettes\Colors.cs" />
@@ -1399,6 +1453,9 @@
     <EmbeddedResource Include="Framework\Provisioning\Model\Configuration\Schemas\201909\apply-configuration.schema.json" />
     <EmbeddedResource Include="Framework\Provisioning\Model\Configuration\Schemas\201910\apply-configuration.schema.json" />
     <EmbeddedResource Include="Framework\Provisioning\Model\Configuration\Schemas\201910\extract-configuration.schema.json" />
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2020-02.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <None Include="Framework\Provisioning\Providers\Xml\readme.md" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
@@ -1524,6 +1581,8 @@
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\STS0Template.xml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\SP-Responsive-UI.min.js" />
+    <None Include="Resources\SP-Responsive-UI_CSS.min.css" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\BDR0Template.xml" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\BICENTERSITE0Template.xml" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\BLOG0Template.xml" />

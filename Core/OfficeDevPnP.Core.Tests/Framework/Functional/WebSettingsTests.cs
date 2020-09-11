@@ -18,7 +18,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
     /// Test cases for the provisioning engine web settings functionality
     /// </summary>
     [TestClass]
-   public class WebSettingsTests : FunctionalTestBase
+    public class WebSettingsTests : FunctionalTestBase
     {
         #region Construction
         public WebSettingsTests()

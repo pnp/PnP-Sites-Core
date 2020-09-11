@@ -514,7 +514,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The argument must be a single file name and cannot contain path characters..
+        ///   Looks up a localized string similar to The argument must be a single file name and cannot contain path characters. Value:&apos;{0}&apos;.
         /// </summary>
         internal static string FileFolderExtensions_UploadFile_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_ {
             get {
@@ -1260,15 +1260,6 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Content Type {0} with ID {1} cannot be updated because delta handling for DocumentSets is on hold..
-        /// </summary>
-        internal static string Provisioning_ObjectHandlers_ContentTypes_DocumentSet_DeltaHandling_OnHold {
-            get {
-                return ResourceManager.GetString("Provisioning_ObjectHandlers_ContentTypes_DocumentSet_DeltaHandling_OnHold", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Failed to add &apos;{1}&apos; as DocumentTemplate to ContentType &apos;{0}&apos;.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ContentTypes_ErrorDocumentTemplate {
@@ -1361,11 +1352,12 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Existing content type with Id {0} and name {1} will not be updated because it&apos;s marked as sealed and the template is not changing the sealed value..
+        ///   Looks up a localized string similar to Existing content type with Id {0} and name {1} will not be updated because it&apos;s marked as sealed or read only and the template is not changing the value..
         /// </summary>
-        internal static string Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type_Sealed {
+        internal static string Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type_SealedOrReadOnly {
             get {
-                return ResourceManager.GetString("Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type_Sealed", resourceCulture);
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type_SealedOrR" +
+                        "eadOnly", resourceCulture);
             }
         }
         
@@ -2600,27 +2592,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /**
-        /// * PnP SharePoint - Responsiveness
-        /// * @see {@link https://github.com/SharePoint/PnP-Guidance/blob/master/articles/Embedding-JavaScript-into-SharePoint.md|PnP Guidance}
-        /// * @see {@link http://usejsdoc.org/|JSDoc}
-        /// */
+        ///   Looks up a localized string similar to  /* SP-Responsive-UI.js
         ///
-        ////*
-        /// * PnPResponsiveApp
-        /// * @namespace
-        /// */
-        ///if (window.hasOwnProperty(&apos;Type&apos;)) {
-        ///    Type.registerNamespace(&apos;PnPResponsiveApp&apos;);
-        ///} else {
-        ///    window.PnPResponsiveApp = window.PnPResponsiveApp || {};
-        ///}
+        ///512 characters to avoid compiler warnings inside the summary
         ///
-        ////**
-        /// * PnP Responsive
-        /// * @class
-        /// */
-        ///PnPResponsiveApp.Main = (function ()  [rest of string was truncated]&quot;;.
+        ///1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+        ///1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+        ///1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+        ///1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+        ///1234567890123 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string SP_Responsive_UI {
             get {
@@ -2629,38 +2609,37 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .mobile-only {
-        ///    display: none;
-        ///}
+        ///   Looks up a localized string similar to  /* SP-Responsive-UI_CSS.css
         ///
-        ///#sideNavBox, #contentRow, #siteIcon {
-        ///    -webkit-transition: all 400ms ease;
-        ///    -moz-transition: all 400ms ease;
-        ///    -ms-transition: all 400ms ease;
-        ///    -o-transition: all 400ms ease;
-        ///    transition: all 400ms ease;
-        ///}
+        ///512 characters to avoid compiler warnings inside the summary
         ///
-        ///#contentBox {
-        ///    min-width: auto;
-        ///}
-        ///
-        ////* Make sure dialog windows don&apos;t break */
-        ///.ms-dialog #contentRow {
-        ///    margin-left: 0;
-        ///}
-        ///
-        ///.ms-dialog #contentBox {
-        ///    margin-top: 0;
-        ///}
-        ///
-        ///.ms-dialog #s4-bodyContainer {
-        ///    min-width: 0;
-        ///   [rest of string was truncated]&quot;;.
+        ///1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+        ///1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+        ///1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+        ///1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+        ///12345678 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string SP_Responsive_UI_CSS {
             get {
                 return ResourceManager.GetString("SP_Responsive_UI_CSS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .mobile-only{display:none}#contentRow,#sideNavBox,#siteIcon{-webkit-transition:all .4s ease;-moz-transition:all .4s ease;-ms-transition:all .4s ease;-o-transition:all .4s ease;transition:all .4s ease}#contentBox,#s4-bodyContainer .contentwrapper{min-width:auto}.ms-dialog #contentRow{margin-left:0}.ms-dialog #contentBox{margin-top:0}.ms-dialog #s4-bodyContainer{min-width:0;font-size:1em}#s4-bodyContainer .contentwrapper{min-width:0;margin-top:0}#suiteBar #suiteBarLeft #PnP_MainLink_Hamburger{min-width:30px;p [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string SP_Responsive_UI_CSS_min {
+            get {
+                return ResourceManager.GetString("SP_Responsive_UI_CSS_min", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to function responsiveStartup(){var e=PnPResponsiveApp.Main.getInstance();e.addViewport(),e.init()}window.hasOwnProperty(&quot;Type&quot;)?Type.registerNamespace(&quot;PnPResponsiveApp&quot;):window.PnPResponsiveApp=window.PnPResponsiveApp||{},PnPResponsiveApp.Main=function(){function e(e,n){if(t(e,n)){var i=new RegExp(&quot;(\\s|^)&quot;+n+&quot;(\\s|$)&quot;);e.className=e.className.replace(i,&quot; &quot;)}else e.className=e.className+&quot; &quot;+n}function t(e,t){try{return-1!==(&quot; &quot;+e.className+&quot; &quot;).indexOf(&quot; &quot;+t+&quot; &quot;)}catch(e){return!1}}function n(e){var t=docume [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string SP_Responsive_UI_min {
+            get {
+                return ResourceManager.GetString("SP_Responsive_UI_min", resourceCulture);
             }
         }
         
@@ -2860,6 +2839,15 @@ namespace OfficeDevPnP.Core {
         internal static string TimerJob_AddSite_InvalidUrl {
             get {
                 return ResourceManager.GetString("TimerJob_AddSite_InvalidUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Timer job authentication set to type AccessToken.
+        /// </summary>
+        internal static string TimerJob_Authentication_AccessToken {
+            get {
+                return ResourceManager.GetString("TimerJob_Authentication_AccessToken", resourceCulture);
             }
         }
         

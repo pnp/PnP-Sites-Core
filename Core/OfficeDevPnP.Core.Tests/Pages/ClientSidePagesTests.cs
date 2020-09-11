@@ -9,6 +9,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using System.Threading.Tasks;
+using System.Globalization;
 #if !SP2013 && !SP2016
 using OfficeDevPnP.Core.Pages;
 #endif
@@ -38,16 +39,16 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         #endregion
 
         //[TestMethod]
-        //public void PageTest()
+        //public void ExportPagesTest()
         //{
-        //    using (var clientContext = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/BlaBla"))
+        //    using (var clientContext = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/KnowledgeCenter"))
         //    {
         //        ProvisioningTemplateCreationInformation ptci = new ProvisioningTemplateCreationInformation(clientContext.Web)
         //        {
         //            // Limit the amount of handlers in this demo
         //            HandlersToProcess = Handlers.PageContents,
         //            // Create FileSystemConnector, so that we can store composed files temporarely somewhere 
-        //            FileConnector = new FileSystemConnector(@"C:\temp", ""),
+        //            FileConnector = new FileSystemConnector(@"d:\temp\topicpages", ""),
         //            PersistBrandingFiles = true,
         //            IncludeAllClientSidePages = true,
         //            ProgressDelegate = delegate (String message, Int32 progress, Int32 total)
@@ -61,16 +62,16 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         //        ProvisioningTemplate template = clientContext.Web.GetProvisioningTemplate(ptci);
 
         //        // Serialize to XML using the beta 201705 schema
-        //        XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(@"C:\temp", "");
-        //        var formatter = XMLPnPSchemaFormatter.GetSpecificFormatter(XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2019_03);
-        //        provider.SaveAs(template, "PnPProvisioningDemo201903.xml", formatter);
+        //        XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(@"d:\temp\topicpages", "");
+        //        var formatter = XMLPnPSchemaFormatter.GetSpecificFormatter(XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2020_02);
+        //        provider.SaveAs(template, "PnPProvisioningDemo202002.xml", formatter);
         //    }
         //}
 
         //[TestMethod]
-        //public void Page2Test()
+        //public void ApplyPagesTest()
         //{
-        //    using (var clientContext = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/provisioningtest"))
+        //    using (var clientContext = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/KnowledgeCenter"))
         //    {
         //        ProvisioningTemplateApplyingInformation ptai = new ProvisioningTemplateApplyingInformation()
         //        {
@@ -82,8 +83,9 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         //            }
         //        };
 
-        //        XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(@".", "");
-        //        ProvisioningTemplate sourceTemplate = provider.GetTemplate("PnPProvisioningDemo201903.xml");
+        //        XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(@"d:\temp\topicpages", "");
+        //        ProvisioningTemplate sourceTemplate = provider.GetTemplate("PnPProvisioningDemo202002.xml");
+        //        sourceTemplate.Connector = new FileSystemConnector(@"d:\temp\topicpages", "");
 
         //        // Execute actual extraction of the tepmplate
         //        clientContext.Web.ApplyProvisioningTemplate(sourceTemplate);
@@ -91,12 +93,17 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         //}
 
         //[TestMethod]
-        //public void BertTest5()
+        //public void MUITest()
         //{
-        //    using (var cc = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/blabla"))
+        //    //using (var cc = new AuthenticationManager().GetWebLoginClientContext("https://contoso.sharepoint.com/teams/TEST_Provisioning"))
+        //    using (var cc = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/KnowledgeCenter"))
         //    {
-        //        var page = cc.Web.LoadClientSidePage("visual.aspx");
-        //        page.Save("visual_clone.aspx");               
+        //        var page = cc.Web.LoadClientSidePage("pnp2.aspx");
+
+
+        //        page.Save("pnpclone.aspx");
+
+
         //    }
         //}
 
@@ -105,7 +112,7 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         //{
         //    using (var cc = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/blabla"))
         //    {
-        //        //var page = cc.Web.LoadClientSidePage("vertical-section.aspx");
+        // var page = cc.Web.LoadClientSidePage("vertical-section.aspx");
         //        //page.Save("home2_normal.aspx");
 
         //        var newPage = new Pages.ClientSidePage(cc);

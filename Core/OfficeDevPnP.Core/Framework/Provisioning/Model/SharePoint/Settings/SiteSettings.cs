@@ -43,6 +43,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public SearchBoxInNavBar SearchBoxInNavBar { get; set; }
 
+        /// <summary>
+        /// Defines the Search Center URL
+        /// </summary>
+        public string SearchCenterUrl { get; set; }
+
         #endregion
 
         #region Constructors
@@ -60,13 +65,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns hash code in integer</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}",
-                (this.AllowDesigner.GetHashCode()),
-                (this.AllowCreateDeclarativeWorkflow.GetHashCode()),
-                (this.AllowSaveDeclarativeWorkflowAsTemplate.GetHashCode()),
-                (this.AllowSavePublishDeclarativeWorkflow.GetHashCode()),
-                (this.SocialBarOnSitePagesDisabled.GetHashCode()),
-                (this.SearchBoxInNavBar.GetHashCode())
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}",
+                this.AllowDesigner.GetHashCode(),
+                this.AllowCreateDeclarativeWorkflow.GetHashCode(),
+                this.AllowSaveDeclarativeWorkflowAsTemplate.GetHashCode(),
+                this.AllowSavePublishDeclarativeWorkflow.GetHashCode(),
+                this.SocialBarOnSitePagesDisabled.GetHashCode(),
+                this.SearchBoxInNavBar.GetHashCode(),
+                this.SearchCenterUrl.GetHashCode()
             ).GetHashCode());
         }
 
@@ -101,7 +107,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     this.AllowSaveDeclarativeWorkflowAsTemplate == other.AllowSaveDeclarativeWorkflowAsTemplate &&
                     this.AllowSavePublishDeclarativeWorkflow == other.AllowSavePublishDeclarativeWorkflow &&
                     this.SocialBarOnSitePagesDisabled == other.SocialBarOnSitePagesDisabled &&
-                    this.SearchBoxInNavBar == other.SearchBoxInNavBar
+                    this.SearchBoxInNavBar == other.SearchBoxInNavBar &&
+                    this.SearchCenterUrl == other.SearchCenterUrl
                 );
         }
 
