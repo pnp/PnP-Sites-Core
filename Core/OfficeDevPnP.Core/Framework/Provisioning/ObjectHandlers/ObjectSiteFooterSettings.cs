@@ -491,6 +491,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 titleNode.Children[0].Title = template.Footer.Name;
                                 titleNode.Update();
+                                if (template.Footer.Name.ContainsResourceToken())
+                                {
+                                    web.Context.ExecuteQueryRetry();
+                                    titleNode.LocalizeNavigationNode(web, template.Footer.Name, parser, scope);
+                                }
                             }
                         }
                         else
@@ -498,7 +503,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             if (!string.IsNullOrEmpty(template.Footer.Name))
                             {
                                 titleNode = n1.Children.Add(new NavigationNodeCreationInformation() { Title = Constants.SITEFOOTER_TITLENODEKEY });
-                                titleNode.Children.Add(new NavigationNodeCreationInformation() { Title = template.Footer.Name });
+                                var node=titleNode.Children.Add(new NavigationNodeCreationInformation() { Title = template.Footer.Name });
+                                if (template.Footer.Name.ContainsResourceToken())
+                                {
+                                    web.Context.ExecuteQueryRetry();
+                                    node.LocalizeNavigationNode(web, template.Footer.Name, parser, scope);
+                                }
                             }
                         }
                         if (web.Context.PendingRequestCount() > 0)
