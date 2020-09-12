@@ -31,7 +31,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// <summary>
         /// The Visibility for the Team
         /// </summary>
-        public TeamVisibility Visibility { get; set; }
+        public TeamVisibility? Visibility { get; set; }
 
         /// <summary>
         /// The Photo for the Team

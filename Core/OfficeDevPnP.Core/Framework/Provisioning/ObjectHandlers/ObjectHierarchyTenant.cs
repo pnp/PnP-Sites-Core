@@ -44,6 +44,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     parser = TenantHelper.ProcessThemes(tenant, hierarchy.Tenant, parser, scope, MessagesDelegate);
                     parser = TenantHelper.ProcessUserProfiles(tenant, hierarchy.Tenant, parser, scope, MessagesDelegate);
                     parser = TenantHelper.ProcessSharingSettings(tenant, hierarchy.Tenant, parser, scope, MessagesDelegate);
+                    parser = TenantHelper.ProcessO365GroupSettings(tenant, hierarchy.Tenant, parser, scope, MessagesDelegate);
                     // So far we do not provision CDN settings
                     // It will come in the near future
                     // NOOP on CDN

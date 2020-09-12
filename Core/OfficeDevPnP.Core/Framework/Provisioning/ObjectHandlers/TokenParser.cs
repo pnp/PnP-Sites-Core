@@ -494,7 +494,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (PnPProvisioningContext.Current != null)
             {
-                var accessToken = PnPProvisioningContext.Current.AcquireToken("https://graph.microsoft.com/", "Group.Read.All");
+                var accessToken = PnPProvisioningContext.Current.AcquireToken(new Uri(Core.Utilities.Graph.GraphHelper.MicrosoftGraphBaseURI).Authority, "Group.Read.All");
                 if (accessToken != null)
                 {
                     // Get Office 365 Groups

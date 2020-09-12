@@ -380,7 +380,14 @@ namespace Microsoft.SharePoint.Client
                         }
                         else if (contextSettings.Type == ClientContextType.AzureADCertificate)
                         {
-                            newClientContext = authManager.GetAzureADAppOnlyAuthenticatedContext(newSiteUrl, contextSettings.ClientId, contextSettings.Tenant, contextSettings.Certificate, contextSettings.Environment);
+                            if (contextSettings.Certificate != null)
+                            {
+                                newClientContext = authManager.GetAzureADAppOnlyAuthenticatedContext(newSiteUrl, contextSettings.ClientId, contextSettings.Tenant, contextSettings.Certificate, contextSettings.Environment);
+                            }
+                            else
+                            {
+                                newClientContext = authManager.GetAzureADAppOnlyAuthenticatedContext(newSiteUrl, contextSettings.ClientId, contextSettings.Tenant, contextSettings.ClientAssertionCertificate, contextSettings.Environment);
+                            }
                         }
                         else if(contextSettings.Type == ClientContextType.Cookie)
                         {
