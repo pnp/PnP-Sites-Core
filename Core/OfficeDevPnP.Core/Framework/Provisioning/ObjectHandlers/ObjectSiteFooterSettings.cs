@@ -489,7 +489,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                             else
                             {
-                                titleNode.Children[0].Title = template.Footer.Name;
+                                titleNode.Children[0].Title = parser.ParseString(template.Footer.Name);
                                 titleNode.Update();
                                 if (template.Footer.Name.ContainsResourceToken())
                                 {
@@ -503,7 +503,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             if (!string.IsNullOrEmpty(template.Footer.Name))
                             {
                                 titleNode = n1.Children.Add(new NavigationNodeCreationInformation() { Title = Constants.SITEFOOTER_TITLENODEKEY });
-                                var node=titleNode.Children.Add(new NavigationNodeCreationInformation() { Title = template.Footer.Name });
+                                var node=titleNode.Children.Add(new NavigationNodeCreationInformation() { Title = parser.ParseString(template.Footer.Name) });
                                 if (template.Footer.Name.ContainsResourceToken())
                                 {
                                     web.Context.ExecuteQueryRetry();
