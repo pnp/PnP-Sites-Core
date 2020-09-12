@@ -584,7 +584,7 @@ namespace Microsoft.SharePoint.Client
             var newFieldCAML = FormatFieldXml(fieldCreationInformation);
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.FieldAndContentTypeExtensions_CreateField01, fieldCreationInformation.InternalName, fieldCreationInformation.Id);
-            field = fields.AddFieldAsXml(newFieldCAML, fieldCreationInformation.AddToDefaultView, AddFieldOptions.AddFieldInternalNameHint);
+            field = fields.AddFieldAsXml(newFieldCAML, fieldCreationInformation.AddToDefaultView, AddFieldOptions.AddFieldInternalNameHint | fieldCreationInformation.FieldOptions);
             fields.Context.Load(field);
 
             if (executeQuery)

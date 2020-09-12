@@ -45,6 +45,10 @@ namespace OfficeDevPnP.Core.Entities
         /// Specifies filds is required to enter vlaue or not.
         /// </summary>
         public bool Required { get; set; }
+        /// <summary>
+        /// Specifies field options
+        /// </summary>
+        public AddFieldOptions FieldOptions { get; set; }
 
 #if !SP2013
         /// <summary>
