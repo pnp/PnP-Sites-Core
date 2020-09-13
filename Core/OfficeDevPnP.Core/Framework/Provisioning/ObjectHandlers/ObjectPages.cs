@@ -202,7 +202,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         web.Context.Load(file.ListItemAllFields);
                         web.Context.ExecuteQueryRetry();
-                        file.ListItemAllFields.SetSecurity(parser, page.Security);
+                        file.ListItemAllFields.SetSecurity(parser, page.Security, WriteMessage);
                     }
                 }
             }

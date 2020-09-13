@@ -87,7 +87,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (!SetGroupSecurity(scope, parser, team, teamId, accessToken)) return null;
                 }
                 if (!SetTeamChannels(scope, parser, team, teamId, accessToken)) return null;
-                if (!SetTeamApps(scope, team, teamId, accessToken)) return null;
+                if (!SetTeamApps(scope, parser, team, teamId, accessToken)) return null;
 
                 // So far the Team's photo cannot be set if we don't have an already existing mailbox
                 if (!SetTeamPhoto(scope, parser, connector, team, teamId, accessToken)) return null;
@@ -291,9 +291,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             // Then we Teamify the Group
-            var teamId = CreateOrUpdateTeamFromGroup(scope, team, parser, team.GroupId, accessToken);
-
-            return (teamId);
+            return CreateOrUpdateTeamFromGroup(scope, team, parser, team.GroupId, accessToken);
         }
 
         /// <summary>
@@ -356,21 +354,82 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <returns>The ID of the created or updated Team</returns>
         private static string CreateOrUpdateTeamFromGroup(PnPMonitoredScope scope, Team team, TokenParser parser, string groupId, string accessToken)
         {
+            bool isCurrentlyArchived = false;
+            try
+            {
+                // Check the archival status of the team
+                string archiveStatusReq = HttpHelper.MakeGetRequestForString(
+                    $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/teams/{groupId}?$select=isArchived", accessToken: accessToken);
+
+                isCurrentlyArchived = JToken.Parse(archiveStatusReq).Value<bool>("isArchived");
+            }
+            catch(Exception ex)
+            {
+                scope.LogError("Error checking archive status", ex.Message);
+            }            
+
+            // If the Team is currently archived
+            if (isCurrentlyArchived)
+            {
+                // and if the templates declares to have it unarchived
+                if (!team.Archived)
+                {
+                    // first unarchive Team because we have set the flag to false
+                    HttpHelper.MakePostRequest(
+                        $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/teams/{groupId}/unarchive", accessToken: accessToken);
+                }
+                else
+                {
+                    // Else, we will skip processing the team
+                    scope.LogWarning($"Team {team.DisplayName} is currently archived, so processing it will be skipped");
+                    return null;
+                }
+            }
+
+            // Now process the Team create or update request
+            return CreateOrUpdateTeamFromGroupInternal(scope, team, parser, groupId, accessToken);
+        }
+
+        private static string CreateOrUpdateTeamFromGroupInternal(PnPMonitoredScope scope, Team team, TokenParser parser, string groupId, string accessToken)
+        {
             var content = PrepareTeamRequestContent(team, parser);
 
-            var teamId = GraphHelper.CreateOrUpdateGraphObject(scope,
-                HttpMethodVerb.PUT,
-                $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{groupId}/team",
-                content,
-                HttpHelper.JsonContentType,
-                accessToken,
-                "Conflict",
-                CoreResources.Provisioning_ObjectHandlers_Teams_Team_AlreadyExists,
-                "id",
-                parser.ParseString(team.GroupId),
-                CoreResources.Provisioning_ObjectHandlers_Teams_Team_ProvisioningError,
-                canPatch: true);
+            bool wait = true;
+            int iterations = 0;
+            string teamId = null;
+            while (wait)
+            {
+                iterations++;
 
+                try
+                {
+                    teamId = GraphHelper.CreateOrUpdateGraphObject(scope,
+                    HttpMethodVerb.PUT,
+                    $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{groupId}/team",
+                    content,
+                    HttpHelper.JsonContentType,
+                    accessToken,
+                    "Conflict",
+                    CoreResources.Provisioning_ObjectHandlers_Teams_Team_AlreadyExists,
+                    "id",
+                    parser.ParseString(team.GroupId),
+                    CoreResources.Provisioning_ObjectHandlers_Teams_Team_ProvisioningError,
+                    canPatch: true);
+
+                    wait = false;
+                }
+                catch (Exception)
+                {
+                    // In case of exception wait for 5 secs
+                    System.Threading.Thread.Sleep(TimeSpan.FromSeconds(5));
+                }
+
+                // Don't wait more than 60 seconds
+                if (iterations > 12)
+                {
+                    wait = false;
+                }
+            }
             return (teamId);
         }
 
@@ -434,19 +493,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <param name="accessToken">The OAuth 2.0 Access Token</param>
         private static void ArchiveTeam(PnPMonitoredScope scope, string teamId, bool archived, string accessToken)
         {
+            string archiveStatusRequest = HttpHelper.MakeGetRequestForString(
+                $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/teams/{teamId}?$select=isArchived", accessToken: accessToken);
+
+            bool isCurrentlyArchived = JToken.Parse(archiveStatusRequest).Value<bool>("isArchived");
+
             try
             {
-                if (archived)
+                if (archived && !isCurrentlyArchived)
                 {
                     // Archive the Team
                     HttpHelper.MakePostRequest(
-                        $"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/archive", accessToken: accessToken);
+                        $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/teams/{teamId}/archive", accessToken: accessToken);
                 }
-                else
+                else if (!archived && isCurrentlyArchived)
                 {
                     // Unarchive the Team
                     HttpHelper.MakePostRequest(
-                        $"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/unarchive", accessToken: accessToken);
+                        $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/teams/{teamId}/unarchive", accessToken: accessToken);
                 }
             }
             catch (Exception ex)
@@ -766,7 +830,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public static JToken GetExistingTeamChannels(string teamId, string accessToken)
         {
-            return JToken.Parse(HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels", accessToken))["value"];
+            return JToken.Parse(HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/teams/{teamId}/channels", accessToken))["value"];
         }
 
         private static string UpdateTeamChannel(Model.Teams.TeamChannel channel, string teamId, JToken existingChannel, string accessToken)
@@ -861,7 +925,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Avoid ActivityLimitReached 
                 System.Threading.Thread.Sleep(TimeSpan.FromSeconds(5));
 
-                var existingTab = existingTabs.FirstOrDefault(x => HttpUtility.UrlDecode(x["displayName"].ToString()) == tab.DisplayName && x["teamsAppId"].ToString() == tab.TeamsAppId);
+                var existingTab = existingTabs.FirstOrDefault(x => x["displayName"] != null && HttpUtility.UrlDecode(x["displayName"].ToString()) == tab.DisplayName && x["teamsAppId"] != null && x["teamsAppId"].ToString() == tab.TeamsAppId);
 
                 var tabId = existingTab == null ? CreateTeamTab(scope, tab, parser, teamId, channelId, accessToken) : UpdateTeamTab(tab, parser, teamId, channelId, existingTab["id"].ToString(), accessToken);
 
@@ -881,7 +945,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private static void RemoveTeamTab(string tabId, string channelId, string teamId, string accessToken)
         {
-            HttpHelper.MakeDeleteRequest($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/tabs/{tabId}", accessToken);
+            HttpHelper.MakeDeleteRequest($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/teams/{teamId}/channels/{channelId}/tabs/{tabId}", accessToken);
         }
 
         public static JToken GetExistingTeamChannelTabs(string teamId, string channelId, string accessToken)
@@ -922,7 +986,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         } : null,
                 };
 
-                HttpHelper.MakePatchRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/tabs/{tabId}", tabToUpdate, HttpHelper.JsonContentType, accessToken);
+            HttpHelper.MakePatchRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/teams/{teamId}/channels/{channelId}/tabs/{tabId}", tabToUpdate, HttpHelper.JsonContentType, accessToken);
 
                 // Add the teamsAppId back now that we've updated the tab
                 tab.TeamsAppId = teamsAppId;
@@ -1038,25 +1102,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             }
 
-            var tabToCreate = new
-            {
-                displayname,
-                teamsAppId,
-                configuration = tab.Configuration != null
-                    ? new
-                    {
-                        tab.Configuration.EntityId,
-                        tab.Configuration.ContentUrl,
-                        tab.Configuration.RemoveUrl,
-                        tab.Configuration.WebsiteUrl
-                    }
-                    : null
-            };
+            Dictionary<string, object> tabToCreate = new Dictionary<string, object>();
+            tabToCreate.Add("displayName", displayname);
+            tabToCreate.Add("configuration", tab.Configuration != null
+                                        ? new
+                                        {
+                                            tab.Configuration.EntityId,
+                                            tab.Configuration.ContentUrl,
+                                            tab.Configuration.RemoveUrl,
+                                            tab.Configuration.WebsiteUrl
+                                        }
+                                        : null);
+            tabToCreate.Add("teamsApp@odata.bind", "https://graph.microsoft.com/v1.0/appCatalogs/teamsApps/" + teamsAppId);
 
             var tabId = GraphHelper.CreateOrUpdateGraphObject(scope,
                 HttpMethodVerb.POST,
-                $"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/tabs",
-                tabToCreate,
+                $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/teams/{teamId}/channels/{channelId}/tabs",
+                JsonConvert.SerializeObject(tabToCreate),
                 HttpHelper.JsonContentType,
                 accessToken,
                 "NameAlreadyExists",
@@ -1129,22 +1191,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// Synchronizes Team Apps settings
         /// </summary>
         /// <param name="scope">The PnP Provisioning Scope</param>
+        /// <param name="parser">Token parser</param>
         /// <param name="team">The Team settings, including security settings</param>
         /// <param name="teamId">The ID of the target Team</param>
         /// <param name="accessToken">The OAuth 2.0 Access Token</param>
         /// <returns>Whether the Apps have been provisioned or not</returns>
-        private static bool SetTeamApps(PnPMonitoredScope scope, Team team, string teamId, string accessToken)
+        private static bool SetTeamApps(PnPMonitoredScope scope, TokenParser parser, Team team, string teamId, string accessToken)
         {
             foreach (var app in team.Apps)
             {
                 object appToCreate = new JObject
                 {
-                    ["teamsApp@odata.bind"] = app.AppId
+                    ["teamsApp@odata.bind"] = "https://graph.microsoft.com/v1.0/appCatalogs/teamsApps/" + parser.ParseString(app.AppId)
                 };
 
                 var id = GraphHelper.CreateOrUpdateGraphObject(scope,
                     HttpMethodVerb.POST,
-                    $"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/installedApps",
+                    $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/teams/{teamId}/installedApps",
                     appToCreate,
                     HttpHelper.JsonContentType,
                     accessToken,
@@ -1230,15 +1293,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 return null;
             }
 
-            try
+            bool wait = true;
+            int iterations = 0;
+            while (wait)
             {
-                var teamId = responseHeaders.Location.ToString().Split('\'')[1];
-                var team = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{teamId}", accessToken);
-                return JToken.Parse(team);
-            }
-            catch (Exception ex)
-            {
-                scope.LogError(CoreResources.Provisioning_ObjectHandlers_Teams_TeamTemplate_FetchingError, ex.Message);
+                iterations++;
+
+                try
+                {
+                    var teamId = responseHeaders.Location.ToString().Split('\'')[1];
+                    var team = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{teamId}", accessToken);
+                    wait = false;
+                    return JToken.Parse(team);
+                }
+                catch (Exception)
+                {
+                    // In case of exception wait for 10 secs
+                    Thread.Sleep(TimeSpan.FromSeconds(10));
+                }
+
+                // Don't wait more than 1 minute
+                if (iterations > 6)
+                {
+                    wait = false;
+                }                
             }
 
             return null;
@@ -1257,7 +1335,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (teamTemplate.DisplayName != null) team["displayName"] = teamTemplate.DisplayName;
             if (teamTemplate.Description != null) team["description"] = teamTemplate.Description;
-            if (teamTemplate.Classification != null) team["classification"] = teamTemplate.Classification;
+            if (!string.IsNullOrEmpty(teamTemplate.Classification)) team["classification"] = teamTemplate.Classification;
             team["visibility"] = teamTemplate.Visibility.ToString();
 
             return team.ToString();
@@ -1303,7 +1381,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (PnPProvisioningContext.Current != null)
                         {
                             // Get a fresh Access Token for every request
-                            accessToken = PnPProvisioningContext.Current.AcquireToken(GraphHelper.MicrosoftGraphBaseURI, "Group.ReadWrite.All");
+                            accessToken = PnPProvisioningContext.Current.AcquireToken(new Uri(GraphHelper.MicrosoftGraphBaseURI).Authority, "Group.ReadWrite.All");
 
                             if (accessToken != null)
                             {
@@ -1325,12 +1403,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     foreach (var team in teams)
                     {
                         WriteSubProgress("Teams", "Team", currentProgress, totalCount);
+                        if (PnPProvisioningContext.Current != null)
+                        {
+                            // Get a fresh Access Token for every request
+                            accessToken = PnPProvisioningContext.Current.AcquireToken(GraphHelper.MicrosoftGraphBaseURI, "Group.ReadWrite.All");
 
-                        // Get a fresh Access Token for every request
-                        accessToken = PnPProvisioningContext.Current.AcquireToken(GraphHelper.MicrosoftGraphBaseURI, "Group.ReadWrite.All");
-
-                        // Create the Team starting from the XML PnP Provisioning Schema definition
-                        CreateTeamFromProvisioningSchema(scope, parser, hierarchy.Connector, team, accessToken);
+                            if (accessToken != null)
+                            {
+                                // Create the Team starting from the XML PnP Provisioning Schema definition
+                                CreateTeamFromProvisioningSchema(scope, parser, hierarchy.Connector, team, accessToken);
+                            }
+                        }
 
                         currentProgress++;
                     }
@@ -1346,7 +1429,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(Name))
             {
-                var accessToken = PnPProvisioningContext.Current.AcquireTokenWithMultipleScopes(GraphHelper.MicrosoftGraphBaseURI, "Group.ReadWrite.All", "User.Read.All");
+                var accessToken = PnPProvisioningContext.Current.AcquireTokenWithMultipleScopes(new Uri(GraphHelper.MicrosoftGraphBaseURI).Authority, "Group.ReadWrite.All", "User.Read.All");
 
                 if (accessToken != null)
                 {
@@ -1413,7 +1496,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // Get Settings
             try
             {
-                var teamString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{groupId}", accessToken);
+                var teamString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/teams/{groupId}", accessToken);
                 team = JsonConvert.DeserializeObject<Team>(teamString);
                 if (configuration.Tenant.Teams.IncludeGroupId)
                 {
@@ -1501,12 +1584,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private static Team GetTeamSecurity(string accessToken, string groupId, Team team, PnPMonitoredScope scope)
         {
             team.Security = new TeamSecurity();
-            var teamOwnersString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/groups/{groupId}/owners", accessToken);
+            var teamOwnersString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{groupId}/owners?$select=userPrincipalName", accessToken);
             foreach (var user in JObject.Parse(teamOwnersString)["value"] as JArray)
             {
                 team.Security.Owners.Add(user.ToObject<TeamSecurityUser>());
             }
-            var teamMembersString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/groups/{groupId}/members", accessToken);
+            var teamMembersString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{groupId}/members?$select=userPrincipalName", accessToken);
             foreach (var user in JObject.Parse(teamMembersString)["value"] as JArray)
             {
                 team.Security.Members.Add(user.ToObject<TeamSecurityUser>());
@@ -1518,7 +1601,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private static Team GetTeamApps(string accessToken, string groupId, Team team, PnPMonitoredScope scope)
         {
-            var teamsAppsString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{groupId}/installedApps", accessToken);
+            var teamsAppsString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/teams/{groupId}/installedApps", accessToken);
             foreach (var app in JObject.Parse(teamsAppsString)["value"] as JArray)
             {
                 team.Apps.Add(new TeamAppInstance() { AppId = app["id"].Value<string>() });
@@ -1551,7 +1634,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private static List<TeamTab> GetTeamChannelTabs(ExtractConfiguration configuration, string accessToken, string groupId, string channelId)
         {
             List<TeamTab> tabs = new List<TeamTab>();
-            var teamTabsString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{groupId}/channels/{channelId}/tabs", accessToken);
+            var teamTabsString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/teams/{groupId}/channels/{channelId}/tabs", accessToken);
             foreach (var tab in JsonConvert.DeserializeObject<List<TeamTab>>(JObject.Parse(teamTabsString)["value"].ToString()))
             {
                 if (tab.Configuration != null && string.IsNullOrEmpty(tab.Configuration.ContentUrl))

@@ -895,7 +895,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 web.Context.Load(page.PageListItem);
                 web.Context.ExecuteQueryRetry();
-                page.PageListItem.SetSecurity(parser, clientSidePage.Security);
+                page.PageListItem.SetSecurity(parser, clientSidePage.Security, WriteMessage);
             }
         }
 

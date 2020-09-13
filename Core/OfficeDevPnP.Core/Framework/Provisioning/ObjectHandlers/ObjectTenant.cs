@@ -52,6 +52,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         parser = TenantHelper.ProcessThemes(tenant, template.Tenant, parser, scope, MessagesDelegate);
                         parser = TenantHelper.ProcessUserProfiles(tenant, template.Tenant, parser, scope, MessagesDelegate);
                         parser = TenantHelper.ProcessSharingSettings(tenant, template.Tenant, parser, scope, MessagesDelegate);
+                        parser = TenantHelper.ProcessO365GroupSettings(tenant, template.Tenant, parser, scope, MessagesDelegate);
                     }
                 }
             }

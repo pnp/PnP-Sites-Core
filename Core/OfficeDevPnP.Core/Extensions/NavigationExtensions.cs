@@ -783,6 +783,7 @@ namespace Microsoft.SharePoint.Client
 
             if (menuState["StartingNodeKey"] == null)
             {
+                web.EnsureProperties(w => w.ServerRelativeUrl);
                 var now = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss:Z");
                 web.ExecutePostAsync($"/_api/navigation/SaveMenuState", $@"{{ ""menuState"":{{ ""Version"":""{now}"",""StartingNodeTitle"":""3a94b35f-030b-468e-80e3-b75ee84ae0ad"",""SPSitePrefix"":""/"",""SPWebPrefix"":""{web.ServerRelativeUrl}"",""FriendlyUrlPrefix"":"""",""SimpleUrl"":"""",""Nodes"":[]}}}}").GetAwaiter().GetResult();
                 structureString = web.ExecuteGetAsync($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();

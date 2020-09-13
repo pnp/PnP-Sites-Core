@@ -6,10 +6,13 @@ using Microsoft.SharePoint.Client.UserProfiles;
 using Newtonsoft.Json;
 using OfficeDevPnP.Core.ALM;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Framework.Graph;
+using OfficeDevPnP.Core.Framework.Graph.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
+using OfficeDevPnP.Core.Utilities.Graph;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -404,7 +407,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             {
                                 parser.Tokens.Remove(existingToken);
                             }
-                            parser.AddToken(new SiteScriptIdToken(null, parsedTitle, existingId));
+                            parser.AddToken(new SiteDesignIdToken(null, parsedTitle, existingId));
 
                             if (siteDesign.Grants != null && siteDesign.Grants.Any())
                             {
@@ -757,6 +760,143 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
                 // Save the new settings
                 tenant.Context.ExecuteQueryRetry();
+            }
+            return parser;
+        }
+
+        public static TokenParser ProcessO365GroupSettings(Tenant tenant, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope, ProvisioningMessagesDelegate messagesDelegate)
+        {
+            if (provisioningTenant.Office365GroupsSettings != null && provisioningTenant.Office365GroupsSettings.Properties.Any())
+            {
+                messagesDelegate?.Invoke("Processing Office 365 Group Settings", ProvisioningMessageType.Progress);
+                bool siteClassificationSettingsExists = false;
+                if (PnPProvisioningContext.Current != null)
+                {
+                    string accessToken = string.Empty;
+                    try
+                    {
+                        // Get a fresh Access Token for every request
+                        accessToken = PnPProvisioningContext.Current.AcquireToken(GraphHelper.MicrosoftGraphBaseURI, "Directory.ReadWrite.All");
+
+                        if (accessToken != null)
+                        {
+                            try
+                            {
+                                var siteClassificationSettings = tenant.GetSiteClassificationsSettings(accessToken);
+                                siteClassificationSettingsExists = true;
+                            }
+                            catch (Exception ex)
+                            {
+                                // Tenant classification doesn't exist, just swallow the exception.
+                            }
+
+                            if (siteClassificationSettingsExists)
+                            {
+                                // Tenant classification exists, update the necessary values for Group Settings.
+                                try
+                                {
+                                    string directorySettingTemplatesUrl = $"{GraphHttpClient.MicrosoftGraphV1BaseUri}groupSettings";
+                                    var directorySettingTemplatesJson = GraphHttpClient.MakeGetRequestForString(directorySettingTemplatesUrl, accessToken);
+                                    var directorySettingTemplates = JsonConvert.DeserializeObject<DirectorySettingTemplates>(directorySettingTemplatesJson);
+
+                                    // Retrieve the setinngs for "Group.Unified"
+                                    var unifiedGroupSetting = directorySettingTemplates.Templates.FirstOrDefault(t => t.DisplayName == "Group.Unified");
+
+                                    if (unifiedGroupSetting != null)
+                                    {
+                                        var props = provisioningTenant.Office365GroupsSettings.Properties;
+                                        foreach (var v in unifiedGroupSetting.SettingValues)
+                                        {
+                                            var item = props.Where(p => p.Key == v.Name).FirstOrDefault();
+                                            if (!string.IsNullOrEmpty(item.Key))
+                                            {
+                                                v.Value = parser.ParseString(item.Value);
+                                            }
+                                        }
+
+                                        string updateDirectorySettingUrl = $"{GraphHttpClient.MicrosoftGraphV1BaseUri}groupSettings/{unifiedGroupSetting.Id}";
+                                        var updateDirectorySettingResult = GraphHttpClient.MakePatchRequestForString(
+                                            updateDirectorySettingUrl,
+                                            content: new
+                                            {
+                                                templateId = unifiedGroupSetting.Id,
+                                                values = from v in unifiedGroupSetting.SettingValues select new { name = v.Name, value = v.Value },
+                                            },
+                                            contentType: "application/json",
+                                            accessToken: accessToken);
+
+                                    }
+                                    else
+                                    {
+                                        throw new ApplicationException("Missing DirectorySettingTemplate for \"Group.Unified\"");
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    scope.LogError($"Error occurred processing O365 Group settings ${ex.Message}");
+                                }
+                            }
+                            else
+                            {
+                                // Tenant classification doesn't exist, create the necessary template for Group Settings.
+
+                                try
+                                {
+                                    string directorySettingTemplatesUrl = $"{GraphHttpClient.MicrosoftGraphV1BaseUri}groupSettingTemplates";
+                                    var directorySettingTemplatesJson = GraphHttpClient.MakeGetRequestForString(directorySettingTemplatesUrl, accessToken);
+                                    var directorySettingTemplates = JsonConvert.DeserializeObject<DirectorySettingTemplates>(directorySettingTemplatesJson);
+
+                                    // Retrieve the setinngs for "Group.Unified"
+                                    var unifiedGroupSetting = directorySettingTemplates.Templates.FirstOrDefault(t => t.DisplayName == "Group.Unified");
+
+                                    if (unifiedGroupSetting != null)
+                                    {
+                                        var props = provisioningTenant.Office365GroupsSettings.Properties;
+                                        foreach (var v in unifiedGroupSetting.SettingValues)
+                                        {
+                                            var item = props.Where(p => p.Key == v.Name).FirstOrDefault();
+                                            if (!string.IsNullOrEmpty(item.Key))
+                                            {
+                                                v.Value = parser.ParseString(item.Value);
+                                            }
+                                            else
+                                            {
+                                                // Set default value because null is not supported
+                                                // It only accepts entire collection and not individual properties
+                                                v.Value = v.DefaultValue;
+                                            }
+                                        }
+
+                                        string updateDirectorySettingUrl = $"{GraphHttpClient.MicrosoftGraphV1BaseUri}groupSettings";
+                                        var updateDirectorySettingResult = GraphHttpClient.MakePostRequestForString(
+                                            updateDirectorySettingUrl,
+                                            content: new
+                                            {
+                                                templateId = unifiedGroupSetting.Id,
+                                                values = from v in unifiedGroupSetting.SettingValues select new { name = v.Name, value = v.Value },
+                                            },
+                                            contentType: "application/json",
+                                            accessToken: accessToken);
+
+                                    }
+                                    else
+                                    {
+                                        throw new ApplicationException("Missing DirectorySettingTemplate for \"Group.Unified\"");
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    scope.LogError($"Error occurred processing O365 Group settings ${ex.Message}");
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        scope.LogError($"Error occurred processing O365 Group settings ${ex.Message}");
+                    }
+
+                }
             }
             return parser;
         }
