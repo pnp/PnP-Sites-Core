@@ -181,7 +181,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     }
                                     if (dataRow.Security != null && (dataRow.Security.ClearSubscopes || dataRow.Security.CopyRoleAssignments || dataRow.Security.RoleAssignments.Count > 0))
                                     {
-                                        listitem.SetSecurity(parser, dataRow.Security);
+                                        listitem.SetSecurity(parser, dataRow.Security, WriteMessage);
                                     }
                                 }
                             }

@@ -10,7 +10,7 @@
     "siteUrl": {
       "type": "string",
       "description": "A value in the shape of https://[yourtenant].sharepoint.com/sites/yoursite",
-      "pattern": "https:\/\/[a-zA-Z]*.sharepoint\\.[a-zA-Z].*"
+      "pattern": "https:\/\/[a-zA-Z0-9]*.sharepoint\\.[a-zA-Z].*"
     }
   },
   "properties": {

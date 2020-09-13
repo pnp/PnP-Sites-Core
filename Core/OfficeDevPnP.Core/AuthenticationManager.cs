@@ -21,6 +21,7 @@ using System.Net.Http;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Utilities.Context;
 using System.Web;
+using System.Windows.Threading;
 
 namespace OfficeDevPnP.Core
 {
@@ -401,12 +402,13 @@ namespace OfficeDevPnP.Core
         /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
         /// <param name="icon">Optional icon to use for the popup form</param>
         /// <param name="scriptErrorsSuppressed">Optional parameter to set WebBrowser.ScriptErrorsSuppressed value in the popup form</param>
+        /// <param name="loginRequestUri">Optional URL to use to log the user in to a specific page. If not provided, the <paramref name="siteUrl"/> will be used.</param>
         /// <returns>ClientContext to be used by CSOM code</returns>
-        public ClientContext GetWebLoginClientContext(string siteUrl, System.Drawing.Icon icon = null, bool scriptErrorsSuppressed = true)
+        public ClientContext GetWebLoginClientContext(string siteUrl, System.Drawing.Icon icon = null, bool scriptErrorsSuppressed = true, Uri loginRequestUri = null)
         {
             var authCookiesContainer = new CookieContainer();
             var siteUri = new Uri(siteUrl);
-
+            
             var thread = new Thread(() =>
             {
                 var form = new System.Windows.Forms.Form();
@@ -427,11 +429,11 @@ namespace OfficeDevPnP.Core
                 form.Controls.Add(browser);
                 form.ResumeLayout(false);
 
-                browser.Navigate(siteUri);
+                browser.Navigate(loginRequestUri ?? siteUri);
 
                 browser.Navigated += (sender, args) =>
                 {
-                    if (siteUri.Host.Equals(args.Url.Host))
+                    if ((loginRequestUri ?? siteUri).Host.Equals(args.Url.Host))
                     {
                         var cookieString = CookieReader.GetCookie(siteUrl).Replace("; ", ",").Replace(";", ",");
 
@@ -458,7 +460,7 @@ namespace OfficeDevPnP.Core
                 };
 
                 form.Focus();
-                form.ShowDialog();
+                form.ShowDialog();                
                 browser.Dispose();
             });
 
@@ -1165,6 +1167,58 @@ namespace OfficeDevPnP.Core
 
             return clientContext;
         }
+
+#if !NETSTANDARD2_0
+        /// <summary>
+        /// Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
+        /// </summary>
+        /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
+        /// <param name="clientId">The Azure AD Application Client ID</param>
+        /// <param name="tenant">The Azure AD Tenant, e.g. mycompany.onmicrosoft.com</param>
+        /// <param name="clientAssertionCertificate">IClientAssertionCertificate used to authenticate</param>
+        /// <param name="environment">SharePoint environment being used</param>
+        /// <returns></returns>
+        public ClientContext GetAzureADAppOnlyAuthenticatedContext(string siteUrl, string clientId, string tenant, IClientAssertionCertificate clientAssertionCertificate, AzureEnvironment environment = AzureEnvironment.Production)
+        {
+            var clientContext = new ClientContext(siteUrl);
+#if !ONPREMISES || SP2016 || SP2019
+            clientContext.DisableReturnValueCache = true;
+#endif
+
+            string authority = string.Format(CultureInfo.InvariantCulture, "{0}/{1}/", GetAzureADLoginEndPoint(environment), tenant);
+
+            var authContext = new AuthenticationContext(authority);
+
+            //var clientAssertionCertificate = new ClientAssertionCertificate(clientId, certificate);
+
+            var host = new Uri(siteUrl);
+
+            clientContext.ExecutingWebRequest += (sender, args) =>
+            {
+                var ar = Task.Run(() => authContext
+                    .AcquireTokenAsync(host.Scheme + "://" + host.Host + "/", clientAssertionCertificate))
+                    .GetAwaiter().GetResult();
+                args.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + ar.AccessToken;
+            };
+
+            ClientContextSettings clientContextSettings = new ClientContextSettings()
+            {
+                Type = ClientContextType.AzureADCertificate,
+                SiteUrl = siteUrl,
+                AuthenticationManager = this,
+                ClientId = clientId,
+                Tenant = tenant,
+                ClientAssertionCertificate = clientAssertionCertificate,
+                Environment = environment
+            };
+
+            clientContext.AddContextSettings(clientContextSettings);
+
+            return clientContext;
+        }
+#endif
+
+
 
         /// <summary>
         /// Get's the Azure AD login end point for the given environment

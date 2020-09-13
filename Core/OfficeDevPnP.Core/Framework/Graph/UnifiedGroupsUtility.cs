@@ -1750,29 +1750,51 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// </summary>
         /// <param name="groupId">The ID of the Office 365 Group</param>
         /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
+        /// <param name="timeoutSeconds">Time to wait till Team is created. Default is 300 seconds (5 mins)</param>
         /// <returns></returns>
-        public static async Task CreateTeam(String groupId, String accessToken)
+        public static async Task CreateTeam(string groupId, string accessToken, int timeoutSeconds = 300)
         {
-            if (String.IsNullOrEmpty(groupId))
+            if (string.IsNullOrEmpty(groupId))
             {
                 throw new ArgumentNullException(nameof(groupId));
             }
-            if (String.IsNullOrEmpty(accessToken))
+            if (string.IsNullOrEmpty(accessToken))
             {
                 throw new ArgumentNullException(nameof(accessToken));
             }
+
             var createTeamEndPoint = GraphHttpClient.MicrosoftGraphV1BaseUri + $"groups/{groupId}/team";
-            try
+            bool wait = true;
+            int iterations = 0;
+            while (wait)
             {
-                await Task.Run(() =>
+                iterations++;
+                try
                 {
-                    GraphHttpClient.MakePutRequest(createTeamEndPoint, new { }, "application/json", accessToken);
-                });
-            }
-            catch (ServiceException ex)
-            {
-                Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, ex.Error.Message);
-                throw;
+                    await Task.Run(() =>
+                    {
+                        var teamid = HttpHelper.MakePutRequestForString(createTeamEndPoint, new { }, "application/json", accessToken);
+                        if (!string.IsNullOrEmpty(teamid))
+                        {
+                            wait = false;
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    // Don't wait more than the requested timeout in seconds
+                    if (iterations * 30 >= timeoutSeconds)
+                    {
+                        wait = false;
+                        throw;
+                    }
+                    else
+                    {
+                        // In case of exception wait for 30 secs
+                        Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, ex.Message);
+                        System.Threading.Thread.Sleep(TimeSpan.FromSeconds(30));
+                    }
+                }
             }
         }
 
