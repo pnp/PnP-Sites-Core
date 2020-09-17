@@ -11,6 +11,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## Changed
 
 - Update extract-configuration.schema.json #2747 [pschaeflein - Paul Schaeflein]
+- Additional check while extracting/setting hub site #2489 [gautamdsheth - Gautam Sheth]
+- Multiple improvements while working with Teams #2476 [gautamdsheth - Gautam Sheth]
+- Added retry mechanism to handle team creation replication delays #2521 [gautamdsheth - Gautam Sheth]
+- Fix site design token parsing (and application) in tenant provisioning #2736 [michael-jensen - Mike Jensen]
 
 ## [3.25.2009.1 September 2020 release]
 
