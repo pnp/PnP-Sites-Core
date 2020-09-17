@@ -1729,6 +1729,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             var ctx = (ClientContext)list.Context;
             var web = ctx.Web;
+
+            ctx.Load(web.AvailableFields);
+            ctx.ExecuteQueryRetry();
+
             foreach (var fieldLink in tempCT.FieldLinks)
             {
                 if (fieldLink.Hidden && !list.FieldExistsById(fieldLink.Id))
