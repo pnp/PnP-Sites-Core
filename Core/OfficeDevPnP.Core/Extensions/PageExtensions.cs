@@ -256,6 +256,10 @@ namespace Microsoft.SharePoint.Client
             web.Context.ExecuteQueryRetry();
 
             string wikiField = (string)webPartPage.ListItemAllFields["WikiField"];
+            if (wikiField == null)
+            {
+                return null;
+            }
 
             var wpdNew = AddWebPart(web, webPartPage, webPart, "wpz", 0);
 
