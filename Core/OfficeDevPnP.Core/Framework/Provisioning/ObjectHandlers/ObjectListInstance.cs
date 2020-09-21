@@ -193,6 +193,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         #endregion Views
 
+                        #region Column default values
+
+                        foreach (var listInfo in processedLists)
+                        {
+                            var defaultFolderValues = new List<Entities.IDefaultColumnValue>();
+                            foreach (var templateListFolder in listInfo.TemplateList.Folders)
+                            {
+                                var folderName = templateListFolder.Name;
+                                ProcessDefaultFolders(web, listInfo, templateListFolder, folderName, defaultFolderValues, parser);
+                            }
+                            listInfo.SiteList.SetDefaultColumnValues(defaultFolderValues, true);
+                        }
+
+                        #endregion Column default values
+
                         #region Folders
 
                         // Folders are supported for document libraries and generic lists only
@@ -230,21 +245,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
 
                         #endregion Property Bag Entries
-
-                        #region Column default values
-
-                        foreach (var listInfo in processedLists)
-                        {
-                            var defaultFolderValues = new List<Entities.IDefaultColumnValue>();
-                            foreach (var templateListFolder in listInfo.TemplateList.Folders)
-                            {
-                                var folderName = templateListFolder.Name;
-                                ProcessDefaultFolders(web, listInfo, templateListFolder, folderName, defaultFolderValues, parser);
-                            }
-                            listInfo.SiteList.SetDefaultColumnValues(defaultFolderValues, true);
-                        }
-
-                        #endregion Column default values
                     }
                     WriteMessage("Done processing lists", ProvisioningMessageType.Completed);
                 }
