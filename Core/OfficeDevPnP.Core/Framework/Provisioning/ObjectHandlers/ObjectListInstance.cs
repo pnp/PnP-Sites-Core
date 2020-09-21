@@ -239,7 +239,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             foreach (var templateListFolder in listInfo.TemplateList.Folders)
                             {
                                 var folderName = templateListFolder.Name;
-                                ProcessDefaultFolders(web, listInfo, templateListFolder, folderName, defaultFolderValues);
+                                ProcessDefaultFolders(web, listInfo, templateListFolder, folderName, defaultFolderValues, parser);
                             }
                             listInfo.SiteList.SetDefaultColumnValues(defaultFolderValues, true);
                         }
@@ -253,20 +253,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
         private static void ProcessDefaultFolders(Web web, ListInfo listInfo, Model.Folder templateListFolder, string folderName,
-            List<IDefaultColumnValue> defaultFolderValues)
+            List<IDefaultColumnValue> defaultFolderValues, TokenParser parser)
         {
             foreach (KeyValuePair<string, string> columnValue in templateListFolder.DefaultColumnValues)
             {
-                string fieldName = columnValue.Key;
+                string fieldName = parser.ParseString(columnValue.Key);
                 var field = listInfo.SiteList.Fields.GetByInternalNameOrTitle(fieldName);
                 var defaultValue =
-                    field.GetDefaultColumnValueFromField((ClientContext)web.Context, folderName, new[] { columnValue.Value });
+                    field.GetDefaultColumnValueFromField((ClientContext)web.Context, folderName, new[] { parser.ParseString(columnValue.Value) });
                 defaultFolderValues.Add(defaultValue);
             }
             foreach (var folder in templateListFolder.Folders)
             {
                 var childFolderName = folderName + "/" + folder.Name;
-                ProcessDefaultFolders(web, listInfo, folder, childFolderName, defaultFolderValues);
+                ProcessDefaultFolders(web, listInfo, folder, childFolderName, defaultFolderValues, parser);
             }
         }
 
