@@ -2230,7 +2230,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     foreach (var p in folder.PropertyBagEntries)
                     {
-                        currentFolder.Properties[p.Key] = parser.ParseString(p.Value);
+                        currentFolder.Properties[parser.ParseString(p.Key)] = parser.ParseString(p.Value);
                     }
                     currentFolder.Update();
                 }
