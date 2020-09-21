@@ -404,7 +404,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             var anchorIdElement = taxonomyFieldElement.XPathSelectElement("./Customization/ArrayOfProperty/Property[Name = 'AnchorId']/Value");
-            if (anchorIdElement != null & Guid.TryParse(anchorIdElement.Value, out Guid anchorIdValue) && field.AnchorId.Equals(anchorIdValue) == false)
+            if (anchorIdElement != null && Guid.TryParse(anchorIdElement.Value, out Guid anchorIdValue) && field.AnchorId.Equals(anchorIdValue) == false)
             {
                 field.AnchorId = anchorIdValue;
                 isDirty = true;
