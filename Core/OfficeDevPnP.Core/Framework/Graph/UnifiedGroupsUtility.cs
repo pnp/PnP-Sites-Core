@@ -312,10 +312,10 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         // And if any, add it to the collection of group's owners
                         await graphClient.Groups[groupId].Members.References.Request().AddAsync(member);
                     }
-                    catch (ServiceException ex)
+                    catch (Exception ex)
                     {
-                        if (ex.Error.Code == "Request_BadRequest" &&
-                            ex.Error.Message.Contains("added object references already exist"))
+                        if (ex.InnerException.Message.Contains("Request_BadRequest") &&
+                            ex.InnerException.Message.Contains("added object references already exist"))
                         {
                             // Skip any already existing member
                         }
@@ -401,10 +401,10 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         // And if any, add it to the collection of group's owners
                         await graphClient.Groups[groupId].Owners.References.Request().AddAsync(owner);
                     }
-                    catch (ServiceException ex)
+                    catch (Exception ex)
                     {
-                        if (ex.Error.Code == "Request_BadRequest" &&
-                            ex.Error.Message.Contains("added object references already exist"))
+                        if (ex.InnerException.Message.Contains("Request_BadRequest") &&
+                            ex.InnerException.Message.Contains("added object references already exist"))
                         {
                             // Skip any already existing owner
                         }
