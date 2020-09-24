@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using OfficeDevPnP.Core.Utilities.Async;
 using System.IdentityModel.Tokens.Jwt;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using OfficeDevPnP.Core.Utilities.Context;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 
@@ -179,11 +180,9 @@ namespace Microsoft.SharePoint.Client
                     var response = wex.Response as HttpWebResponse;
                     // Check if request was throttled - http status code 429
                     // Check is request failed due to server unavailable - http status code 503
-                    if (response != null &&
-                        (response.StatusCode == (HttpStatusCode)429
-                        || response.StatusCode == (HttpStatusCode)503
-                        // || response.StatusCode == (HttpStatusCode)500
-                        ))
+                    // Check if we are unable to connect to the remote server - Only one usage of each socket address (protocol/network address/port)
+                    if ((response != null && (response.StatusCode == (HttpStatusCode)429 || response.StatusCode == (HttpStatusCode)503))
+                        || (wex.InnerException is SocketException sockex && sockex.SocketErrorCode == SocketError.AddressAlreadyInUse))
                     {
                         Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetry, backoffInterval);
 
