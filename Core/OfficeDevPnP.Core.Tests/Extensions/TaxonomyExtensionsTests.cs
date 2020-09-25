@@ -826,6 +826,37 @@ namespace Microsoft.SharePoint.Client.Tests
         }
 
         [TestMethod()]
+        public void HandleTermsWithCommanAndGuidTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var site = clientContext.Site;
+
+                var termName1 = "1stComma,Comma";
+                var term1Guid = Guid.NewGuid();
+                var termName2 = "2ndComma,Comma";
+                var term2Guid = Guid.NewGuid();
+                var termName3 = "3ndComma,Comma";
+                var term3Guid = Guid.NewGuid();
+                List<string> termLines = new List<string>();
+                string termSrc1 = _termGroupName + ";#" + _termGroupId + "|" + _termSetName1 + ";#" + _termSet1Id + "|\"" + termName1 + "\";#" + term1Guid.ToString();
+                string termSrc2 = _termGroupName + ";#" + _termGroupId + "|" + _termSetName1 + ";#" + _termSet1Id + "|\"" + termName2 + "\";#" + term2Guid.ToString() + "|\"" + termName3 + "\";#" + term3Guid.ToString();
+                termLines.Add(termSrc1);
+                termLines.Add(termSrc2);
+
+                TaxonomySession session = TaxonomySession.GetTaxonomySession(clientContext);
+                var termStore = session.GetDefaultSiteCollectionTermStore();
+                site.ImportTerms(termLines.ToArray(), 1033, termStore, "|");
+
+                var terms = site.ExportTermSet(_termSet1Id, true);
+                string termDest1 = terms.SingleOrDefault(t => t.Contains(termName1));
+                string termDest2 = terms.SingleOrDefault(t => t.Contains(termName3));
+                Assert.AreEqual(termSrc1, termDest1);
+                Assert.AreEqual(termSrc2, termDest2);
+            }
+        }
+
+        [TestMethod()]
         public void HandleTermsWithQuotesTest()
         {
             using (var clientContext = TestCommon.CreateClientContext())
