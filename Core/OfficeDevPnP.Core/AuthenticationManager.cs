@@ -21,7 +21,6 @@ using System.Net.Http;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Utilities.Context;
 using System.Web;
-using System.Windows.Threading;
 
 namespace OfficeDevPnP.Core
 {
@@ -1168,7 +1167,6 @@ namespace OfficeDevPnP.Core
             return clientContext;
         }
 
-#if !NETSTANDARD2_0
         /// <summary>
         /// Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
         /// </summary>
@@ -1188,8 +1186,6 @@ namespace OfficeDevPnP.Core
             string authority = string.Format(CultureInfo.InvariantCulture, "{0}/{1}/", GetAzureADLoginEndPoint(environment), tenant);
 
             var authContext = new AuthenticationContext(authority);
-
-            //var clientAssertionCertificate = new ClientAssertionCertificate(clientId, certificate);
 
             var host = new Uri(siteUrl);
 
@@ -1216,7 +1212,6 @@ namespace OfficeDevPnP.Core
 
             return clientContext;
         }
-#endif
 
 
 
