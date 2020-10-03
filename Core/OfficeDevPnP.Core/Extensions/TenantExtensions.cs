@@ -1027,14 +1027,20 @@ namespace Microsoft.SharePoint.Client
 #if !ONPREMISES
         public static bool IsCurrentUserTenantAdmin(ClientContext clientContext)
         {
+            // In order to support an App Only AAD connection that has Sites.FullControl.All permission
+            // we need to check via the SPO approach first as the Microsoft Graph approach currently
+            // assumes a user is connected and therefore does not work for an App Only AAD connection.
+            if (IsCurrentUserTenantAdminViaSPO(clientContext))
+            {
+                return true;
+			}
+
             if (PnPProvisioningContext.Current != null)
             {
                 return IsCurrentUserTenantAdminViaGraph();
             }
-            else
-            {
-                return IsCurrentUserTenantAdminViaSPO(clientContext);
-            }
+
+            return false;
         }
 
         private static bool IsCurrentUserTenantAdminViaGraph()
