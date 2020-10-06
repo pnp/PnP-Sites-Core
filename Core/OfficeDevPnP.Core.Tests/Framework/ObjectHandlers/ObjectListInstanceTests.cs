@@ -21,6 +21,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         private const string TokenizedCalculatedFieldElementSchema = @"<Field Name=""CalculatedField"" StaticName=""CalculatedField"" DisplayName=""Test Calculated Field"" Type=""Calculated"" ResultType=""Text"" ID=""{D1A33456-9FEB-4D8E-AFFA-177EACCE4B70}"" Group=""PnP"" ReadOnly=""TRUE"" ><Formula>=[{fieldtitle:DemoField}]&amp;""BlaBla""</Formula></Field>";
         private Guid calculatedFieldId = Guid.Parse("{D1A33456-9FEB-4D8E-AFFA-177EACCE4B70}");
 
+        private const string DetailsFieldName = "DetailsField";
+        private const string LookupFieldName = "LookupField";
+        private const string LookupMultiFieldName = "LookupMultiField";
+
         private List<string> listsForCleanup = new List<string>();
         private string listName;
         private string datarowListName;
@@ -983,6 +987,115 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         }
 
         [TestMethod]
+        public void CanProvisionLookupFieldValuesInListInstance()
+        {
+            var detailsListName = string.Format("DetailsList_{0}", DateTime.Now.Ticks);
+            var masterListName = string.Format("MasterList_{0}", DateTime.Now.Ticks);
+            listsForCleanup.Add(detailsListName);
+            listsForCleanup.Add(masterListName);
+            var detailsFieldId = Guid.NewGuid();
+            var lookupFieldId = Guid.NewGuid();
+            var lookupMultiFieldId = Guid.NewGuid();
+            var detailsRows = new[]
+            {
+                new DataRow(new Dictionary<string, string> { { DetailsFieldName, "Lookup val 1" } }),
+                new DataRow(new Dictionary<string, string> { { DetailsFieldName, "Lookup val 2" } }),
+                new DataRow(new Dictionary<string, string> { { DetailsFieldName, "Lookup val 3" } }),
+                new DataRow(new Dictionary<string, string> { { DetailsFieldName, "Lookup val 4" } })
+            };
+            var masterRows = new[]
+            {
+                new DataRow(new Dictionary<string, string> {
+                    { LookupFieldName, "1" },
+                    { LookupMultiFieldName, "2,3,4" }
+                }),
+                new DataRow(new Dictionary<string, string> {
+                  { LookupFieldName, "2" },
+                  { LookupMultiFieldName, "3" }
+                }),
+                new DataRow(new Dictionary<string, string> {
+                  { LookupFieldName, "3" },
+                  { LookupMultiFieldName, "1;2" }
+                }),
+                new DataRow(new Dictionary<string, string> {
+                  { LookupFieldName, "4" },
+                  { LookupMultiFieldName, "2,1" }
+                }),
+                new DataRow(new Dictionary<string, string> {
+                  { LookupFieldName, "{parameter:TestLookupId2}" },
+                  { LookupMultiFieldName, "2,{parameter:TestLookupId3}" }
+                }),
+                new DataRow(new Dictionary<string, string> {
+                  { LookupFieldName, "{parameter:TestLookupId3}" },
+                  { LookupMultiFieldName, "{parameter:TestLookupId3},1" }
+                }),
+                new DataRow(new Dictionary<string, string> {
+                  { LookupFieldName, "{parameter:TestLookupId2}" },
+                  { LookupMultiFieldName, "{parameter:TestLookupId2},{parameter:TestLookupId3}" }
+                }),
+                new DataRow(new Dictionary<string, string> {
+                  { LookupFieldName, "{parameter:TestLookupId2}" },
+                  { LookupMultiFieldName, "{parameter:TestLookupId3};{parameter:TestLookupId2}" }
+                }),
+                new DataRow(new Dictionary<string, string> {
+                  { LookupFieldName, "{parameter:TestLookupId3}" },
+                  { LookupMultiFieldName, "{parameter:TestLookupId24}" }
+                }),
+                new DataRow(new Dictionary<string, string> {
+                  { LookupFieldName, "{parameter:TestLookupId3}" },
+                  { LookupMultiFieldName, "{parameter:TestLookupId24},1" }
+                }),
+                new DataRow(new Dictionary<string, string> {
+                  { LookupFieldName, "{parameter:TestLookupId3}" },
+                  { LookupMultiFieldName, "{parameter:TestLookupId24};1" }
+                }),
+                new DataRow(new Dictionary<string, string> {
+                  { LookupFieldName, "{parameter:TestLookupId2}" },
+                  { LookupMultiFieldName, "2,{parameter:TestLookupId13}" }
+                }),
+                new DataRow(new Dictionary<string, string> {
+                  { LookupFieldName, "{parameter:TestLookupId2}" },
+                  { LookupMultiFieldName, "3;{parameter:TestLookupId24}" }
+                })
+            };
+
+            var template = BuildTemplateForLookupInListInstanceTest(
+                masterListName, detailsListName,
+                lookupFieldId, lookupMultiFieldId, detailsFieldId,
+                masterRows, detailsRows);
+
+            template.Parameters.Add("TestLookupId2", "2");
+            template.Parameters.Add("TestLookupId3", "3");
+            template.Parameters.Add("TestLookupId24", "2,4");
+            template.Parameters.Add("TestLookupId13", "1;3");
+
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                var parser = new TokenParser(ctx.Web, template);
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListSettings).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.LookupFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstanceDataRows().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                var detailsList = ctx.Web.GetListByUrl("lists/" + detailsListName);
+                Assert.IsNotNull(detailsList, "Details list not found.");
+
+                var masterList = ctx.Web.GetListByUrl("lists/" + masterListName);
+                Assert.IsNotNull(masterList, "Master list not found.");
+
+                var lf = masterList.GetFieldById<FieldLookup>(lookupFieldId);
+                Assert.IsNotNull(lf, "Lookup field not found.");
+                Assert.IsInstanceOfType(lf, typeof(FieldLookup));
+                Assert.IsTrue(detailsList.FieldExistsByName(lf.LookupField));
+
+                var lmf = masterList.GetFieldById<FieldLookup>(lookupMultiFieldId);
+                Assert.IsNotNull(lmf, "LookupMulti field not found.");
+                Assert.IsInstanceOfType(lmf, typeof(FieldLookup));
+                Assert.IsTrue(detailsList.FieldExistsByName(lmf.LookupField));
+            }
+        }
+
+        [TestMethod]
         public void CanUpdateLookupFieldLocallyInListInstance()
         {
             var detailsListName = string.Format("DetailsList_{0}", DateTime.Now.Ticks);
@@ -1078,12 +1191,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         }
 
         private ProvisioningTemplate BuildTemplateForLookupInListInstanceTest(string masterListName, string detailsListName,
-            Guid lookupFieldId, Guid lookupMultiFieldId, Guid detailsFieldId)
+            Guid lookupFieldId, Guid lookupMultiFieldId, Guid detailsFieldId,
+            IEnumerable<DataRow> masterListRows = null,
+            IEnumerable<DataRow> detailsListRows = null)
         {
-            string detailsFieldSchema = @"<Field Name=""DetailsField"" StaticName=""DetailsField"" DisplayName=""Details Field"" Type=""Text"" ID=""" + detailsFieldId.ToString("B") + @""" Group=""PnP"" Required=""true""/>";
-            string lookupFieldSchema = @"<Field Name=""LookupField"" StaticName=""LookupField"" DisplayName=""Test Lookup Field"" Type=""Lookup"" List=""Lists\" + detailsListName + @""" ShowField=""DetailsField"" ID=""" + lookupFieldId.ToString("B") + @""" Group=""PnP""></Field>";
-            string lookupMultiFieldSchema = @"<Field Name=""LookupMultiField"" StaticName=""LookupMultiField"" DisplayName=""Test LookupMulti Field"" Type=""LookupMulti"" Mult=""TRUE"" List=""Lists\" + detailsListName + @""" ShowField=""DetailsField"" ID=""" + lookupMultiFieldId.ToString("B") + @""" Group=""PnP""></Field>";
-            string lookupFieldToInternalListSchema = @"<Field ID=""{6bfaba20-36bf-44b5-a1b2-eb6346d49716}"" ColName=""tp_AppAuthor"" RowOrdinal=""0"" ReadOnly=""TRUE"" Hidden=""FALSE"" Type=""Lookup"" List=""AppPrincipals"" Name=""AppAuthor"" DisplayName=""App Created By"" ShowField=""Title"" JoinColName=""Id"" SourceID=""http://schemas.microsoft.com/sharepoint/v3"" StaticName=""AppAuthor"" FromBaseType=""TRUE"" />";
+            var detailsFieldSchema = @"<Field Name=""" + DetailsFieldName + @""" StaticName=""" + DetailsFieldName + @""" DisplayName=""Details Field"" Type=""Text"" ID=""" + detailsFieldId.ToString("B") + @""" Group=""PnP"" Required=""true""/>";
+            var lookupFieldSchema = @"<Field Name=""" + LookupFieldName + @""" StaticName=""" + LookupFieldName + @""" DisplayName=""Test Lookup Field"" Type=""Lookup"" List=""Lists\" + detailsListName + @""" ShowField=""DetailsField"" ID=""" + lookupFieldId.ToString("B") + @""" Group=""PnP""></Field>";
+            var lookupMultiFieldSchema = @"<Field Name=""" + LookupMultiFieldName + @""" StaticName=""" + LookupMultiFieldName + @""" DisplayName=""Test LookupMulti Field"" Type=""LookupMulti"" Mult=""TRUE"" List=""Lists\" + detailsListName + @""" ShowField=""DetailsField"" ID=""" + lookupMultiFieldId.ToString("B") + @""" Group=""PnP""></Field>";
+            var lookupFieldToInternalListSchema = @"<Field ID=""{6bfaba20-36bf-44b5-a1b2-eb6346d49716}"" ColName=""tp_AppAuthor"" RowOrdinal=""0"" ReadOnly=""TRUE"" Hidden=""FALSE"" Type=""Lookup"" List=""AppPrincipals"" Name=""AppAuthor"" DisplayName=""App Created By"" ShowField=""Title"" JoinColName=""Id"" SourceID=""http://schemas.microsoft.com/sharepoint/v3"" StaticName=""AppAuthor"" FromBaseType=""TRUE"" />";
 
             var template = new ProvisioningTemplate();
             var detailsList = new ListInstance();
@@ -1091,6 +1206,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             detailsList.Title = detailsListName;
             detailsList.TemplateType = (int)ListTemplateType.GenericList;
             detailsList.Fields.Add(new Core.Framework.Provisioning.Model.Field() { SchemaXml = detailsFieldSchema });
+            if (detailsListRows != null)
+            {
+                detailsList.DataRows.AddRange(detailsListRows);
+            }
             template.Lists.Add(detailsList);
 
             var masterList = new ListInstance();
@@ -1100,6 +1219,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             masterList.Fields.Add(new Core.Framework.Provisioning.Model.Field() { SchemaXml = lookupFieldSchema });
             masterList.Fields.Add(new Core.Framework.Provisioning.Model.Field() { SchemaXml = lookupMultiFieldSchema });
             masterList.Fields.Add(new Core.Framework.Provisioning.Model.Field() { SchemaXml = lookupFieldToInternalListSchema });
+            if (masterListRows != null)
+            {
+                masterList.DataRows.AddRange(masterListRows);
+            }
             template.Lists.Add(masterList);
 
             return template;
