@@ -818,6 +818,7 @@
     <Compile Include="Pages\HeaderControlData.cs" />
     <Compile Include="Pages\TranslationStatus.cs" />
     <Compile Include="Pages\TranslationStatusCreationRequest.cs" />
+    <Compile Include="Utilities\CheckPermissionUtility.cs" />
     <Compile Include="Utilities\Graph\GraphHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ListItemUtilities.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ConnectorFileHelper.cs" />
