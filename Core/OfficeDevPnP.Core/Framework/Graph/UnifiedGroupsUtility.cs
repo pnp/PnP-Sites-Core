@@ -159,7 +159,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     var newGroup = new GroupExtended
                     {
                         DisplayName = displayName,
-                        Description = description,
+                        Description = String.IsNullOrEmpty(description) ? null : description,
                         MailNickname = mailNickname,
                         MailEnabled = true,
                         SecurityEnabled = false,
