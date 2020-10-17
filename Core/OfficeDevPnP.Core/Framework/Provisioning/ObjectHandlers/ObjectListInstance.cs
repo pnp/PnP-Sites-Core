@@ -193,6 +193,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         #endregion Views
 
+                        #region Column default values
+
+                        foreach (var listInfo in processedLists)
+                        {
+                            var defaultFolderValues = new List<Entities.IDefaultColumnValue>();
+                            foreach (var templateListFolder in listInfo.TemplateList.Folders)
+                            {
+                                var folderName = templateListFolder.Name;
+                                ProcessDefaultFolders(web, listInfo, templateListFolder, folderName, defaultFolderValues, parser);
+                            }
+                            listInfo.SiteList.SetDefaultColumnValues(defaultFolderValues, true);
+                        }
+
+                        #endregion Column default values
+
                         #region Folders
 
                         // Folders are supported for document libraries and generic lists only
@@ -230,21 +245,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
 
                         #endregion Property Bag Entries
-
-                        #region Column default values
-
-                        foreach (var listInfo in processedLists)
-                        {
-                            var defaultFolderValues = new List<Entities.IDefaultColumnValue>();
-                            foreach (var templateListFolder in listInfo.TemplateList.Folders)
-                            {
-                                var folderName = templateListFolder.Name;
-                                ProcessDefaultFolders(web, listInfo, templateListFolder, folderName, defaultFolderValues);
-                            }
-                            listInfo.SiteList.SetDefaultColumnValues(defaultFolderValues, true);
-                        }
-
-                        #endregion Column default values
                     }
                     WriteMessage("Done processing lists", ProvisioningMessageType.Completed);
                 }
@@ -253,20 +253,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
         private static void ProcessDefaultFolders(Web web, ListInfo listInfo, Model.Folder templateListFolder, string folderName,
-            List<IDefaultColumnValue> defaultFolderValues)
+            List<IDefaultColumnValue> defaultFolderValues, TokenParser parser)
         {
             foreach (KeyValuePair<string, string> columnValue in templateListFolder.DefaultColumnValues)
             {
-                string fieldName = columnValue.Key;
+                string fieldName = parser.ParseString(columnValue.Key);
                 var field = listInfo.SiteList.Fields.GetByInternalNameOrTitle(fieldName);
                 var defaultValue =
-                    field.GetDefaultColumnValueFromField((ClientContext)web.Context, folderName, new[] { columnValue.Value });
+                    field.GetDefaultColumnValueFromField((ClientContext)web.Context, folderName, new[] { parser.ParseString(columnValue.Value) });
                 defaultFolderValues.Add(defaultValue);
             }
             foreach (var folder in templateListFolder.Folders)
             {
                 var childFolderName = folderName + "/" + folder.Name;
-                ProcessDefaultFolders(web, listInfo, folder, childFolderName, defaultFolderValues);
+                ProcessDefaultFolders(web, listInfo, folder, childFolderName, defaultFolderValues, parser);
             }
         }
 
@@ -2205,7 +2205,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     parentFolder.Context.ExecuteQueryRetry();
                     foreach (var p in folder.Properties.Where(p => !p.Key.Equals("ContentTypeId")))
                     {
-                        currentFolderItem[p.Key] = parser.ParseString(p.Value);
+                        currentFolderItem[parser.ParseString(p.Key)] = parser.ParseString(p.Value);
                     }
 #if !SP2013 && !SP2016
                     currentFolderItem.UpdateOverwriteVersion();
@@ -2230,7 +2230,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     foreach (var p in folder.PropertyBagEntries)
                     {
-                        currentFolder.Properties[p.Key] = parser.ParseString(p.Value);
+                        currentFolder.Properties[parser.ParseString(p.Key)] = parser.ParseString(p.Value);
                     }
                     currentFolder.Update();
                 }
