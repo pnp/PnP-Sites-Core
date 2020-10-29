@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## Changed
 
 - Fix issue with handling of terms with comma and provided GUID #2776 [reusto]
+- Fix for sublinks not provisioned in Footer #2797 [kkrzaczkowski]
 
 # [3.26.2010.0 October 2020 release]
 
