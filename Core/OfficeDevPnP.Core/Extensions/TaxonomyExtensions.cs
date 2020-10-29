@@ -1201,7 +1201,7 @@ namespace Microsoft.SharePoint.Client
                         || (!char.IsWhiteSpace(lineChars[charIndex]) && lineChars[charIndex] != '"'))
                     {
                         if (flagInsideQuotes && lineChars[charIndex] == '"'
-                            && (charIndex + 1 >= line.Length || lineChars[charIndex + 1] == ','))
+                            && (charIndex + 1 >= line.Length || lineChars[charIndex + 1] == ',' || lineChars[charIndex + 1] == '|'))
                         {
                             // End of quotes (and either end of line or next char is comma)
                             flagInsideQuotes = false;
@@ -1463,13 +1463,18 @@ namespace Microsoft.SharePoint.Client
         public static string NormalizeName(string name)
         {
             if (name == null) return (string)null;
-            name = TrimSpacesRegex.Replace(name, " ").Replace('&', '＆');
 
-            if (!name.Contains(",") || !name.StartsWith("\"") || !name.EndsWith("\""))
+            var hasGuid = name.IndexOf("|") > -1;
+
+            var nameToNormalize = hasGuid ? name.Split('|')[0] : name;
+
+            nameToNormalize = TrimSpacesRegex.Replace(nameToNormalize, " ").Replace('&', '＆');
+
+            if (!nameToNormalize.Contains(",") || !nameToNormalize.StartsWith("\"") || !nameToNormalize.EndsWith("\""))
             {
-                name = name.Replace('"', '＂');
+                nameToNormalize = nameToNormalize.Replace('"', '＂');
             }
-            return name;
+            return hasGuid ? string.Format("{0}|{1}", nameToNormalize, name.Split('|')[1]) : nameToNormalize;
         }
 
         /// <summary>
