@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix issue with handling of terms with comma and provided GUID #2776 [reusto]
 - Fix for sublinks not provisioned in Footer #2797 [kkrzaczkowski]
 - Fix for issue #2324 - The property or field 'WelcomePage' has not been initialized #2759 [wspelt - Wouter Spelt]
+- Fix: Incorrect HasTeamsTeam check #2763 [gautamdsheth - Gautam Sheth]
 
 # [3.26.2010.0 October 2020 release]
 
