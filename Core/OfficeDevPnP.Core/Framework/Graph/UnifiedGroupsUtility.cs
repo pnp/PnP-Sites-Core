@@ -1719,12 +1719,11 @@ namespace OfficeDevPnP.Core.Framework.Graph
             try
             {
                 groupId = groupId.ToLower();
-                string getGroupsInfo = $"{GraphHttpClient.MicrosoftGraphV1BaseUri}groups/{groupId}?&select=resourceProvisioningOptions";
-
-                string getGroupsWithATeamsTeam = $"{GraphHttpClient.MicrosoftGraphBetaBaseUri}groups?$filter=resourceProvisioningOptions/Any(x:x eq 'Team')&select=id,resourceProvisioningOptions";
+                
+                string getGroupsInfo = $"{GraphHttpClient.MicrosoftGraphV1BaseUri}groups/{groupId}?$select=resourceProvisioningOptions";
 
                 var getGroupResult = GraphHttpClient.MakeGetRequestForString(
-                    getGroupsWithATeamsTeam,
+                    getGroupsInfo,
                     accessToken: accessToken);
 
                 using (var jsonDocument = JsonDocument.Parse(getGroupResult))
