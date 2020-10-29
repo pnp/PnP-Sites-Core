@@ -347,11 +347,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         foreach (var footerLink in template.Footer.FooterLinks)
                         {
-                            menuNode.Children.Add(new NavigationNodeCreationInformation()
+                            var newParentNode = menuNode.Children.Add(new NavigationNodeCreationInformation()
                             {
                                 Url = parser.ParseString(footerLink.Url),
                                 Title = parser.ParseString(footerLink.DisplayName)
                             });
+
+                            foreach (var childFooterLink in footerLink.FooterLinks)
+                            {
+                                newParentNode.Children.Add(new NavigationNodeCreationInformation()
+                                {
+                                    Url = parser.ParseString(childFooterLink.Url),
+                                    Title = parser.ParseString(childFooterLink.DisplayName)
+                                });
+                            }
                         }
                         if (web.Context.PendingRequestCount() > 0)
                         {
