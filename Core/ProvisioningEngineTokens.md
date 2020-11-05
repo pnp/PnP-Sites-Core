@@ -8,7 +8,7 @@ Below all the supported tokens are listed:
 
 Token|Description|Example|Returns
 :-----|:----------|:------|:------
-{apppackageid:[packagename]}|Returns the ID of an app package given its name|{apppackageid:MyPackageName}|55898e77-a7bf-4799-8034-506db5521b98
+{apppackageid:[packagename]}|Returns the ID of an app package given its title|{apppackageid:MyPackageTitle}|55898e77-a7bf-4799-8034-506db5521b98
 {associatedmembergroup}|Returns the title of the associated members SharePoint group of a site|{associatedmembergroup}|My Site Members Group Title
 {associatedownergroup}|Returns the title of the associated owners SharePoint group of a site|{associatedownergroup}|My Site Owners Group Title
 {associatedvisitorgroup}|Returns the title of the associated visitors SharePoint group of a site|{associatedvisitorgroup}|My Site Visitors Group Title
