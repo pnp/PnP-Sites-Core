@@ -1052,7 +1052,8 @@ namespace Microsoft.SharePoint.Client
                 Folder nextFolder = null;
                 foreach (Folder existingFolder in folderCollection)
                 {
-                    if (string.Equals(existingFolder.Name, System.Net.WebUtility.UrlDecode(folderName), StringComparison.InvariantCultureIgnoreCase))
+                    //System.Net.WebUtility.UrlDecode removes + from folderName which leads to invalid compare if folderName was not UrlEncoded 
+                    if (string.Equals(existingFolder.Name, System.Net.WebUtility.UrlDecode(folderName), StringComparison.InvariantCultureIgnoreCase)|| string.Equals(existingFolder.Name, folderName, StringComparison.InvariantCultureIgnoreCase))
                     {
                         nextFolder = existingFolder;
                         break;
