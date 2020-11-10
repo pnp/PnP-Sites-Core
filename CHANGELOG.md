@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Handle AddWebPartToWikiPage() being called on a non-wiki page #2762 [Giacomo Pozzoni jackpoz]
 - Features/fix for collection not initialized exception issue #2580 (fix for issue 2324 accidentally came in also with this commit, but is submitted separately as well) #2760 [Wouter Spelt wspelt]
 - Reapply PR #2596 which addresses Issue #2595 #2790 [Mike Jensen michael-jensen]
+- All COntent of the Field needs proper HtmlEncode not only & #2802 [czullu - Christian Zuellig]
 
 # [3.26.2010.0 October 2020 release]
 
