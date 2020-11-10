@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Reapply PR #2596 which addresses Issue #2595 #2790 [Mike Jensen - michael-jensen]
 - All COntent of the Field needs proper HtmlEncode not only & #2802 [czullu - Christian Zuellig]
 - Update provisioning token apppackageid description #2800 [Joel Rodrigues - joelfmrodrigues]
+- Fix Layout dedection for TwoColumnRightVerticalSection and TwoColumnLeftVerticalSection #2801 [czullu - Christian Zuellig]
 
 # [3.26.2010.0 October 2020 release]
 
