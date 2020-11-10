@@ -17,6 +17,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix for issue #2324 - The property or field 'WelcomePage' has not been initialized #2759 [wspelt - Wouter Spelt]
 - Fix: Incorrect HasTeamsTeam check #2763 [gautamdsheth - Gautam Sheth]
 - Fix: CustomFormatter Compare to treat "" and Null as same string #2746 [czullu - Christian Zuellig]
+- Adjust tenant admin check to support an App Only AAD connection #2784 [Mike Jensen michael-jensen]
+- Fix #2773 - changed Exception type for duplicate members and owners #2775 [Gautam Sheth gautamdsheth]
+- Handle AddWebPartToWikiPage() being called on a non-wiki page #2762 [Giacomo Pozzoni jackpoz]
+- Features/fix for collection not initialized exception issue #2580 (fix for issue 2324 accidentally came in also with this commit, but is submitted separately as well) #2760 [Wouter Spelt wspelt]
+- Reapply PR #2596 which addresses Issue #2595 #2790 [Mike Jensen michael-jensen]
 
 # [3.26.2010.0 October 2020 release]
 
