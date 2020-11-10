@@ -859,7 +859,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (customFormatterElement != null)
                 {
                     var customFormatter = customFormatterElement.Value;
-                    customFormatter = customFormatter.Replace("&", "&amp;");
+                    customFormatter = System.Net.WebUtility.HtmlEncode(customFormatter);
                     if (createdView.CustomFormatter != customFormatter)
                     {
                         createdView.CustomFormatter = customFormatter;
