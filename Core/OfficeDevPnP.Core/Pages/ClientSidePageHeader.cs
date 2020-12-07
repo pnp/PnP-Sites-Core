@@ -1,4 +1,4 @@
-﻿using AngleSharp.Parser.Html;
+﻿using AngleSharp.Html.Parser;
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Diagnostics;
@@ -202,7 +202,7 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             HtmlParser parser = new HtmlParser(new HtmlParserOptions() { IsEmbedded = true });
-            using (var document = parser.Parse(pageHeaderHtml))
+            using (var document = parser.ParseDocument(pageHeaderHtml))
             {
                 var pageHeaderControl = document.All.Where(m => m.HasAttribute(CanvasControl.ControlDataAttribute)).FirstOrDefault();
                 if (pageHeaderControl != null)
