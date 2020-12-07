@@ -30,8 +30,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     {
                         container = container.TrimStart("/".ToCharArray());
                     }
-
-#if !NETSTANDARD2_0
+#if !ONPREMISES
                     if (connector.GetType() == typeof(Connectors.AzureStorageConnector))
                     {
                         if (connector.GetContainer().EndsWith("/"))

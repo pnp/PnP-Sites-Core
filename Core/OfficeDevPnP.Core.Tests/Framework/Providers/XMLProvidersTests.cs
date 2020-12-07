@@ -3,8 +3,10 @@ using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
+#if !ONPREMISES
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+#endif
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Tests.Framework.Providers.Extensibility;
 using System.Security.Cryptography.X509Certificates;
@@ -35,10 +37,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [ClassInitialize()]
         public static void ClassInit(TestContext context)
         {
+#if !ONPREMISES
             if (!String.IsNullOrEmpty(TestCommon.AzureStorageKey))
             {
                 UploadTemplatesToAzureStorageAccount();
             }
+#endif
 
             if (!String.IsNullOrEmpty(TestCommon.DevSiteUrl))
             {
@@ -50,17 +54,19 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [ClassCleanup()]
         public static void ClassCleanup()
         {
+#if !ONPREMISES
             if (!String.IsNullOrEmpty(TestCommon.AzureStorageKey))
             {
                 CleanupTemplatesFromAzureStorageAccount();
             }
-
+#endif
             if (!String.IsNullOrEmpty(TestCommon.DevSiteUrl))
             {
                 CleanupTemplatesFromSharePointLibrary();
             }
         }
 
+#if !ONPREMISES
         private static void CleanupTemplatesFromAzureStorageAccount()
         {
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(TestCommon.AzureStorageKey);
@@ -113,7 +119,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 blockBlob.UploadFromStream(fileStream);
             }
         }
-
+#endif
         private static void UploadTemplatesToSharePointLibrary()
         {
             var context = TestCommon.CreatePnPClientContext();
@@ -264,7 +270,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 #endregion
 
 #region XML Azure Storage tests
-#if !NETSTANDARD2_0
+#if !ONPREMISES
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
         public void XMLAzureStorageGetTemplatesTest()

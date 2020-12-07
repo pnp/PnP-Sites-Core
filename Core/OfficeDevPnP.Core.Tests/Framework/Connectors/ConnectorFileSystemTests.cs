@@ -1,7 +1,9 @@
 ﻿using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+#if !ONPREMISES
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+#endif
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using System;
 using System.Collections.Generic;
@@ -15,7 +17,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
     public class ConnectorFileSystemTests
     {
 
-        #region Test initialize and cleanup    
+#region Test initialize and cleanup    
         [ClassInitialize()]
         public static void ClassInit(TestContext context)
         {
@@ -46,9 +48,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
             }
 
         }
-        #endregion
+#endregion
 
-        #region File connector tests
+#region File connector tests
         /// <summary>
         /// Get file as string from provided directory and folder. Specify both directory and container
         /// </summary>
@@ -300,6 +302,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
             // Folder will be deleted in cleanup
         }
 
-        #endregion
+#endregion
     }
 }

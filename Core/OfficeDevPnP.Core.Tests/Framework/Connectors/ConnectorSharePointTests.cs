@@ -1,7 +1,9 @@
 ﻿using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+#if !ONPREMISES
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+#endif
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using System;
 using System.Collections.Generic;
@@ -14,12 +16,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
     [TestClass]
     public class ConnectorSharePointTests
     {
-        #region Test variables
+#region Test variables
         static string testContainer = "pnptest";
         static string testContainerSecure = "pnptestsecure";
-        #endregion
+#endregion
 
-        #region Test initialize and cleanup
+#region Test initialize and cleanup
         [ClassInitialize()]
         public static void ClassInit(TestContext context)
         {
@@ -76,10 +78,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
                 }
             }
         }
-        #endregion
+#endregion
 
 #region SharePoint Connector tests
-#if !NETSTANDARD2_0
+#if !ONPREMISES
         /// <summary>
         /// Pass the connection information as parameters
         /// Get a file as string from passed SharePoint url and list
@@ -168,7 +170,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
             }
         }
 
-#if !NETSTANDARD2_0
+#if !ONPREMISES
         /// <summary>
         /// Pass the connection information as parameters
         /// Get a file as stream from passed SharePoint url and list. Uses 1 level of sub folders 

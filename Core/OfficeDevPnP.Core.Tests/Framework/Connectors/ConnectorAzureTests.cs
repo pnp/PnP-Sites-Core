@@ -1,7 +1,9 @@
 ﻿using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+#if !ONPREMISES
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+#endif
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using System;
 using System.Collections.Generic;
@@ -9,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-#if !NETSTANDARD2_0
+#if !ONPREMISES
 namespace OfficeDevPnP.Core.Tests.Framework.Connectors
 {
     [TestClass]

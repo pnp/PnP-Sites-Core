@@ -1,4 +1,4 @@
-﻿#if !NETSTANDARD2_0
+﻿#if !ONPREMISES
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml

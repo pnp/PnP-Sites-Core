@@ -1,4 +1,4 @@
-﻿#if !NETSTANDARD2_0
+﻿#if !ONPREMISES
 using System;
 using System.Collections.Generic;
 using System.Linq;
