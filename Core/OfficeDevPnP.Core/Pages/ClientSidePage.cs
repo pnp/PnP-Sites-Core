@@ -1,4 +1,4 @@
-﻿using AngleSharp.Parser.Html;
+﻿using AngleSharp.Html.Parser;
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -2046,7 +2046,7 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             HtmlParser parser = new HtmlParser(new HtmlParserOptions() { IsEmbedded = true });
-            using (var document = parser.Parse(html))
+            using (var document = parser.ParseDocument(html))
             {
                 // select all control div's
                 var clientSideControls = document.All.Where(m => m.HasAttribute(CanvasControl.ControlDataAttribute));
@@ -2252,7 +2252,7 @@ namespace OfficeDevPnP.Core.Pages
             // Load page header controls. Cortex Topic pages do have 5 controls in the header (= controls that cannot be moved)
             if (LayoutType == ClientSidePageLayoutType.Topic)
             {
-                using (var document = parser.Parse(pageHeaderHtml))
+                using (var document = parser.ParseDocument(pageHeaderHtml))
                 {
                     // select all control div's
                     var clientSideHeaderControls = document.All.Where(m => m.HasAttribute(CanvasControl.ControlDataAttribute));
