@@ -6,6 +6,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+# [3.28.2012.0 December 2020 release]
+
+## Added
+
+## Changed
+
+- Fixed issue with provisioning template footer links being provisioned in reverse order
+
 # [3.27.2011.0 November 2020 release]
 
 ## Added
