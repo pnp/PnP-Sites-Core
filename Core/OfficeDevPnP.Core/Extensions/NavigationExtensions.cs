@@ -781,7 +781,7 @@ namespace Microsoft.SharePoint.Client
             var structureString = web.ExecuteGetAsync($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
             var menuState = JObject.Parse(structureString);
 
-            if (menuState["StartingNodeKey"] == null)
+            if (menuState["StartingNodeKey"] == null || !menuState["Nodes"].Any(n => n["Title"].Value<string>() == Constants.SITEFOOTER_MENUNODEKEY))
             {
                 web.EnsureProperties(w => w.ServerRelativeUrl);
                 var now = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss:Z");
