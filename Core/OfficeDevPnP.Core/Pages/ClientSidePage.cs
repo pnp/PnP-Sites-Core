@@ -1,4 +1,4 @@
-﻿using AngleSharp.Parser.Html;
+using AngleSharp.Parser.Html;
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -78,6 +78,7 @@ namespace OfficeDevPnP.Core.Pages
         private string sitePagesServerRelativeUrl;
         private bool securityInitialized = false;
         private string accessToken;
+        private CookieContainer cookies;
         private readonly List<CanvasSection> sections = new List<CanvasSection>(1);
         private readonly List<CanvasControl> controls = new List<CanvasControl>(5);
         private readonly List<CanvasControl> headerControls = new List<CanvasControl>();
@@ -1578,7 +1579,7 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             // Request information about the available client side components from SharePoint
-            string availableClientSideComponentsJson = await GetClientSideWebPartsAsync(this.accessToken, this.Context);
+            string availableClientSideComponentsJson = await GetClientSideWebPartsAsync(this.accessToken, this.cookies, this.Context);
 
             if (String.IsNullOrEmpty(availableClientSideComponentsJson))
             {
@@ -1618,7 +1619,7 @@ namespace OfficeDevPnP.Core.Pages
                 this.InitializeSecurity();
             }
 
-            Task<String> result = Task.Run(() => GenerateTranslationsImplementationAsync(this.accessToken, this.Context, this.PageId, translationStatusCreationRequest).GetAwaiter().GetResult());
+            Task<String> result = Task.Run(() => GenerateTranslationsImplementationAsync(this.accessToken, this.cookies, this.Context, this.PageId, translationStatusCreationRequest).GetAwaiter().GetResult());
 
             if (!string.IsNullOrEmpty(result.Result))
             {
@@ -1644,7 +1645,7 @@ namespace OfficeDevPnP.Core.Pages
                 this.InitializeSecurity();
             }
 
-            Task<string> result = Task.Run(() => GetTranslationsImplementationAsync(this.accessToken, this.Context, this.PageId).GetAwaiter().GetResult());
+            Task<string> result = Task.Run(() => GetTranslationsImplementationAsync(this.accessToken, this.cookies, this.Context, this.PageId).GetAwaiter().GetResult());
 
             if (!string.IsNullOrEmpty(result.Result))
             {
@@ -1672,7 +1673,7 @@ namespace OfficeDevPnP.Core.Pages
                 await this.InitializeSecurityAsync();
             }
 
-            string result = await GetTranslationsImplementationAsync(this.accessToken, this.Context, this.PageId);
+            string result = await GetTranslationsImplementationAsync(this.accessToken, this.cookies, this.Context, this.PageId);
 
             if (!string.IsNullOrEmpty(result))
             {
@@ -1697,7 +1698,7 @@ namespace OfficeDevPnP.Core.Pages
                 this.InitializeSecurity();
             }
             
-            Task<string> result = Task.Run(() => GenerateTranslationsImplementationAsync(this.accessToken, this.Context, this.PageId, null).GetAwaiter().GetResult());
+            Task<string> result = Task.Run(() => GenerateTranslationsImplementationAsync(this.accessToken, this.cookies, this.Context, this.PageId, null).GetAwaiter().GetResult());
 
             if (!string.IsNullOrEmpty(result.Result))
             {
@@ -1725,7 +1726,7 @@ namespace OfficeDevPnP.Core.Pages
                 await this.InitializeSecurityAsync();
             }
 
-            string result = await GenerateTranslationsImplementationAsync(this.accessToken, this.Context, this.PageId, translationStatusCreationRequest);
+            string result = await GenerateTranslationsImplementationAsync(this.accessToken, this.cookies, this.Context, this.PageId, translationStatusCreationRequest);
 
             if (!string.IsNullOrEmpty(result))
             {
@@ -1752,7 +1753,7 @@ namespace OfficeDevPnP.Core.Pages
                 await this.InitializeSecurityAsync();
             }
 
-            string result = await GenerateTranslationsImplementationAsync(this.accessToken, this.Context, this.PageId, null);
+            string result = await GenerateTranslationsImplementationAsync(this.accessToken, this.cookies, this.Context, this.PageId, null);
 
             if (!string.IsNullOrEmpty(result))
             {
@@ -2370,7 +2371,7 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
-        private async Task<string> GetTranslationsImplementationAsync(string accessToken, ClientContext context, int? pageID)
+        private async Task<string> GetTranslationsImplementationAsync(string accessToken, CookieContainer cookies, ClientContext context, int? pageID)
         {
             await new SynchronizationContextRemover();
 
@@ -2396,6 +2397,10 @@ namespace OfficeDevPnP.Core.Pages
                     if (context.Credentials is System.Net.NetworkCredential networkCredential)
                     {
                         handler.Credentials = networkCredential;
+                    }
+                    else
+                    {
+                        handler.CookieContainer = cookies;
                     }
                 }
 
@@ -2435,7 +2440,7 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
-        private async Task<string> GenerateTranslationsImplementationAsync(string accessToken, ClientContext context, int? pageID, TranslationStatusCreationRequest translationStatusCreationRequest)
+        private async Task<string> GenerateTranslationsImplementationAsync(string accessToken, CookieContainer cookies, ClientContext context, int? pageID, TranslationStatusCreationRequest translationStatusCreationRequest)
         {
             await new SynchronizationContextRemover();
 
@@ -2474,6 +2479,10 @@ namespace OfficeDevPnP.Core.Pages
                         {
                             handler.Credentials = networkCredential;
                         }
+                        else
+                        {
+                            handler.CookieContainer = cookies;
+                        }
                     }
 
                     request.Headers.Add("X-RequestDigest", await context.GetRequestDigestAsync());
@@ -2507,7 +2516,7 @@ namespace OfficeDevPnP.Core.Pages
         }
 
 
-        private async Task<string> GetClientSideWebPartsAsync(string accessToken, ClientContext context)
+        private async Task<string> GetClientSideWebPartsAsync(string accessToken, CookieContainer cookies, ClientContext context)
         {
             await new SynchronizationContextRemover();
 
@@ -2541,6 +2550,10 @@ namespace OfficeDevPnP.Core.Pages
                         if (context.Credentials is NetworkCredential networkCredential)
                         {
                             handler.Credentials = networkCredential;
+                        }
+                        else
+                        {
+                            handler.CookieContainer = this.cookies;
                         }
                     }
 
@@ -2589,6 +2602,8 @@ namespace OfficeDevPnP.Core.Pages
             {
                 this.accessToken = e.WebRequestExecutor.RequestHeaders.Get("Authorization").Replace("Bearer ", "");
             }
+
+            cookies = e.WebRequestExecutor.WebRequest.CookieContainer;
         }
 #endregion
     }
