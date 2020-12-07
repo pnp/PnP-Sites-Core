@@ -2639,7 +2639,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 #endif
-                list.Views.Add(new View { SchemaXml = TokenizeXml(schemaElement.ToString(), web) });
+                list.Views.Add(new View { SchemaXml = TokenizeListView(schemaElement.ToString(), siteList, web) });
             }
 
             return list;
