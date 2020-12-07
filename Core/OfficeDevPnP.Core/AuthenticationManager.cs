@@ -732,7 +732,7 @@ namespace OfficeDevPnP.Core
         /// <param name="userPrincipalName">The user id</param>
         /// <param name="userPassword">The user's password as a secure string</param>
         /// <param name="environment">SharePoint environment being used</param>
-        /// <param name="clientId">Enum value pointing to one of the known client ids</param></parm>
+        /// <param name="clientId">Enum value pointing to one of the known client ids</param>
         /// <returns>Client context object</returns>
         public ClientContext GetAzureADCredentialsContext(string siteUrl, string userPrincipalName, SecureString userPassword, AzureEnvironment environment = AzureEnvironment.Production, KnownClientId clientId = KnownClientId.SPOManagementShell)
         {

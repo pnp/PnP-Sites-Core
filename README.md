@@ -5,7 +5,7 @@ The [PnP Sites Core library](https://github.com/PnP/PnP-Sites-Core) is very popu
 > **Important:**
 > PnP Sites Core will be retired by the end of 2020. As of the GA of [PnP Framework](https://github.com/pnp/pnpframework) we'll only maintain that version going forward.
 
-![PnP dotnet roadmap](PnP%20dotnet%20Roadmap%20-%20October%20status.png)
+![PnP dotnet roadmap](PnP%20dotnet%20Roadmap%20-%20December%20status.png)
 
 ## I've found a bug, where do I need to log an issue or create a PR
 
