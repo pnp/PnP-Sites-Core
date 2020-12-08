@@ -297,6 +297,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     }
 
                     var value = parser.ParseString(valuesToSet[key]);
+#if !SP2013
                     if(!string.IsNullOrWhiteSpace(value) && fileUniqueIdToken.IsMatch(value))
                     {
                         //unresovled fileuniqueid or fileuniqueidencoded Token -try to reslove and add to parser..
@@ -343,7 +344,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             }
                         }
                     }
-
+#endif
                     switch (field.TypeAsString)
                     {
                         case "User":
