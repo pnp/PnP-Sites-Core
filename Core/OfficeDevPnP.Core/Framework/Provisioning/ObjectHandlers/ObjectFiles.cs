@@ -92,7 +92,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
 
                     var folder = web.EnsureFolderPath(folderName);
-
+#if !SP2013
+                    //register folder UniqueId as Token
+                    folder.EnsureProperties(p => p.UniqueId, p => p.ServerRelativeUrl);
+                    parser.AddToken(new FileUniqueIdToken(web, folder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), folder.UniqueId));
+                    parser.AddToken(new FileUniqueIdEncodedToken(web, folder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), folder.UniqueId));
+#endif
                     var checkedOut = false;
 
                     var targetFile = folder.GetFile(template.Connector.GetFilenamePart(targetFileName));
