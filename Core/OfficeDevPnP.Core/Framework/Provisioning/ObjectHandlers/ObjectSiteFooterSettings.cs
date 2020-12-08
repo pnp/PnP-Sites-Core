@@ -38,9 +38,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.EnsureProperties(w => w.FooterEnabled, w => w.ServerRelativeUrl, w => w.Url, w => w.Language);
                 var defaultCulture = new CultureInfo((int)web.Language);
 
-                var footer = new SiteFooter();
-
-                footer.Enabled = web.FooterEnabled;
+                var footer = new SiteFooter
+                {
+                    Enabled = web.FooterEnabled
+                };
 
                 //get them in the default language of the Site
                 var structureString = web.ExecuteGetAsync($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'", defaultCulture.Name).GetAwaiter().GetResult();
@@ -63,7 +64,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 if (creationInfo.PersistMultiLanguageResources)
                                 {
-                                    if (UserResourceExtensions.PersistResourceValue($"FooterNavigationNode_{titleNode.Key}_{titleNodeNodes[0].Key}_Title", defaultCulture.LCID, titleNodeNodes[0].Title))
+                                    if (UserResourceExtensions.PersistResourceValue($"FooterNavigationNode_{titleNode.Key}_{titleNodeNodes[0].Key}_Title", defaultCulture.LCID, titleNodeNodes[0].Title, creationInfo))
                                     {
                                         footer.Name = $"{{res:FooterNavigationNode_{titleNode.Key}_{titleNodeNodes[0].Key}_Title}}";
                                     }
@@ -91,7 +92,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     foreach (var innerMenuNode in menuNodesNode.Nodes)
                     {
-                        footer.FooterLinks.Add(ParseNodes(innerMenuNode, template, web.ServerRelativeUrl, creationInfo.PersistMultiLanguageResources, defaultCulture, menuNodesNode.Key));
+                        footer.FooterLinks.Add(ParseNodes(innerMenuNode, template, web.ServerRelativeUrl, creationInfo.PersistMultiLanguageResources, defaultCulture, menuNodesNode.Key, creationInfo));
                     }
                 }
 
@@ -119,7 +120,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 {
                                     if (!string.IsNullOrEmpty(titleNodeNodes[0].Title))
                                     {
-                                        if (UserResourceExtensions.PersistResourceValue($"FooterNavigationNode_{titleNode.Key}_{titleNodeNodes[0].Key}_Title", currentCulture.LCID, titleNodeNodes[0].Title))
+                                        if (UserResourceExtensions.PersistResourceValue($"FooterNavigationNode_{titleNode.Key}_{titleNodeNodes[0].Key}_Title", currentCulture.LCID, titleNodeNodes[0].Title, creationInfo))
                                         {
                                             footer.Name = $"{{res:FooterNavigationNode_{titleNode.Key}_{titleNodeNodes[0].Key}_Title}}";
                                         }
@@ -134,7 +135,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             foreach (var innerMenuNode in menuNodesNodeMUI.Nodes)
                             {
-                               ParseNodesMUI(innerMenuNode, web.ServerRelativeUrl, currentCulture, menuNodesNode.Key);
+                               ParseNodesMUI(innerMenuNode, web.ServerRelativeUrl, currentCulture, menuNodesNode.Key, creationInfo);
                             }
                         }
                     }
@@ -291,26 +292,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             } while (bytesRead != 0);
         }
 
-        private void ParseNodesMUI(MenuNode node, string webServerRelativeUrl, CultureInfo currentCulture, string parentKey)
+        private void ParseNodesMUI(MenuNode node, string webServerRelativeUrl, CultureInfo currentCulture, string parentKey, ProvisioningTemplateCreationInformation creationInfo)
         {
-            UserResourceExtensions.PersistResourceValue($"FooterNavigationNode_{parentKey}_{node.Key}_Title", currentCulture.LCID, node.Title);
+            UserResourceExtensions.PersistResourceValue($"FooterNavigationNode_{parentKey}_{node.Key}_Title", currentCulture.LCID, node.Title, creationInfo);
 
             if (node.Nodes.Count > 0)
             {
                 foreach (var childNode in node.Nodes)
                 {
-                    ParseNodesMUI(childNode, webServerRelativeUrl, currentCulture, node.Key);
+                    ParseNodesMUI(childNode, webServerRelativeUrl, currentCulture, node.Key, creationInfo);
                 }
             }
         }
 
-        private SiteFooterLink ParseNodes(MenuNode node, ProvisioningTemplate template, string webServerRelativeUrl, bool PersistLanguage, CultureInfo currentCulture,string parentKey)
+        private SiteFooterLink ParseNodes(MenuNode node, ProvisioningTemplate template, string webServerRelativeUrl, bool PersistLanguage, CultureInfo currentCulture,string parentKey, ProvisioningTemplateCreationInformation creationInfo)
         {
             var link = new SiteFooterLink();
 
             if (PersistLanguage)
             {
-                if (UserResourceExtensions.PersistResourceValue($"FooterNavigationNode_{parentKey}_{node.Key}_Title", currentCulture.LCID, node.Title))
+                if (UserResourceExtensions.PersistResourceValue($"FooterNavigationNode_{parentKey}_{node.Key}_Title", currentCulture.LCID, node.Title, creationInfo))
                 {
                     link.DisplayName = $"{{res:FooterNavigationNode_{parentKey}_{node.Key}_Title}}";
                 }
@@ -328,7 +329,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 link.FooterLinks = new SiteFooterLinkCollection(template);
                 foreach (var childNode in node.Nodes)
                 {
-                    link.FooterLinks.Add(ParseNodes(childNode, template, webServerRelativeUrl,PersistLanguage, currentCulture, node.Key));
+                    link.FooterLinks.Add(ParseNodes(childNode, template, webServerRelativeUrl,PersistLanguage, currentCulture, node.Key, creationInfo));
                 }
             }
             return link;
