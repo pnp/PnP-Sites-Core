@@ -271,7 +271,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         #region Utility methods
 
-        private string ReplaceFileUniqueToken(Web web, string UrlValue)
+        internal static string ReplaceFileUniqueToken(Web web, string UrlValue)
         {
 #if !SP2013 && !SP2016
             if (!string.IsNullOrWhiteSpace(UrlValue))
