@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## Added
 
+- Added support to PersistMultiLanguageResources for Footer Navigation #2755 [czullu - Christian Zuellig]
 - Allow to pass Microsoft.SharePoint.Client.AddFieldOptions when creating a field through FieldCreationInformation #2754 [Giacomo Pozzoni - jackpoz]
 
 ## Changed
