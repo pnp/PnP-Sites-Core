@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fixed issue with provisioning template footer links being provisioned in reverse order
 - Moved to latest AngleSharp release #2818 [netclectic - Adrian Cockburn]
 - Add listcontenttype tokenization #2583 [jensotto - Jens Otto Hatlevold]
+- Fix adding Footer nodes on new sites #2740 #2819 [kkrzaczkowski]
 
 # [3.27.2011.0 November 2020 release]
 
