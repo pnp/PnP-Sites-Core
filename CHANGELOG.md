@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## Added
 
+- Allow to pass Microsoft.SharePoint.Client.AddFieldOptions when creating a field through FieldCreationInformation #2754 [Giacomo Pozzoni - jackpoz]
+
 ## Changed
 
 - Fixed issue with provisioning template footer links being provisioned in reverse order
