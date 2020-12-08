@@ -20,7 +20,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Add listcontenttype tokenization #2583 [jensotto - Jens Otto Hatlevold]
 - Fix adding Footer nodes on new sites #2740 #2819 [kkrzaczkowski]
 - Fixed an "InvalidOperationException" when extracting multilingual resources in a multi-threaded environment #2756 [fzbm - Florian Zink]
-Resolve fileuniqueid or fileuniqueidencoeded in DataRow Value if not already resolved by parser #2745 [czullu - Christian Zuellig]
+- Resolve fileuniqueid or fileuniqueidencoeded in DataRow Value if not already resolved by parser #2745 [czullu - Christian Zuellig]
+- #2772 Fix token replacement during lookup field deployment #2785 [SLTKA - Alexandr Yeskov]
 
 # [3.27.2011.0 November 2020 release]
 
