@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 
 <!--
-Base template: goal is to verify that all list properties and elements work as expected. 
-               
+Base template: goal is to verify that all list properties and elements work as expected.
+
                Possible Lists attributes are:
                Title                (*) (parsed only for resource, resource)
                Description              (parsed only for resource, resource)
@@ -15,30 +15,30 @@ Base template: goal is to verify that all list properties and elements work as e
                EnableModeration
                MinorVersionLimit
                MaxVersionLimit
-               DraftVersionVisibility   
+               DraftVersionVisibility
                RemoveExistingContentTypes
                TemplateFeatureID
                ContentTypesEnabled
                Hidden
                EnableAttachments
-               EnableFolderCreation               
-               ContentTypeBindings (e)               
-               Views (e)               
-               Fields (e)               
-               FieldRefs (e)               
-               DataRows (e)               
-               Folders (e)               
-               FieldDefaults (e)               
+               EnableFolderCreation
+               ContentTypeBindings (e)
+               Views (e)
+               Fields (e)
+               FieldRefs (e)
+               DataRows (e)
+               Folders (e)
+               FieldDefaults (e)
                Security (e)
-               
+
                Possible ContentTypeBinding attributes are:
                ContentTypeID        (*)
                Default
-               
+
                Possible FieldRef attributes are:
                ID                   (*)
                DisplayName
-               Hidden 
+               Hidden
                Required
                Name                     (informative, not actually used)
 
@@ -64,12 +64,12 @@ Base template: goal is to verify that all list properties and elements work as e
                                 EnableMinorVersions, MinorVersionLimit (only for doc libraries)
                                 DraftVersionVisibility (can be set to 0, 1, 2   only 2 when EnableModeration = true)
     -->
-    <pnp:ListInstance Title="LI_2" TemplateType="101" Url="LI_2" Description="LI 2 description" 
-                      EnableMinorVersions="true" MinorVersionLimit="10" EnableVersioning="true" MaxVersionLimit="10" DraftVersionVisibility="2" 
+    <pnp:ListInstance Title="LI_2" TemplateType="101" Url="LI_2" Description="LI 2 description"
+                      EnableMinorVersions="true" MinorVersionLimit="10" EnableVersioning="true" MaxVersionLimit="10" DraftVersionVisibility="2"
                       EnableFolderCreation="true"  OnQuickLaunch="true" EnableModeration="true" />
     <!-- Test other attributes: Hidden -->
     <pnp:ListInstance Title="LI_3" TemplateType="101" Url="LI_3" Hidden="true" />
-    <!-- Test other attributes: ContentTypesEnabled, RemoveExistingContentTypes 
+    <!-- Test other attributes: ContentTypesEnabled, RemoveExistingContentTypes
                                 ContentTypeBinding element with ContentTypeID and Default properties
       -->
     <pnp:ListInstance Title="LI_4" TemplateType="101" Url="LI_4" ContentTypesEnabled="true" RemoveExistingContentTypes="true" EnableFolderCreation="false">
@@ -83,8 +83,8 @@ Base template: goal is to verify that all list properties and elements work as e
         <pnp:ContentTypeBinding ContentTypeID="0x0101005D4F34E4BE7F4B6892AEBE088EDD215E" />
       </pnp:ContentTypeBindings>
     </pnp:ListInstance>
-    <!-- Test FieldRef element with: ID, DisplayName, Hidden, Required, Name 
-              Folder element with Name attribute 
+    <!-- Test FieldRef element with: ID, DisplayName, Hidden, Required, Name
+              Folder element with Name attribute
               Security element on Folder element -->
     <pnp:ListInstance Title="LI_6" TemplateType="101" Url="LI_6" EnableFolderCreation="true">
       <pnp:FieldRefs>
@@ -139,7 +139,7 @@ Base template: goal is to verify that all list properties and elements work as e
     <pnp:ListInstance Title="LI_11" TemplateType="100" Url="Lists/LI_11" Description="LI 11 description"
                       EnableVersioning="true" MaxVersionLimit="10" DraftVersionVisibility="2"
                       EnableFolderCreation="true" OnQuickLaunch="true" EnableModeration="true" />
-    <!-- Minimal attributes Hidden, 
+    <!-- Minimal attributes Hidden,
                             EnableAttachments (not for doc libs or surveys -->
     <pnp:ListInstance Title="LI_12" TemplateType="100" Url="Lists/LI_12" Hidden="true" EnableAttachments="true"/>
     <pnp:ListInstance Title="LI_13" TemplateType="100" Url="Lists/LI_13" >
@@ -169,11 +169,11 @@ Base template: goal is to verify that all list properties and elements work as e
             main.xsl
           </XslLink>
           <Toolbar Type="Standard" />
-        </View>  
+        </View>
       </pnp:Views>
     </pnp:ListInstance>
     <pnp:ListInstance Title="LI_14" TemplateType="100" Url="Lists/LI_14">
-      <pnp:Security>        
+      <pnp:Security>
         <pnp:BreakRoleInheritance ClearSubscopes="true" CopyRoleAssignments="true">
           <pnp:RoleAssignment Principal="c:0(.s|true" RoleDefinition="Contribute" />
         </pnp:BreakRoleInheritance>
@@ -207,11 +207,51 @@ Base template: goal is to verify that all list properties and elements work as e
         </pnp:DataRow>
       </pnp:DataRows>
     </pnp:ListInstance>
+    <pnp:ListInstance Title="LI_17" TemplateType="100" Url="Lists/LI_17">
+      <pnp:DataRows>
+        <pnp:DataRow>
+          <pnp:DataValue FieldName="Title">Lookup val 1</pnp:DataValue>
+        </pnp:DataRow>
+        <pnp:DataRow>
+          <pnp:DataValue FieldName="Title">Lookup val 2</pnp:DataValue>
+        </pnp:DataRow>
+        <pnp:DataRow>
+          <pnp:DataValue FieldName="Title">Lookup val 3</pnp:DataValue>
+        </pnp:DataRow>
+        <pnp:DataRow>
+          <pnp:DataValue FieldName="Title">Lookup val 4</pnp:DataValue>
+        </pnp:DataRow>
+      </pnp:DataRows>
+    </pnp:ListInstance>
+    <pnp:ListInstance Title="LI_18" TemplateType="100" Url="Lists/LI_18">
+      <pnp:Fields>
+        <Field ID="{3F2C6EDA-1F45-4D4A-B1CD-696F1C679EF5}" Type="Lookup" Name="FLD_LI_18_1" DisplayName="Fld LI 18 1" Description="Fld LI 18 1" List="{listid:LI_17}" WebId="{siteid}" ShowField="Title" Mult="FALSE" Sortable="FALSE" UnlimitedLengthInDocumentLibrary="TRUE" />
+        <Field ID="{477E9D19-2D95-4EFC-A83D-33C1C63E813B}" Type="LookupMulti" Name="FLD_LI_18_2" DisplayName="Fld LI 18 2" Description="Fld LI 18 2" List="{listid:LI_17}" WebId="{siteid}" ShowField="Title" Mult="TRUE" Sortable="FALSE" UnlimitedLengthInDocumentLibrary="TRUE" />
+      </pnp:Fields>
+      <pnp:DataRows>
+        <pnp:DataRow>
+          <pnp:DataValue FieldName="FLD_LI_18_1">1</pnp:DataValue>
+          <pnp:DataValue FieldName="FLD_LI_18_2">2,3,4</pnp:DataValue>
+        </pnp:DataRow>
+        <pnp:DataRow>
+          <pnp:DataValue FieldName="FLD_LI_18_1">2</pnp:DataValue>
+          <pnp:DataValue FieldName="FLD_LI_18_2">3</pnp:DataValue>
+        </pnp:DataRow>
+        <pnp:DataRow>
+          <pnp:DataValue FieldName="FLD_LI_18_1">3</pnp:DataValue>
+          <pnp:DataValue FieldName="FLD_LI_18_2">1;2</pnp:DataValue>
+        </pnp:DataRow>
+        <pnp:DataRow>
+          <pnp:DataValue FieldName="FLD_LI_18_1">4</pnp:DataValue>
+          <pnp:DataValue FieldName="FLD_LI_18_2">2,1</pnp:DataValue>
+        </pnp:DataRow>
+      </pnp:DataRows>
+    </pnp:ListInstance>
 
-    <!-- Feature based: create promoted links list 
-         TemplateFeatureID 
+    <!-- Feature based: create promoted links list
+         TemplateFeatureID
          EnableFolderCreation needs to be false for a promoted links list
-    -->    
+    -->
     <pnp:ListInstance Title="LI_20" TemplateType="170" Url="Lists/LI_20" TemplateFeatureID="192efa95-e50c-475e-87ab-361cede5dd7f" EnableFolderCreation="false"/>
 
   </pnp:Lists>

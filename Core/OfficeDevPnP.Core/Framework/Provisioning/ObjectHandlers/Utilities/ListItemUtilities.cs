@@ -480,25 +480,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         case "LookupMulti":
                             {
                                 if (value == null) goto default;
-                                int[] multiValue;
-                                if (value.Contains(",") || value.Contains(";"))
-                                {
-                                    var arr = valuesToSet[key].Split(new char[] { ',', ';' });
-                                    multiValue = new int[arr.Length];
-                                    for (int i = 0; i < arr.Length; i++)
-                                    {
-                                        multiValue[i] = int.Parse(arr[i].ToString().Trim());
-                                    }
-                                }
-                                else
-                                {
-                                    string valStr = valuesToSet[key].ToString().Trim();
-                                    multiValue = valStr.Split(',', ';').Select(int.Parse).ToArray();
-                                }
+                                var newVals = value.Split(',', ';')
+                                    .Select(v => new FieldLookupValue { LookupId = int.Parse(v.Trim()) })
+                                    .ToArray();
 
-                                var newVals = multiValue.Select(id => new FieldLookupValue { LookupId = id }).ToArray();
-
-                                FieldLookup lookupField = context.CastTo<FieldLookup>(field);
+                                var lookupField = context.CastTo<FieldLookup>(field);
                                 lookupField.EnsureProperty(lf => lf.AllowMultipleValues);
                                 if (!lookupField.AllowMultipleValues && newVals.Length > 1)
                                 {
