@@ -334,9 +334,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         public List<String> ListsToExtract { get; set; } = new List<String>();
 
         /// <summary>
+        /// List which contains information about resource tokens used and/or created during the extraction of a template.
+        /// </summary>
+        internal List<Tuple<string, int, string>> ResourceTokens { get; } = new List<Tuple<string, int, string>>();
+
+        /// <summary>
         /// Extraction configuration coming from JSON
         /// </summary>
         internal Model.Configuration.ExtractConfiguration ExtractConfiguration { get; set; }
-
     }
 }
