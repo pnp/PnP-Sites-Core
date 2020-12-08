@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 #elif SP2019
 [assembly: AssemblyDescription("Office Dev PnP Core library for SharePoint 2019")]
 #else
-[assembly: AssemblyDescription("Retired - Use PnP.Framework going forward: Office Dev PnP Core library for SharePoint Online")]
+[assembly: AssemblyDescription("Retired - Use PnP.Framework going forward (Office Dev PnP Core library for SharePoint Online)")]
 #endif
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("OfficeDevPnP.Core")]

@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+**PnP Sites Core has retired, please use [PnP Framework](https://github.com/pnp/pnpframework) going forward.**
+
 # [3.28.2012.0 December 2020 release]
 
 ## Added
