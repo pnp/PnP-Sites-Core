@@ -187,13 +187,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
 #endif
                         
-                        //Set Properties before Checkin
-                        if (file.Properties != null && file.Properties.Any())
-                        {
-                            Dictionary<string, string> transformedProperties = file.Properties.ToDictionary(property => property.Key, property => parser.ParseString(property.Value));
-                            SetFileProperties(targetFile, transformedProperties, parser, false);
-                        }
-
                         switch (file.Level)
                         {
                             case Model.FileLevel.Published:
@@ -222,6 +215,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             (file.Security.ClearSubscopes == true || file.Security.CopyRoleAssignments == true || file.Security.RoleAssignments.Count > 0))
                         {
                             targetFile.ListItemAllFields.SetSecurity(parser, file.Security, WriteMessage);
+                        }
+                        
+                        if (file.Properties != null && file.Properties.Any())	
+                        {	
+                            Dictionary<string, string> transformedProperties = file.Properties.ToDictionary(property => property.Key, property => parser.ParseString(property.Value));	
+                            SetFileProperties(targetFile, transformedProperties, parser, false);	
                         }
                     }
 
