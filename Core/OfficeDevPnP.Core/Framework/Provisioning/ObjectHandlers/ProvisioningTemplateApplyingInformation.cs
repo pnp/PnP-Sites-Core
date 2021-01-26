@@ -55,6 +55,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         public bool OverwriteSystemPropertyBagValues { get; set; }
 
         /// <summary>
+        /// If true the ContentTypes on a existing List will be updated or new ones added. Default is false to preserve existing behavior.
+        /// </summary>
+        public bool UpdateContentTypeOnExistingLists { get; set; }
+
+        /// <summary>
         /// If true, existing navigation nodes of the site (where applicable) will be cleared out before applying the navigation nodes from the template (if any). This setting will override any settings made in the template.
         /// </summary>
         public bool ClearNavigation { get; set; }

@@ -130,7 +130,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Updating_list__0_, templateList.Title);
                                 var existingList = web.Lists[index];
-                                var returnTuple = UpdateList(web, existingList, templateList, listParser, scope, isNoScriptSite);
+                                var returnTuple = UpdateList(web, existingList, templateList, listParser, scope, applyingInformation.UpdateContentTypeOnExistingLists, isNoScriptSite);
                                 var updatedList = returnTuple.Item1;
                                 listParser = returnTuple.Item2;
                                 if (updatedList != null)
@@ -1265,7 +1265,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return fieldElement;
         }
 
-        private Tuple<List, TokenParser> UpdateList(Web web, List existingList, ListInstance templateList, TokenParser parser, PnPMonitoredScope scope, bool isNoScriptSite = false)
+        private Tuple<List, TokenParser> UpdateList(Web web, List existingList, ListInstance templateList, TokenParser parser, PnPMonitoredScope scope, bool UpdateContentTypeOnExistingLists = false, bool isNoScriptSite = false)
         {
             web.Context.Load(existingList,
                 l => l.Title,
@@ -1532,7 +1532,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     isDirty = false;
                 }
 
-                if (existingList.ContentTypesEnabled)
+                //it might make sense to update ContentType on existing list in case we want to add/refresh a ContentType even if users should not choose
+                if (existingList.ContentTypesEnabled|| UpdateContentTypeOnExistingLists)
                 {
                     ConfigureContentTypes(web, existingList, templateList, false, scope);
                 }
