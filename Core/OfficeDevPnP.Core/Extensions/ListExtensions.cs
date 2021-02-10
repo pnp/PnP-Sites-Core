@@ -1652,12 +1652,7 @@ namespace Microsoft.SharePoint.Client
                         path = path.Equals("/") ? list.RootFolder.ServerRelativeUrl : UrlUtility.Combine(list.RootFolder.ServerRelativeUrl, path);
                         // Find all in the same path:
                         var defaultColumnValuesInSamePath = columnValues.Where(x => x.FolderRelativePath == defaultColumnValue.FolderRelativePath);
-#if !NETSTANDARD2_0
-                        path = Utilities.HttpUtility.UrlPathEncode(path, false);
-#else
-                        path = System.Web.HttpUtility.UrlEncode(path);
-#endif
-
+                        
                         var xATag = new XElement("a", new XAttribute("href", path));
 
                         foreach (var defaultColumnValueInSamePath in defaultColumnValuesInSamePath)
