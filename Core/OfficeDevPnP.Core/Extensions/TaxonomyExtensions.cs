@@ -364,6 +364,20 @@ namespace Microsoft.SharePoint.Client
             return termStore;
         }
 
+        /// <summary>
+        /// Gets the URL of the content type syndication hub, if it exists.
+        /// </summary>
+        /// <param name="site">Site to be processed</param>
+        /// <returns>Returns the URL of the content type syndication hub</returns>
+        public static string GetContentTypePublishingHub(this Site site)
+        {
+            TaxonomySession session = TaxonomySession.GetTaxonomySession(site.Context);
+            var termStore = session.GetDefaultSiteCollectionTermStore();
+            site.Context.Load(termStore, s => s.ContentTypePublishingHub);
+            site.Context.ExecuteQueryRetry();
+
+            return termStore.ContentTypePublishingHub;
+        }
 
         /// <summary>
         /// Finds a termset by name
