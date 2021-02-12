@@ -889,11 +889,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             Assert.IsNotNull(ct.DocumentSetTemplate);
             Assert.IsNotNull(ct.DocumentSetTemplate.AllowedContentTypes);
-            Assert.IsNotNull(ct.DocumentSetTemplate.AllowedContentTypes.FirstOrDefault(c => c == "0x01005D4F34E4BE7F4B6892AEBE088EDD215E002"));
-            Assert.AreNotEqual(Guid.Empty, ct.DocumentSetTemplate.SharedFields.FirstOrDefault(c => c == new Guid("f6e7bdd5-bdcb-4c72-9f18-2bd8c27003d3")));
-            Assert.AreNotEqual(Guid.Empty, ct.DocumentSetTemplate.SharedFields.FirstOrDefault(c => c == new Guid("a8df65ec-0d06-4df1-8edf-55d48b3936dc")));
-            Assert.AreNotEqual(Guid.Empty, ct.DocumentSetTemplate.WelcomePageFields.FirstOrDefault(c => c == new Guid("c69d2ffc-0c86-474a-9cc7-dcd7774da531")));
-            Assert.AreNotEqual(Guid.Empty, ct.DocumentSetTemplate.WelcomePageFields.FirstOrDefault(c => c == new Guid("b9132b30-2b9e-47d4-b0fc-1ac34a61506f")));
+            Assert.IsNotNull(ct.DocumentSetTemplate.AllowedContentTypes.FirstOrDefault(c => c.ContentTypeId == "0x01005D4F34E4BE7F4B6892AEBE088EDD215E002"));
+            Assert.AreNotEqual(Guid.Empty, ct.DocumentSetTemplate.SharedFields.FirstOrDefault(c => c == new SharedField { FieldId = new Guid("f6e7bdd5-bdcb-4c72-9f18-2bd8c27003d3") }));
+            Assert.AreNotEqual(Guid.Empty, ct.DocumentSetTemplate.SharedFields.FirstOrDefault(c => c == new SharedField { FieldId = new Guid("a8df65ec-0d06-4df1-8edf-55d48b3936dc") }));
+            Assert.AreNotEqual(Guid.Empty, ct.DocumentSetTemplate.WelcomePageFields.FirstOrDefault(c => c == new WelcomePageField { FieldId = new Guid("c69d2ffc-0c86-474a-9cc7-dcd7774da531") }));
+            Assert.AreNotEqual(Guid.Empty, ct.DocumentSetTemplate.WelcomePageFields.FirstOrDefault(c => c == new WelcomePageField { FieldId = new Guid("b9132b30-2b9e-47d4-b0fc-1ac34a61506f") }));
             Assert.AreEqual("home.aspx", ct.DocumentSetTemplate.WelcomePage);
             Assert.IsNotNull(ct.DocumentSetTemplate.DefaultDocuments);
 
@@ -943,13 +943,16 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             };
 
             var dt = new DocumentSetTemplate();
-            dt.AllowedContentTypes.Add("0x01005D4F34E4BE7F4B6892AEBE088EDD215E002");
-            dt.SharedFields.Add(new Guid("f6e7bdd5-bdcb-4c72-9f18-2bd8c27003d3"));
-            dt.SharedFields.Add(new Guid("a8df65ec-0d06-4df1-8edf-55d48b3936dc"));
-            dt.WelcomePageFields.Add(new Guid("c69d2ffc-0c86-474a-9cc7-dcd7774da531"));
-            dt.WelcomePageFields.Add(new Guid("b9132b30-2b9e-47d4-b0fc-1ac34a61506f"));
+            dt.AllowedContentTypes.Add(new AllowedContentType
+            {
+                ContentTypeId = "0x01005D4F34E4BE7F4B6892AEBE088EDD215E002"
+            }); 
+            dt.SharedFields.Add(new SharedField { FieldId = new Guid("f6e7bdd5-bdcb-4c72-9f18-2bd8c27003d3") });
+            dt.SharedFields.Add(new SharedField { FieldId = new Guid("a8df65ec-0d06-4df1-8edf-55d48b3936dc") });
+            dt.WelcomePageFields.Add(new WelcomePageField { FieldId = new Guid("c69d2ffc-0c86-474a-9cc7-dcd7774da531") });
+            dt.WelcomePageFields.Add(new WelcomePageField { FieldId = new Guid("b9132b30-2b9e-47d4-b0fc-1ac34a61506f") });
             dt.WelcomePage = "home.aspx";
-            dt.DefaultDocuments.Add(new DefaultDocument()
+            dt.DefaultDocuments.Add(new DefaultDocument
             {
                 ContentTypeId = "0x01005D4F34E4BE7F4B6892AEBE088EDD215E001",
                 FileSourcePath = "document.dotx",

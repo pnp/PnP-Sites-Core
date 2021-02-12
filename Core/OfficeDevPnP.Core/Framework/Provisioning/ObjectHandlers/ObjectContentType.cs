@@ -365,16 +365,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     // AllowedContentTypes
                     // Add additional content types to the set of allowed content types
-                    foreach (string ctId in templateContentType.DocumentSetTemplate.AllowedContentTypes)
+                    foreach (AllowedContentType allowedContentType in templateContentType.DocumentSetTemplate.AllowedContentTypes)
                     {
-                        // Validate if the content type is not part of the document set content types yet
-                        if (documentSetTemplate.AllowedContentTypes.All(d => d.StringValue != ctId))
+                        // Validate if the content type is not part of the document set content types yet and it hasn't got the instruction to remove it
+                        if (!allowedContentType.Remove && documentSetTemplate.AllowedContentTypes.All(d => d.StringValue != allowedContentType.ContentTypeId))
                         {
-                            Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == ctId);
+                            Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == allowedContentType.ContentTypeId);
                             if (ct != null)
                             {
                                 documentSetTemplate.AllowedContentTypes.Add(ct.Id);
                                 documentSetIsDirty = true;
+                            }
+                        }
+                        else
+                        {
+                            // Content Type is part of the document set already, check if it should be removed
+                            if(allowedContentType.Remove)
+                            {
+                                // Remove the content type
+                                Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == allowedContentType.ContentTypeId);
+                                if (ct != null)
+                                {
+                                    documentSetTemplate.AllowedContentTypes.Remove(ct.Id);
+                                    documentSetIsDirty = true;
+                                }
                             }
                         }
                     }
@@ -382,17 +396,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // DefaultDocuments
                     if (!isNoScriptSite)
                     {
-                        foreach (var doc in templateContentType.DocumentSetTemplate.DefaultDocuments)
-                        {                                
-                            // Ensure the default document is not part of the document set yet
-                            if (documentSetTemplate.DefaultDocuments.All(d => d.Name != doc.Name))
+                        foreach (var defaultDocument in templateContentType.DocumentSetTemplate.DefaultDocuments)
+                        {
+                            // Ensure the default document is not part of the document set yet and it hasn't got the instruction to remove it
+                            if (!defaultDocument.Remove && documentSetTemplate.DefaultDocuments.All(d => d.Name != defaultDocument.Name))
                             {
-                                Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == doc.ContentTypeId);
+                                Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == defaultDocument.ContentTypeId);
                                 if (ct != null)
                                 {
-                                    using (Stream fileStream = connector.GetFileStream(doc.FileSourcePath))
+                                    using (Stream fileStream = connector.GetFileStream(defaultDocument.FileSourcePath))
                                     {
-                                        documentSetTemplate.DefaultDocuments.Add(doc.Name, ct.Id, ReadFullStream(fileStream));
+                                        documentSetTemplate.DefaultDocuments.Add(defaultDocument.Name, ct.Id, ReadFullStream(fileStream));
+                                        documentSetIsDirty = true;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // Default Document is part of the document set already, check if it should be removed
+                                if (defaultDocument.Remove)
+                                {
+                                    // Remove the default document
+                                    Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == defaultDocument.ContentTypeId);
+                                    if (ct != null)
+                                    {
+                                        documentSetTemplate.DefaultDocuments.Remove(defaultDocument.Name);
                                         documentSetIsDirty = true;
                                     }
                                 }
@@ -409,15 +437,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     // SharedFields
                     foreach (var sharedField in templateContentType.DocumentSetTemplate.SharedFields)
-                    {                            
-                        // Ensure the shared field is not part of the document set yet
-                        if (documentSetTemplate.SharedFields.All(f => f.Id != sharedField))
+                    {
+                        // Ensure the shared field is not part of the document set yet and it hasn't got the instruction to remove it
+                        if (!sharedField.Remove && documentSetTemplate.SharedFields.All(f => f.Id != sharedField.FieldId))
                         {
-                            Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == sharedField);
+                            Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == sharedField.FieldId);
                             if (field != null)
                             {
                                 documentSetTemplate.SharedFields.Add(field);
                                 documentSetIsDirty = true;
+                            }
+                        }
+                        else
+                        {
+                            // Shared Field is part of the document set already, check if it should be removed
+                            if (sharedField.Remove)
+                            {
+                                // Remove the shared field
+                                Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == sharedField.FieldId);
+                                if (field != null)
+                                {
+                                    documentSetTemplate.SharedFields.Remove(field);
+                                    documentSetIsDirty = true;
+                                }
                             }
                         }
                     }
@@ -425,14 +467,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // WelcomePageFields
                     foreach (var welcomePageField in templateContentType.DocumentSetTemplate.WelcomePageFields)
                     {
-                        // Ensure the welcomepage field is not part of the document set yet
-                        if (documentSetTemplate.WelcomePageFields.All(w => w.Id != welcomePageField))
+                        // Ensure the welcomepage field is not part of the document set yet and it hasn't got the instruction to remove it
+                        if (!welcomePageField.Remove && documentSetTemplate.WelcomePageFields.All(w => w.Id != welcomePageField.FieldId))
                         {
-                            Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == welcomePageField);
+                            Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == welcomePageField.FieldId);
                             if (field != null)
                             {
                                 documentSetTemplate.WelcomePageFields.Add(field);
                                 documentSetIsDirty = true;
+                            }
+                        }
+                        else
+                        {
+                            // Welcome page field is part of the document set already, check if it should be removed
+                            if (welcomePageField.Remove)
+                            {
+                                // Remove the welcome page field
+                                Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == welcomePageField.FieldId);
+                                if (field != null)
+                                {
+                                    documentSetTemplate.WelcomePageFields.Remove(field.Id);
+                                    documentSetIsDirty = true;
+                                }
                             }
                         }
                     }
@@ -642,9 +698,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 // Add additional content types to the set of allowed content types
                 bool hasDefaultDocumentContentTypeInTemplate = false;
-                foreach (String ctId in templateContentType.DocumentSetTemplate.AllowedContentTypes)
+                foreach (AllowedContentType allowedContentType in templateContentType.DocumentSetTemplate.AllowedContentTypes)
                 {
-                    Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == ctId);
+                    // If the allowed content type is marked to be removed, since we're creating the document set here, we simply skip this line
+                    if (allowedContentType.Remove) continue;
+
+                    Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == allowedContentType.ContentTypeId);
                     if (ct != null)
                     {
                         if (ct.Id.StringValue.Equals("0x0101", StringComparison.InvariantCultureIgnoreCase))
@@ -667,14 +726,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (!isNoScriptSite)
                 {
-                    foreach (var doc in templateContentType.DocumentSetTemplate.DefaultDocuments)
+                    foreach (var defaultDocument in templateContentType.DocumentSetTemplate.DefaultDocuments)
                     {
-                        Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == doc.ContentTypeId);
+                        // If the default document is marked to be removed, since we're creating the document set here, we simply skip this line
+                        if (defaultDocument.Remove) continue;
+
+                        Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == defaultDocument.ContentTypeId);
                         if (ct != null)
                         {
-                            using (Stream fileStream = connector.GetFileStream(doc.FileSourcePath))
+                            using (Stream fileStream = connector.GetFileStream(defaultDocument.FileSourcePath))
                             {
-                                documentSetTemplate.DefaultDocuments.Add(doc.Name, ct.Id, ReadFullStream(fileStream));
+                                documentSetTemplate.DefaultDocuments.Add(defaultDocument.Name, ct.Id, ReadFullStream(fileStream));
                             }
                         }
                     }
@@ -689,7 +751,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 foreach (var sharedField in templateContentType.DocumentSetTemplate.SharedFields)
                 {
-                    Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == sharedField);
+                    // If the shared field is marked to be removed, since we're creating the document set here, we simply skip this line
+                    if (sharedField.Remove) continue;
+
+                    Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == sharedField.FieldId);
                     if (field != null)
                     {
                         documentSetTemplate.SharedFields.Add(field);
@@ -698,7 +763,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 foreach (var welcomePageField in templateContentType.DocumentSetTemplate.WelcomePageFields)
                 {
-                    Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == welcomePageField);
+                    // If the welcome page field is marked to be removed, since we're creating the document set here, we simply skip this line
+                    if (welcomePageField.Remove) continue;
+
+                    Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == welcomePageField.FieldId);
                     if (field != null)
                     {
                         documentSetTemplate.WelcomePageFields.Add(field);
@@ -911,7 +979,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         newCT.DocumentSetTemplate = new DocumentSetTemplate(
                             null, // TODO: WelcomePage not yet supported
                             (from allowedCT in documentSetTemplate.AllowedContentTypes.AsEnumerable()
-                             select allowedCT.StringValue).ToList(),
+                             select new AllowedContentType
+                             {
+                                 ContentTypeId = allowedCT.StringValue
+                             }).ToList(),
                             (from defaultDocument in documentSetTemplate.DefaultDocuments.AsEnumerable()
                              select new DefaultDocument
                              {
@@ -924,9 +995,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
                              }).ToList(),
                             (from sharedField in documentSetTemplate.SharedFields.AsEnumerable()
-                             select sharedField.Id).ToList(),
+                             select new SharedField
+                             {
+                                 FieldId = sharedField.Id,
+                                 Name = sharedField.StaticName
+                             }).ToList(),
                             (from welcomePageField in documentSetTemplate.WelcomePageFields.AsEnumerable()
-                             select welcomePageField.Id).ToList()
+                             select new WelcomePageField
+                             {
+                                 FieldId = welcomePageField.Id,
+                                 Name = welcomePageField.StaticName
+                             }).ToList()
                         );
 
                         //extract the DefaultDocument files

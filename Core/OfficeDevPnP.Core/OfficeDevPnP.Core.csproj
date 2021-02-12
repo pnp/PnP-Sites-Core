@@ -650,8 +650,14 @@
     <Compile Include="Framework\Provisioning\Model\Hierarchy\ProvisioningSequenceCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Extensibility\ProvisioningWebhook.cs" />
     <Compile Include="Framework\Provisioning\Model\Extensibility\ProvisioningWebhookCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\WelcomePageFieldCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\WelcomePageField.cs" />
+    <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\SharedFieldCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\SharedField.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\DataRowAttachment.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\DataRowAttachmentCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\AllowedContentType.cs" />
+    <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\AllowedContentTypeCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\ModernExperiences\BaseClientSidePage.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\ModernExperiences\TranslatedClientSidePageCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\ModernExperiences\TranslatedClientSidePage.cs" />
@@ -814,6 +820,10 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\TeamSecurityFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\AlternateUICultureFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\TeamSecurityFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V202002\DocumentSetTemplateWelcomePageFieldsFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V202002\DocumentSetTemplateWelcomePageFieldsFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V202002\DocumentSetTemplateSharedFieldsFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V202002\DocumentSetTemplateSharedFieldsFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V202002\SharingSettingsFromModelToSchema.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V202002\SharingSettingsFromSchemaToModel.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\ClientSidePagesSerializer.cs" />

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using OfficeDevPnP.Core.Extensions;
 
@@ -15,10 +13,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     {
         #region Private Members
 
-        private List<String> _allowedContentTypes = new List<String>();
+        private AllowedContentTypeCollection _allowedContentTypes;
         private DefaultDocumentCollection _defaultDocuments;
-        private List<Guid> _sharedFields = new List<Guid>();
-        private List<Guid> _welcomePageFields = new List<Guid>();
+        private SharedFieldCollection _sharedFields;
+        private WelcomePageFieldCollection _welcomePageFields;
 
         #endregion
 
@@ -30,6 +28,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public DocumentSetTemplate()
         {
             _defaultDocuments = new DefaultDocumentCollection(this.ParentTemplate);
+            _allowedContentTypes = new AllowedContentTypeCollection(this.ParentTemplate);
+            _sharedFields = new SharedFieldCollection(this.ParentTemplate);
+            _welcomePageFields = new WelcomePageFieldCollection(this.ParentTemplate);
         }
 
         /// <summary>
@@ -40,7 +41,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <param name="defaultDocuments">Default documents for the DocumentSet</param>
         /// <param name="sharedFields">Shared Fields for the DocumentSet</param>
         /// <param name="welcomePageFields">Welcome Page Fields for the DocumentSet</param>
-        public DocumentSetTemplate(String welcomePage, IEnumerable<String> allowedContentTypes = null, IEnumerable<DefaultDocument> defaultDocuments = null, IEnumerable<Guid> sharedFields = null, IEnumerable<Guid> welcomePageFields = null) : 
+        public DocumentSetTemplate(String welcomePage, IEnumerable<AllowedContentType> allowedContentTypes = null, IEnumerable<DefaultDocument> defaultDocuments = null, IEnumerable<SharedField> sharedFields = null, IEnumerable<WelcomePageField> welcomePageFields = null) : 
             this()
         {
             if (!String.IsNullOrEmpty(welcomePage))
@@ -49,9 +50,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
             if (allowedContentTypes != null)
             {
-                this._allowedContentTypes.AddRange(allowedContentTypes);
+                this.AllowedContentTypes.AddRange(allowedContentTypes);
             }
-            this.DefaultDocuments.AddRange(defaultDocuments);
+            if (defaultDocuments != null)
+            {
+                this.DefaultDocuments.AddRange(defaultDocuments);
+            }
             if (sharedFields != null)
             {
                 this._sharedFields.AddRange(sharedFields);
@@ -69,7 +73,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// The list of allowed Content Types for the Document Set
         /// </summary>
-        public List<String> AllowedContentTypes
+        public AllowedContentTypeCollection AllowedContentTypes
         {
             get { return this._allowedContentTypes; }
             private set { this._allowedContentTypes = value; }
@@ -87,7 +91,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// The list of Shared Fields for the Document Set
         /// </summary>
-        public List<Guid> SharedFields
+        public SharedFieldCollection SharedFields
         {
             get { return this._sharedFields; }
             private set { this._sharedFields = value; }
@@ -96,7 +100,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// The list of Welcome Page Fields for the Document Set
         /// </summary>
-        public List<Guid> WelcomePageFields
+        public WelcomePageFieldCollection WelcomePageFields
         {
             get { return this._welcomePageFields; }
             private set { this._welcomePageFields = value; }

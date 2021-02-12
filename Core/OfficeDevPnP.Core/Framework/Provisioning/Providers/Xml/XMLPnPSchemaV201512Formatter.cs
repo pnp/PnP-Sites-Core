@@ -467,7 +467,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                      (from act in ct.DocumentSetTemplate.AllowedContentTypes
                                       select new DocumentSetTemplateAllowedContentType
                                       {
-                                          ContentTypeID = act
+                                          ContentTypeID = act.ContentTypeId
                                       }).ToArray() : null,
                                  DefaultDocuments = ct.DocumentSetTemplate.DefaultDocuments.Count > 0 ?
                                      (from dd in ct.DocumentSetTemplate.DefaultDocuments
@@ -1440,7 +1440,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                 contentType.DocumentSetTemplate.WelcomePage,
                                 contentType.DocumentSetTemplate.AllowedContentTypes != null ?
                                     (from act in contentType.DocumentSetTemplate.AllowedContentTypes
-                                     select act.ContentTypeID) : null,
+                                     select new Model.AllowedContentType
+                                     {
+                                         ContentTypeId = act.ContentTypeID
+                                     }) : null,
                                 contentType.DocumentSetTemplate.DefaultDocuments != null ?
                                     (from dd in contentType.DocumentSetTemplate.DefaultDocuments
                                      select new Model.DefaultDocument
@@ -1451,10 +1454,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                      }) : null,
                                 contentType.DocumentSetTemplate.SharedFields != null ?
                                     (from sf in contentType.DocumentSetTemplate.SharedFields
-                                     select Guid.Parse(sf.ID)) : null,
+                                     select new Model.SharedField
+                                     {
+                                         FieldId = Guid.Parse(sf.ID)
+                                     }) : null,
                                 contentType.DocumentSetTemplate.WelcomePageFields != null ?
                                     (from wpf in contentType.DocumentSetTemplate.WelcomePageFields
-                                     select Guid.Parse(wpf.ID)) : null
+                                     select new Model.WelcomePageField
+                                     {
+                                         FieldId = Guid.Parse(wpf.ID)
+                                     }) : null
                                 ) : null,
                         DisplayFormUrl = contentType.DisplayFormUrl,
                         EditFormUrl = contentType.EditFormUrl,

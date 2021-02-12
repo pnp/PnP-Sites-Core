@@ -27,22 +27,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
 
                 // Define custom resolver for FieldRef.ID because needs conversion from String to GUID
                 expressions.Add(c => c.FieldRefs[0].Id, new FromStringToGuidValueResolver());
+                
                 //document template
                 expressions.Add(c => c.DocumentTemplate, new ExpressionValueResolver((s, v) => v.GetPublicInstancePropertyValue("TargetName")));
+                
                 //document set template
                 expressions.Add(c => c.DocumentSetTemplate, new PropertyObjectTypeResolver<ContentType>(ct => ct.DocumentSetTemplate));
 
                 //document set template - allowed content types
-                expressions.Add(c => c.DocumentSetTemplate.AllowedContentTypes,
-                    new DocumentSetTemplateAllowedContentTypesFromSchemaToModelTypeResolver());
+                expressions.Add(c => c.DocumentSetTemplate.AllowedContentTypes, new DocumentSetTemplateAllowedContentTypesFromSchemaToModelTypeResolver());
+                
                 //document set template - remove existing content types
-                expressions.Add(c => c.DocumentSetTemplate.RemoveExistingContentTypes,
-                    new RemoveExistingContentTypesFromSchemaToModelValueResolver());
+                expressions.Add(c => c.DocumentSetTemplate.RemoveExistingContentTypes, new RemoveExistingContentTypesFromSchemaToModelValueResolver());
 
                 //document set template - shared fields
-                expressions.Add(c => c.DocumentSetTemplate.SharedFields, new ExpressionCollectionValueResolver<Guid>((s) => Guid.Parse(s.GetPublicInstancePropertyValue("ID").ToString())));
+                expressions.Add(c => c.DocumentSetTemplate.SharedFields, new DocumentSetTemplateSharedFieldsFromSchemaToModelTypeResolver());
+                
                 //document set template - welcome page fields
-                expressions.Add(c => c.DocumentSetTemplate.WelcomePageFields, new ExpressionCollectionValueResolver<Guid>((s) => Guid.Parse(s.GetPublicInstancePropertyValue("ID").ToString())));
+                expressions.Add(c => c.DocumentSetTemplate.WelcomePageFields, new DocumentSetTemplateWelcomePageFieldsFromSchemaToModelTypeResolver());
 
                 //document set template - XmlDocuments section
                 expressions.Add(c => c.DocumentSetTemplate.XmlDocuments, new XmlAnyFromSchemaToModelValueResolver("XmlDocuments"));
@@ -79,8 +81,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                 expressions.Add($"{contentTypeType.Namespace}.DocumentSetTemplate.AllowedContentTypes",
                     new DocumentSetTemplateAllowedContentTypesFromModelToSchemaTypeResolver());
 
-                //document set template - shared fields and welcome page fields (this expression also used to resolve fieldref collection ids because of same type name)
+                //document set template - shared fields
+                expressions.Add($"{contentTypeType.Namespace}.DocumentSetTemplate.SharedFields",
+                    new DocumentSetTemplateSharedFieldsFromModelToSchemaTypeResolver());
+
+                //document set template - welcome page fields
+                expressions.Add($"{contentTypeType.Namespace}.DocumentSetTemplate.WelcomePageFields",
+                    new DocumentSetTemplateWelcomePageFieldsFromModelToSchemaTypeResolver());
+
+                //document set template - fieldref collection
                 expressions.Add($"{contentTypeType.Namespace}.FieldRefBase.ID", new ExpressionValueResolver((s, v) => v != null ? v.ToString() : s?.ToString()));
+
                 //document template
                 expressions.Add($"{contentTypeType.FullName}.DocumentTemplate", new DocumentTemplateFromModelToSchemaTypeResolver(documentTemplateType));
 

@@ -22,7 +22,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V2017
 
         public object Resolve(object source, Dictionary<String, IResolver> resolvers = null, Boolean recursive = false)
         {
-            var result = new List<String>();
+            var result = new List<Model.AllowedContentType>();
 
             var allowedContentTypesContainer = source.GetPublicInstancePropertyValue("AllowedContentTypes");
             var allowedContentTypes = allowedContentTypesContainer?.GetPublicInstancePropertyValue("AllowedContentType");
@@ -31,8 +31,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V2017
             {
                 foreach(var ac in (IEnumerable)allowedContentTypes)
                 {
-                    var contentTypeId = ac?.GetPublicInstancePropertyValue("ContentTypeID");
-                    result.Add((String)contentTypeId);
+                    var model = new Model.AllowedContentType
+                    {
+                        ContentTypeId = ac?.GetPublicInstancePropertyValue("ContentTypeID").ToString(),
+                        Name = ac?.GetPublicInstancePropertyValue("Name")?.ToString(),
+                    };
+
+                    var removeContentType = ac?.GetPublicInstancePropertyValue("Remove");
+                    if (removeContentType != null && bool.TryParse(removeContentType.ToString(), out bool removeContentTypeBool))
+                    {
+                        model.Remove = removeContentTypeBool;
+                    }
+
+                    result.Add(model);
                 }
             }
 
