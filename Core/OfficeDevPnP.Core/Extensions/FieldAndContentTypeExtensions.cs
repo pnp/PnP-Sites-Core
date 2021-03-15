@@ -2069,12 +2069,75 @@ namespace Microsoft.SharePoint.Client
             var ctx = contentTypes.Context;
             contentTypes.EnsureProperties(c => c.Include(ct => ct.Id));
 
-            var res = contentTypes.Where(c => c.Id.StringValue.StartsWith(contentTypeId, StringComparison.InvariantCultureIgnoreCase)).OrderBy(c => c.Id.StringValue.Length).FirstOrDefault();
-            if (res != null)
+            return BestMatch(contentTypeId, contentTypes);
+        }
+
+        /// <summary>
+        /// Searches for the content type with the closest match to the specified content type ID. 
+        /// If the search finds two matches, the shorter ID is returned. 
+        /// </summary>
+        /// <param name="contentTypes">Content type collection to search</param>
+        /// <param name="contentTypeId">Content type id for the content type to search</param>
+        /// <returns>Content type Id object or null if was not found</returns>
+        public static ContentTypeId BestMatch(this ContentTypeCollection contentTypes, ContentTypeId contentTypeId)
+        {
+            if (contentTypeId == null)
             {
-                return res.Id;
+                throw new ArgumentNullException(nameof(contentTypeId));
             }
-            return null;
+            return BestMatch(contentTypes, contentTypeId.StringValue);
+        }
+
+        internal static int CountCommonBytes(this ContentTypeId thisId, ContentTypeId id)
+        {
+            return thisId.CountCommonBytes(id.StringValue);
+        }
+
+        internal static int CountCommonBytes(this ContentTypeId thisId, string id)
+        {
+            string thisIdValue = thisId.StringValue.Substring(2).ToLower();
+            string otherIdValue = id.Substring(2).ToLower();
+
+            int index = 0;
+            while ((index * 2 + 1 < thisIdValue.Length) && ((index * 2 + 1 < otherIdValue.Length) && (thisIdValue[index * 2] == otherIdValue[index * 2]) && (thisIdValue[index * 2 + 1] == otherIdValue[index * 2 + 1])))
+            {
+                index++;
+            }
+            return index;
+        }
+
+        /// <summary>
+        /// Searches for the content type with the closest match to this content type id. 
+        /// If the search finds two matches, the shorter ID is returned. 
+        /// </summary>
+        /// <param name="contentTypeId">Content type id for the content type to search</param>
+        /// <param name="contentTypeCollection">Content type collection to search</param>
+        /// <returns>Content type Id object or null if was not found</returns>
+
+        public static ContentTypeId BestMatch(ContentTypeId contentTypeId, IEnumerable<ContentType> contentTypeCollection)
+        {
+            return BestMatch(contentTypeId.StringValue, contentTypeCollection);
+        }
+
+        private static ContentTypeId BestMatch(string contentTypeId, IEnumerable<ContentType> contentTypeCollection)
+        {
+            ContentTypeId bestMatch = null;
+            int bestMatchCommonBytes = 0;
+            foreach (ContentType contentType in contentTypeCollection)
+            {
+                int commonBytes = contentType.Id.CountCommonBytes(contentTypeId);
+                if (commonBytes > bestMatchCommonBytes)
+                {
+                    bestMatch = contentType.Id;
+                    bestMatchCommonBytes = commonBytes;
+                    continue;
+                }
+                if ((commonBytes == bestMatchCommonBytes) && (contentType.Id.StringValue.Length < bestMatch.StringValue.Length))
+                {
+                    bestMatch = contentType.Id;
+                }
+            }
+            return bestMatch;
         }
 
         /// <summary>
